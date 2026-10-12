@@ -2,17 +2,17 @@ from flask import Blueprint, Response, abort, request
 from pydantic import ValidationError
 
 from ..schemas.chat import ChatRequest
-from ..services.chat_service import stream_answer
+from ..services.rag_service import stream_answer
 
 chat_bp = Blueprint("chat", __name__, url_prefix="/api")
 
 
 @chat_bp.post("/chat")
 def chat():
-    """提问接口：SSE 流式返回答案。
+    """提问接口：SSE 流式返回答案（RAG：检索 → 拼 Prompt → 作答，带出处）。
 
     路由层只负责：校验参数 → 交给 service → 把生成器包成 SSE 响应。
-    业务逻辑（阶段 1 的 RAG 检索）在 services/chat_service.py 里。
+    业务逻辑在 services/rag_service.py 里。
     """
     try:
         payload = ChatRequest.model_validate(request.get_json(silent=True) or {})
