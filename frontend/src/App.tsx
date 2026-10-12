@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route, NavLink } from "react-router-dom";
+import { HashRouter, Routes, Route, NavLink } from "react-router-dom";
 import Chat from "./pages/Chat";
 import Documents from "./pages/Documents";
 
@@ -24,7 +24,7 @@ const navClass = ({ isActive }: { isActive: boolean }) =>
 
 export default function App() {
   return (
-    <BrowserRouter>
+    <HashRouter>
       <div className="app">
         <aside className="sidebar">
           <div className="sidebar-brand">Sensor-Agent</div>
@@ -62,6 +62,6 @@ export default function App() {
           </Routes>
         </main>
       </div>
-    </BrowserRouter>
+    </HashRouter>
   );
 }
