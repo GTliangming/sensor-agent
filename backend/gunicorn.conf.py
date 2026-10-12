@@ -2,7 +2,7 @@
 
 import os
 
-bind = f"0.0.0.0:{int(os.getenv('PORT', '10000'))}"
+bind = f"0.0.0.0:{int(os.getenv('PORT', '8080'))}"
 workers = 1
 worker_class = "gthread"
 threads = 4
