@@ -3,7 +3,7 @@
 一个面向工业传感器、示波器垂直领域的 AI Agent 项目:喂入该领域的 datasheet、手册、规格书等文档，
 实现「基于文档检索作答 + 带出处 + 可调工具 + 带记忆」的智能问答与任务助手。
 
-> 本仓库当前只包含**设计文档**，暂不含代码。代码会在设计对齐后按文档里的实现步骤逐步落地。
+> 当前已实现 React 前端、Flask 后端以及 SQLite + FAISS 的 RAG 链路。部署使用 GitHub Pages 前端和 Render Docker 后端，见[部署指南](docs/06-Render部署指南.md)。
 
 ## 这个项目要解决的真实问题
 
@@ -45,6 +45,8 @@
   —— 第一版跑通后，如何一层层深入原理、从哪里入手、怎么升级到生产级
 - [`docs/03-术语表.md`](docs/03-术语表.md)
   —— 前端视角的 AI 术语速查（embedding / rerank / Agent / LangGraph 等），遇到生词回来查
+- [`docs/06-Render部署指南.md`](docs/06-Render部署指南.md)
+  —— Render 免费 Docker 服务、生产启动配置、GitHub Pages 接口地址及部署验证
 
 ## 阅读顺序建议
 

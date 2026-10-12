@@ -15,7 +15,7 @@ class Config:
 
     # ---- 运行时数据目录（SQLite / FAISS 索引 / 上传的原始文件）----
     BASE_DIR = Path(__file__).resolve().parent
-    DATA_DIR = BASE_DIR / "data"
+    DATA_DIR = Path(os.getenv("DATA_DIR", str(BASE_DIR / "data"))).resolve()
     DB_PATH = DATA_DIR / "app.db"
     UPLOAD_DIR = DATA_DIR / "uploads"
     FAISS_INDEX_PATH = DATA_DIR / "faiss.index"
