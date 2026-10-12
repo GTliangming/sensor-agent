@@ -1,0 +1,13 @@
+# 后端
+backend/.venv/
+backend/.env
+__pycache__/
+*.pyc
+
+# 前端
+frontend/node_modules/
+frontend/dist/
+frontend/.env
+
+# 其它
+.DS_Store
