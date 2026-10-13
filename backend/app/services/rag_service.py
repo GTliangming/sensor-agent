@@ -21,7 +21,7 @@ SYSTEM_PROMPT = """你是工业传感器与示波器领域的技术助手。请*
 1. 答案必须来自资料；资料中没有的，直接说“根据现有资料无法回答”，不要编造。
 2. 涉及参数、数值、型号时，与资料严格保持一致，不要臆测。
 3. 用中文回答，可用 Markdown（表格、公式等）让表述更清晰。
-4. 在答案末尾用【出处】列出你引用了哪些资料片段（格式：文件名#序号）。
+4. 在答案末尾用【出处】简要标注依据了哪些文档（按文件名列出即可，不要逐条罗列每个表格行）。
 5. 用户查询一类产品的报价、汇总或列表时，逐条核对资料中的类别、方式和价格，列出所有符合问题的记录，不要漏掉不同类别，也不要把相同价格视为重复记录。"""
 
 
@@ -79,12 +79,17 @@ def _sse_error(message: str) -> str:
 
 
 def _sse_sources(chunks: list[dict]) -> str:
-    """出处事件：命中的资料片段（文件名#序号），按命中顺序去重。"""
+    """出处事件：按文档去重（而非逐块）。
+
+    XLSX 命中会把整张工作表补进上下文，逐块列出会有几十条噪音；
+    引用的意义是“答案依据了哪些文档”，所以折叠到文件名（去掉 #序号）。
+    """
     seen: list[str] = []
     for c in chunks:
-        src = c.get("source")
-        if src and src not in seen:
-            seen.append(src)
+        src = c.get("source") or ""
+        name = src.rsplit("#", 1)[0] if "#" in src else src
+        if name and name not in seen:
+            seen.append(name)
     return _sse(f"[SOURCES] {json.dumps(seen, ensure_ascii=False)}")
 
 
