@@ -49,6 +49,13 @@ class Config:
     CHUNK_OVERLAP = int(os.getenv("CHUNK_OVERLAP", "50"))
     TOP_K = int(os.getenv("TOP_K", "8"))
 
+    # ---- 重排 rerank（两阶段检索：向量粗筛 top-n → 交叉编码精排 top-k）----
+    # 开关可随时关闭，回退到纯向量 top-k；rerank 走 SiliconFlow /v1/rerank。
+    RERANK_ENABLED = os.getenv("RERANK_ENABLED", "1") == "1"
+    RERANK_MODEL = os.getenv("RERANK_MODEL", "BAAI/bge-reranker-v2-m3")
+    RETRIEVE_TOP_N = int(os.getenv("RETRIEVE_TOP_N", "30"))  # 粗筛候选数（送去精排）
+    RERANK_TIMEOUT = float(os.getenv("RERANK_TIMEOUT", "10"))
+
     # 单文件上传上限（MB）
     MAX_UPLOAD_MB = int(os.getenv("MAX_UPLOAD_MB", "100"))
 

@@ -14,6 +14,7 @@ from config import config
 from .. import db
 from ..clients.embedding import embed_query
 from ..clients.llm import get_llm_client
+from ..clients.rerank import RerankError, rerank
 from ..vectorstore import get_vector_store
 
 SYSTEM_PROMPT = """你是工业传感器与示波器领域的技术助手。请**只依据**下面提供的【资料】回答用户问题。
@@ -34,18 +35,35 @@ class RetrievalError(Exception):
 
 
 def _retrieve(question: str) -> list[dict]:
-    """向量检索 → 回表 → 补齐小型工作表。
+    """两阶段检索：向量粗筛 top-n → rerank 精排 top-k → 小表补全。
 
-    服务故障（embedding / FAISS 异常）抛 RetrievalError，由上层透出给用户；
-    “检索成功但没命中”返回空列表，是正常的“无资料”语义。
+    - 服务故障（embedding / FAISS 异常）抛 RetrievalError，由上层透出；
+    - rerank 关闭或失败时回退到向量 top-k，不影响可用性；
+    - 精排选出最相关的行后，再补全其所在的小型工作表，避免整表稀释精排。
     """
     try:
         qvec = embed_query(question)
-        hits = get_vector_store().search(qvec, config.TOP_K)
+        # rerank 开启时多捞一些候选送去精排；关闭时直接取 top-k
+        fetch_n = config.RETRIEVE_TOP_N if config.RERANK_ENABLED else config.TOP_K
+        hits = get_vector_store().search(qvec, fetch_n)
     except Exception as exc:  # noqa: BLE001 —— 统一转成领域异常再透出
         raise RetrievalError("检索服务暂时不可用，请稍后重试") from exc
-    chunks = db.get_chunks_by_ids([cid for cid, _ in hits])
-    return _expand_small_sheets(chunks)
+
+    candidates = db.get_chunks_by_ids([cid for cid, _ in hits])
+    top = _rerank(question, candidates) if config.RERANK_ENABLED else candidates
+    return _expand_small_sheets(top[: config.TOP_K])
+
+
+def _rerank(question: str, candidates: list[dict]) -> list[dict]:
+    """用 cross-encoder 对候选精排；失败则原样返回（回退到向量顺序）。"""
+    if not candidates:
+        return candidates
+    try:
+        ranked = rerank(question, [c["text"] for c in candidates], config.TOP_K)
+    except RerankError:
+        traceback.print_exc()
+        return candidates
+    return [candidates[i] for i, _ in ranked]
 
 
 def _expand_small_sheets(chunks: list[dict]) -> list[dict]:
