@@ -2,8 +2,10 @@ import { useEffect, useRef, useState } from "react";
 import {
   ACCEPT_EXTS,
   DocItem,
+  INLINE_PREVIEW_EXTS,
   STAGES,
   deleteDocument,
+  fileUrl,
   formatSize,
   listDocuments,
   stageIndex,
@@ -36,10 +38,63 @@ function Stepper({ doc }: { doc: DocItem }) {
   );
 }
 
+function PreviewModal({ doc, onClose }: { doc: DocItem; onClose: () => void }) {
+  const url = fileUrl(doc.id);
+  const inline = INLINE_PREVIEW_EXTS.includes(doc.ext);
+
+  useEffect(() => {
+    function onKey(e: KeyboardEvent) {
+      if (e.key === "Escape") onClose();
+    }
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [onClose]);
+
+  return (
+    <div className="preview-overlay" onClick={onClose}>
+      <div className="preview-box" onClick={(e) => e.stopPropagation()}>
+        <div className="preview-head">
+          <span className="preview-title" title={doc.name}>
+            {doc.name}
+          </span>
+          <div className="preview-ops">
+            <a href={url} target="_blank" rel="noopener noreferrer">
+              新窗口打开
+            </a>
+            <button onClick={onClose} aria-label="关闭">
+              关闭
+            </button>
+          </div>
+        </div>
+        <div className="preview-body">
+          {inline ? (
+            <iframe src={url} title={doc.name} />
+          ) : (
+            <div className="preview-fallback">
+              <p>
+                {doc.ext.toUpperCase()} 文件无法在浏览器内直接预览，可下载后用本地软件查看。
+              </p>
+              <a
+                className="preview-download"
+                href={url}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                下载 / 打开原文件
+              </a>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function Documents() {
   const [docs, setDocs] = useState<DocItem[]>(listDocuments());
   const [dragging, setDragging] = useState(false);
   const [confirmId, setConfirmId] = useState<string | null>(null);
+  const [previewDoc, setPreviewDoc] = useState<DocItem | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => subscribe(() => setDocs([...listDocuments()])), []);
@@ -144,18 +199,33 @@ export default function Documents() {
                     </button>
                   </span>
                 ) : (
-                  <button
-                    className="del-btn"
-                    onClick={() => setConfirmId(d.id)}
-                    title="删除"
-                  >
-                    删除
-                  </button>
+                  <span className="op-group">
+                    {!d.id.startsWith("tmp-") && (
+                      <button
+                        className="del-btn"
+                        onClick={() => setPreviewDoc(d)}
+                        title="预览原文件"
+                      >
+                        预览
+                      </button>
+                    )}
+                    <button
+                      className="del-btn"
+                      onClick={() => setConfirmId(d.id)}
+                      title="删除"
+                    >
+                      删除
+                    </button>
+                  </span>
                 )}
               </span>
             </div>
           ))}
         </div>
+      )}
+
+      {previewDoc && (
+        <PreviewModal doc={previewDoc} onClose={() => setPreviewDoc(null)} />
       )}
     </div>
   );

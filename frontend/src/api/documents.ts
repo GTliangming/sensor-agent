@@ -46,6 +46,14 @@ export function formatSize(bytes: number): string {
   return `${(bytes / 1024 / 1024).toFixed(1)} MB`;
 }
 
+// 原始文件地址（预览 / 下载用）：对接后端 GET /api/documents/:id/file
+export function fileUrl(id: string): string {
+  return `${API_BASE}/api/documents/${id}/file`;
+}
+
+// 浏览器能内嵌预览的格式；其余（docx/xlsx）只能下载或新窗口打开
+export const INLINE_PREVIEW_EXTS = ["pdf", "txt", "md"];
+
 // MOCK_STORE_MARKER
 
 // ===== 真实后端实现 =====

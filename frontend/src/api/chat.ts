@@ -9,13 +9,13 @@ const API_BASE = import.meta.env.VITE_API_BASE ?? "";
 export async function askChat(
   question: string,
   onDelta: (text: string) => void,
-  signal?: AbortSignal
+  opts?: { onSources?: (sources: string[]) => void; signal?: AbortSignal }
 ): Promise<void> {
   const resp = await fetch(`${API_BASE}/api/chat`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ question }),
-    signal,
+    signal: opts?.signal,
   });
 
   if (!resp.ok || !resp.body) {
@@ -40,6 +40,19 @@ export async function askChat(
       if (!line.startsWith("data:")) continue;
       const payload = line.slice(5).trim();
       if (!payload || payload === "[DONE]") continue;
+      // 后端在流中途出错时发错误事件（[ERROR] 前缀），抛出去让上层提示
+      if (payload.startsWith("[ERROR]")) {
+        throw new Error(payload.slice(7).trim() || "生成回答时出错");
+      }
+      // 出处事件（[SOURCES] 前缀）：命中的资料片段列表
+      if (payload.startsWith("[SOURCES]")) {
+        try {
+          opts?.onSources?.(JSON.parse(payload.slice(9).trim()) as string[]);
+        } catch {
+          /* 出处解析失败不影响正文 */
+        }
+        continue;
+      }
       // 后端把每个片段 JSON 编码过（保留换行等），这里解回原文
       try {
         onDelta(JSON.parse(payload) as string);

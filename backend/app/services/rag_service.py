@@ -1,11 +1,12 @@
 """问答链路（RAG）：检索 → 拼 Prompt → 调 DeepSeek 流式作答，带出处。
 
-SSE 协议与之前一致：每个片段是 JSON 编码的文本、以 data: 行发送，最后 data: [DONE]。
-所以前端 chat.ts 不用改。出处由模型按 Prompt 要求写在答案末尾的【出处】里。
+SSE 协议：每个正常片段是 JSON 编码的文本、以 data: 行发送；出错时发
+data: [ERROR] <说明>；最后统一 data: [DONE]。出处由模型按 Prompt 写在答案末尾。
 """
 
 import json
 import re
+import traceback
 from typing import Iterator
 
 from config import config
@@ -28,13 +29,21 @@ def _build_context(chunks: list[dict]) -> str:
     return "\n\n".join(f"[{c['source']}]\n{c['text']}" for c in chunks)
 
 
+class RetrievalError(Exception):
+    """向量化 / 检索阶段的故障（区别于“文档里没有相关内容”）。"""
+
+
 def _retrieve(question: str) -> list[dict]:
-    """向量检索 → 回表 → 补齐小型工作表；向量调用异常退化为“无资料”。"""
+    """向量检索 → 回表 → 补齐小型工作表。
+
+    服务故障（embedding / FAISS 异常）抛 RetrievalError，由上层透出给用户；
+    “检索成功但没命中”返回空列表，是正常的“无资料”语义。
+    """
     try:
         qvec = embed_query(question)
         hits = get_vector_store().search(qvec, config.TOP_K)
-    except Exception:
-        return []
+    except Exception as exc:  # noqa: BLE001 —— 统一转成领域异常再透出
+        raise RetrievalError("检索服务暂时不可用，请稍后重试") from exc
     chunks = db.get_chunks_by_ids([cid for cid, _ in hits])
     return _expand_small_sheets(chunks)
 
@@ -60,20 +69,53 @@ def _expand_small_sheets(chunks: list[dict]) -> list[dict]:
     return expanded
 
 
+def _sse(payload: str) -> str:
+    return f"data: {payload}\n\n"
+
+
+def _sse_error(message: str) -> str:
+    """错误事件：用 [ERROR] 前缀与正常片段区分（正常片段是 JSON 字符串，必以引号开头）。"""
+    return _sse(f"[ERROR] {message}")
+
+
+def _sse_sources(chunks: list[dict]) -> str:
+    """出处事件：命中的资料片段（文件名#序号），按命中顺序去重。"""
+    seen: list[str] = []
+    for c in chunks:
+        src = c.get("source")
+        if src and src not in seen:
+            seen.append(src)
+    return _sse(f"[SOURCES] {json.dumps(seen, ensure_ascii=False)}")
+
+
 def stream_answer(question: str) -> Iterator[str]:
-    chunks = _retrieve(question)
+    try:
+        chunks = _retrieve(question)
+    except RetrievalError as exc:
+        yield _sse_error(str(exc))
+        yield _sse("[DONE]")
+        return
+
+    if chunks:
+        yield _sse_sources(chunks)
+
     context = _build_context(chunks) if chunks else "（无相关资料）"
     messages = [
         {"role": "system", "content": SYSTEM_PROMPT},
         {"role": "user", "content": f"【资料】\n{context}\n\n【问题】\n{question}"},
     ]
 
-    client = get_llm_client()
-    stream = client.chat.completions.create(
-        model=config.DEEPSEEK_MODEL, messages=messages, stream=True
-    )
-    for chunk in stream:
-        delta = chunk.choices[0].delta.content or ""
-        if delta:
-            yield f"data: {json.dumps(delta, ensure_ascii=False)}\n\n"
-    yield "data: [DONE]\n\n"
+    try:
+        client = get_llm_client()
+        stream = client.chat.completions.create(
+            model=config.DEEPSEEK_MODEL, messages=messages, stream=True
+        )
+        for chunk in stream:
+            delta = chunk.choices[0].delta.content or ""
+            if delta:
+                yield _sse(json.dumps(delta, ensure_ascii=False))
+    except Exception:  # noqa: BLE001 —— 流已开始，异常只能通过错误事件透出
+        traceback.print_exc()
+        yield _sse_error("生成回答时出错，请稍后重试")
+    finally:
+        yield _sse("[DONE]")

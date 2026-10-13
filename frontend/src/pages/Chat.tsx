@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { askChat } from "../api/chat";
 import MarkdownView from "../components/MarkdownView";
 
-type Msg = { role: "user" | "assistant"; content: string };
+type Msg = { role: "user" | "assistant"; content: string; sources?: string[] };
 
 function SendIcon() {
   return (
@@ -46,14 +46,27 @@ export default function Chat() {
     requestAnimationFrame(resize);
 
     try {
-      await askChat(q, (delta) => {
-        setMessages((m) => {
-          const copy = m.slice();
-          const last = copy[copy.length - 1];
-          copy[copy.length - 1] = { ...last, content: last.content + delta };
-          return copy;
-        });
-      });
+      await askChat(
+        q,
+        (delta) => {
+          setMessages((m) => {
+            const copy = m.slice();
+            const last = copy[copy.length - 1];
+            copy[copy.length - 1] = { ...last, content: last.content + delta };
+            return copy;
+          });
+        },
+        {
+          onSources: (sources) => {
+            setMessages((m) => {
+              const copy = m.slice();
+              const last = copy[copy.length - 1];
+              copy[copy.length - 1] = { ...last, sources };
+              return copy;
+            });
+          },
+        }
+      );
     } catch (e) {
       setError(e instanceof Error ? e.message : "请求出错");
     } finally {
@@ -101,6 +114,20 @@ export default function Chat() {
                         )}
                         {streaming && <span className="cursor" />}
                       </div>
+                      {m.role === "assistant" &&
+                        m.sources &&
+                        m.sources.length > 0 && (
+                          <div className="sources">
+                            <div className="sources-label">引用来源</div>
+                            <div className="sources-list">
+                              {m.sources.map((s) => (
+                                <span className="source-chip" key={s} title={s}>
+                                  {s}
+                                </span>
+                              ))}
+                            </div>
+                          </div>
+                        )}
                     </div>
                   </div>
                 </div>
