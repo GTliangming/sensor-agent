@@ -11,6 +11,10 @@ frontend/dist/
 frontend/.env
 frontend/.env.production
 
+# langchain-agent
+langchain-agent/.venv/
+langchain-agent/.env
+
 # 其它
 .DS_Store
 .idea/
