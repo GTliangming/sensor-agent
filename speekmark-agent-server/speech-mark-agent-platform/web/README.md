@@ -38,15 +38,15 @@ Vite 默认将 `/api` 代理到 `http://localhost:8000`。若 Go 服务端口不
 
 ## 页面清单
 
-| 路由 | 页面 | 能力 |
-|---|---|---|
-| `/` | 工作台 | 运行指标、趋势图、状态分布、最近任务、快捷入口 |
-| `/assistant` | 智能体对话 | 自然语言提交任务、状态轮询、执行轨迹、取消任务、示例问题 |
-| `/runs` | 运行记录 | 搜索、状态筛选、分页、耗时和工具调用概览 |
-| `/runs/:runId` | 运行详情 | 最终结果、执行事件、工具输入输出、元信息、JSON 导出 |
-| `/approvals` | 人工审批 | 待审批动作、查看详情、批准和拒绝交互 |
-| `/knowledge` | 知识库 | 文档列表、检索测试台、相似度结果 |
-| `/settings` | 系统配置 | 当前开发配置、`.env` 配置生成、后端联调清单 |
+| 路由           | 页面       | 能力                                                     |
+| -------------- | ---------- | -------------------------------------------------------- |
+| `/`            | 工作台     | 运行指标、趋势图、状态分布、最近任务、快捷入口           |
+| `/assistant`   | 智能体对话 | 自然语言提交任务、状态轮询、执行轨迹、取消任务、示例问题 |
+| `/runs`        | 运行记录   | 搜索、状态筛选、分页、耗时和工具调用概览                 |
+| `/runs/:runId` | 运行详情   | 最终结果、执行事件、工具输入输出、元信息、JSON 导出      |
+| `/approvals`   | 人工审批   | 待审批动作、查看详情、批准和拒绝交互                     |
+| `/knowledge`   | 知识库     | 文档列表、检索测试台、相似度结果                         |
+| `/settings`    | 系统配置   | 当前开发配置、`.env` 配置生成、后端联调清单              |
 
 ## 接口契约
 
@@ -74,13 +74,24 @@ Vite 默认将 `/api` 代理到 `http://localhost:8000`。若 Go 服务端口不
 
 ```json
 {
-  "items": [{
-    "run_id": "run_xxx", "input": "用户输入", "status": "succeeded",
-    "started_at": "2026-10-22T06:00:00Z", "finished_at": "2026-10-22T06:00:03Z",
-    "duration_ms": 3000, "final_answer": "智能体最终回答", "error": null,
-    "steps": 4, "tools": 1, "tokens": 800
-  }],
-  "total": 1, "page": 1, "page_size": 20
+  "items": [
+    {
+      "run_id": "run_xxx",
+      "input": "用户输入",
+      "status": "succeeded",
+      "started_at": "2026-10-22T06:00:00Z",
+      "finished_at": "2026-10-22T06:00:03Z",
+      "duration_ms": 3000,
+      "final_answer": "智能体最终回答",
+      "error": null,
+      "steps": 4,
+      "tools": 1,
+      "tokens": 800
+    }
+  ],
+  "total": 1,
+  "page": 1,
+  "page_size": 20
 }
 ```
 
@@ -94,13 +105,22 @@ Vite 默认将 `/api` 代理到 `http://localhost:8000`。若 Go 服务端口不
 ```json
 {
   "run_id": "run_xxx",
-  "events": [{
-    "event_id": "evt_001", "sequence": 1, "type": "tool.started",
-    "node": "get_quality_stats", "title": "调用工具：查询质检统计",
-    "detail": "查询本周项目质检统计", "status": "succeeded",
-    "timestamp": "2026-10-22T06:00:01Z", "duration_ms": 250,
-    "tool_call_id": "tool_001", "input": {"period":"this_week"}, "output": {"projects":12}
-  }]
+  "events": [
+    {
+      "event_id": "evt_001",
+      "sequence": 1,
+      "type": "tool.started",
+      "node": "get_quality_stats",
+      "title": "调用工具：查询质检统计",
+      "detail": "查询本周项目质检统计",
+      "status": "succeeded",
+      "timestamp": "2026-10-22T06:00:01Z",
+      "duration_ms": 250,
+      "tool_call_id": "tool_001",
+      "input": { "period": "this_week" },
+      "output": { "projects": 12 }
+    }
+  ]
 }
 ```
 
@@ -118,9 +138,17 @@ Vite 默认将 `/api` 代理到 `http://localhost:8000`。若 Go 服务端口不
 
 ```json
 {
-  "totalRuns": 1284, "successRate": 96.8, "avgDuration": 18.6, "toolCalls": 3821,
-  "daily": [{"day":"10/22","runs":179}],
-  "statuses": [{"type":"成功","value":1120},{"type":"失败","value":48},{"type":"运行中","value":22},{"type":"待审批","value":16}]
+  "totalRuns": 1284,
+  "successRate": 96.8,
+  "avgDuration": 18.6,
+  "toolCalls": 3821,
+  "daily": [{ "day": "10/22", "runs": 179 }],
+  "statuses": [
+    { "type": "成功", "value": 1120 },
+    { "type": "失败", "value": 48 },
+    { "type": "运行中", "value": 22 },
+    { "type": "待审批", "value": 16 }
+  ]
 }
 ```
 

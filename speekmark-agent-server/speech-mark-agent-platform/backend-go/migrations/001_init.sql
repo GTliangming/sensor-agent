@@ -1,3 +1,17 @@
+-- 001_init.sql：数据库初始化脚本（参考性/说明性）。
+-- 注意：本脚本只是“参考”，实际建表由程序启动时的 GORM AutoMigrate 自动完成，
+-- 并不依赖手动执行本文件。它用来说明本项目涉及的数据模型，方便理解整体结构。
+--
+-- 本项目由 GORM 根据 model 包中的结构体自动创建以下几张表：
+--   1) agent_runs（运行记录）：记录每次 Agent 运行，含 run_id、输入、模式、状态、
+--      最终答案、错误、耗时、步数/工具数/token 数、起止时间等。
+--   2) trace_events（轨迹事件）：记录一次运行过程中的分步事件，含 run_id、序号 seq、
+--      事件类型、节点、标题、详情、工具调用 ID、输入/输出摘要、状态等，用于还原执行轨迹。
+--   3) approvals（审批）：记录运行中需要人工审批的事项，含 run_id、标题、类型、
+--      申请人、风险等级、摘要、状态（默认 pending）、审批意见等。
+--
 -- GORM AutoMigrate currently creates the development schema at startup.
 -- Use versioned migrations (golang-migrate or Atlas) before production deployments.
+-- 下面这条语句演示“先确保数据库存在”：若不存在则创建 agent_platform 库，
+-- 并指定 utf8mb4 字符集与排序规则（面向 MySQL 语法的参考示例）。
 CREATE DATABASE IF NOT EXISTS agent_platform CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci;
