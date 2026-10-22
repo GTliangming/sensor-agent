@@ -1,0 +1,68 @@
+name: speech-mark-agent-platform
+services:
+  agent-python:
+    build:
+      context: ../agent-python
+    restart: unless-stopped
+    environment:
+      APP_ENV: ${APP_ENV:-development}
+      LOG_LEVEL: ${LOG_LEVEL:-INFO}
+      MODEL_ENABLED: ${MODEL_ENABLED:-false}
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+      OPENAI_BASE_URL: ${OPENAI_BASE_URL:-}
+      OPENAI_MODEL: ${OPENAI_MODEL:-gpt-4.1-mini}
+      GO_BACKEND_BASE_URL: http://backend-go:8080/api/v1
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/health/ready', timeout=2)"]
+      interval: 10s
+      timeout: 3s
+      retries: 10
+    networks: [platform]
+
+  backend-go:
+    build:
+      context: ../backend-go
+    restart: unless-stopped
+    environment:
+      GO_PORT: 8080
+      GIN_MODE: ${GIN_MODE:-debug}
+      APP_ENV: ${APP_ENV:-development}
+      DATABASE_DRIVER: sqlite
+      SQLITE_PATH: /data/agent_platform.db
+      AGENT_BASE_URL: http://agent-python:8000
+    volumes:
+      - sqlite_data:/data
+    depends_on:
+      agent-python:
+        condition: service_healthy
+    ports:
+      - "${GO_PORT:-8080}:8080"
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://127.0.0.1:8080/health/ready"]
+      interval: 10s
+      timeout: 3s
+      retries: 10
+    networks: [platform]
+
+  web:
+    build:
+      context: ../web
+      dockerfile: Dockerfile
+      args:
+        VITE_API_BASE_URL: /api
+        VITE_USE_MOCK: "false"
+        VITE_APP_NAME: 语音标注智能体工作台
+    restart: unless-stopped
+    depends_on:
+      backend-go:
+        condition: service_healthy
+    ports:
+      - "5173:80"
+    networks: [platform]
+
+volumes:
+  sqlite_data:
+
+networks:
+  platform:
+    driver: bridge

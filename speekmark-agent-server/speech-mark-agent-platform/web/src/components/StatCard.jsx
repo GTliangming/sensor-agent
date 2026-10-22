@@ -1,0 +1,2 @@
+import { Card, Statistic } from 'antd';
+export default function StatCard({ title, value, suffix, prefix, hint, icon, color = '#625bf6' }) { return <Card className="stat-card" bordered={false}><div className="stat-card-top"><span>{title}</span><span className="stat-icon" style={{ color, background: `${color}14` }}>{icon}</span></div><Statistic value={value} suffix={suffix} prefix={prefix} valueStyle={{ fontWeight: 700, fontSize: 27, color: '#171a2b' }} /><div className="stat-hint">{hint}</div></Card>; }

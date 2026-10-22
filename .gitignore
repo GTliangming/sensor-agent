@@ -1,20 +1,23 @@
+# 统一虚拟环境（整个项目共用根目录 .venv）
+.venv/
+
 # 后端
-backend/.venv/
 backend/.env
 backend/data/
 __pycache__/
 *.pyc
 
 # 前端
-frontend/node_modules/
-frontend/dist/
-frontend/.env
-frontend/.env.production
+*/node_modules/
+*/dist/
+*/.env
+*/.env.production
 
 # langchain-agent
-langchain-agent/.venv/
 langchain-agent/.env
 
 # 其它
 .DS_Store
 .idea/
+
+**/.env.example
