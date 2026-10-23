@@ -17,18 +17,34 @@ export default function Runs() {
   const [keyword, setKeyword] = useState('');
   // status：下拉选中的状态筛选值，未选时为 undefined（表示全部）。
   const [status, setStatus] = useState();
+  // page/pageSize：当前页码与每页条数，与后端分页联动。total：后端返回的真实总条数。
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
+  const [total, setTotal] = useState(0);
   const navigate = useNavigate();
-  // load：按当前关键词与状态向后端请求运行列表并刷新表格；查询/筛选/刷新都会调用它。
-  const load = () => {
+  // load：按当前关键词、状态与分页参数向后端请求运行列表并刷新表格。
+  // 默认沿用当前 page/pageSize，也可显式传入（如查询时回到第 1 页）。
+  const load = (p = page, size = pageSize) => {
     setLoading(true);
     agentApi
-      .listRuns({ keyword, status, page: 1, page_size: 20 })
-      .then((r) => setData(r.items || []))
+      .listRuns({ keyword, status, page: p, page_size: size })
+      .then((r) => {
+        setData(r.items || []);
+        // total 以后端返回为准；缺省时回退为当前页条数，避免分页器异常。
+        setTotal(r.total ?? (r.items ? r.items.length : 0));
+      })
       .finally(() => setLoading(false));
   };
-  // 首次加载以及每当 status 变化时自动重新查询（依赖数组里有 status）。
+  // 查询/刷新：重置到第 1 页再加载。
+  const search = () => {
+    setPage(1);
+    load(1, pageSize);
+  };
+  // 首次加载以及每当 status 变化时回到第 1 页重新查询（依赖数组里有 status）。
   useEffect(() => {
-    load();
+    setPage(1);
+    load(1, pageSize);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [status]);
   // columns：运行记录表格的列定义。
   const columns = [
@@ -87,7 +103,7 @@ export default function Runs() {
         title="运行记录"
         subtitle="统一查看 运行任务状态、耗时、工具调用数量与最终结果。"
         extra={
-          <Button icon={<ReloadOutlined />} onClick={load}>
+          <Button icon={<ReloadOutlined />} onClick={() => load()}>
             刷新
           </Button>
         }
@@ -102,7 +118,7 @@ export default function Runs() {
               placeholder="搜索任务内容或 运行编号"
               value={keyword}
               onChange={(e) => setKeyword(e.target.value)}
-              onPressEnter={load}
+              onPressEnter={search}
               style={{ width: 290 }}
             />
             {/* 状态下拉：选择后更新 status，由上面的 useEffect 自动触发重新查询。 */}
@@ -120,11 +136,11 @@ export default function Runs() {
                 { value: 'cancelled', label: '已取消' },
               ]}
             />
-            <Button type="primary" onClick={load}>
+            <Button type="primary" onClick={search}>
               查询
             </Button>
           </Space>
-          <Text type="secondary">共 {data.length} 条记录（当前开发数据集）</Text>
+          <Text type="secondary">共 {total} 条记录</Text>
         </div>
         <Table
           rowKey="run_id"
@@ -132,9 +148,16 @@ export default function Runs() {
           columns={columns}
           loading={loading}
           pagination={{
-            pageSize: 10,
+            current: page,
+            pageSize,
+            total,
             showSizeChanger: true,
-            showTotal: (total) => `共 ${total} 条`,
+            showTotal: (t) => `共 ${t} 条`,
+            onChange: (p, size) => {
+              setPage(p);
+              setPageSize(size);
+              load(p, size);
+            },
           }}
           scroll={{ x: 1000 }}
         />

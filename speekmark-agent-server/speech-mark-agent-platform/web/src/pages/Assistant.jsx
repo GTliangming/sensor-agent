@@ -231,7 +231,7 @@ export default function Assistant() {
                         <ClockCircleOutlined /> {formatDuration(run.duration_ms)}
                       </span>
                       <span>
-                        <ToolOutlined /> {run.tools ?? trace.filter((x) => x.tool_call_id).length}{' '}
+                        <ToolOutlined /> {run.tools || trace.filter((x) => x.tool_call_id).length}{' '}
                         次工具调用
                       </span>
                       <span>
@@ -345,9 +345,9 @@ export default function Assistant() {
                   {trace.map((evt, i) => (
                     <div className="trace-event" key={evt.event_id || i}>
                       <div
-                        className={`trace-node ${evt.type?.startsWith('tool') ? 'tool-node' : evt.type?.includes('completed') ? 'done-node' : ''}`}
+                        className={`trace-node ${evt.tool_call_id || evt.type?.startsWith('tool') ? 'tool-node' : evt.type?.includes('completed') ? 'done-node' : ''}`}
                       >
-                        {evt.type?.startsWith('tool') ? (
+                        {evt.tool_call_id || evt.type?.startsWith('tool') ? (
                           <ToolOutlined />
                         ) : evt.type?.includes('completed') ? (
                           <CheckCircleOutlined />

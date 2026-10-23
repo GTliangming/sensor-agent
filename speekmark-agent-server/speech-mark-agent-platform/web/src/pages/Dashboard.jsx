@@ -21,8 +21,8 @@ import { formatTime, formatDuration } from '../utils/format';
 const { Text, Title } = Typography;
 // 工作台（首页）页面：展示系统整体运行概览，包括统计卡片、趋势/状态图表与最近运行列表。
 export default function Dashboard() {
-  // 是否为"模拟数据"模式，读取构建环境变量 VITE_USE_MOCK（缺省按 'true' 处理，即默认用模拟数据）。
-  const isMock = String(import.meta.env.VITE_USE_MOCK ?? 'true') === 'true';
+  // 是否为"模拟数据"模式，读取构建环境变量 VITE_USE_MOCK（缺省按 'false' 处理，即默认用真实接口）。
+  const isMock = String(import.meta.env.VITE_USE_MOCK ?? 'false') === 'true';
   // useState 类似 Python 里"一个变量 + 修改它的函数"。stats 存仪表盘统计数据，setStats 用来更新它。
   const [stats, setStats] = useState(null);
   // runs 存最近运行记录列表，初始为空数组。
@@ -223,7 +223,7 @@ export default function Dashboard() {
               </div>
               <div>
                 <span className="legend-dot running" />
-                运行中 <b>{stats?.statuses?.[2]?.value ?? 0}</b>
+                进行中 <b>{stats?.statuses?.[2]?.value ?? 0}</b>
               </div>
               <div>
                 <span className="legend-dot waiting" />

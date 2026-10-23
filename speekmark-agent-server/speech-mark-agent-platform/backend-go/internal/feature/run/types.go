@@ -32,7 +32,21 @@ type Stats struct {
 	Success int64            // 成功数
 	Failed  int64            // 失败数
 	Running int64            // 进行中（queued + running）
+	Waiting int64            // 待审批（waiting_approval）
 	Recent  []model.AgentRun // 最近若干条记录
+}
+
+// Metrics 汇总仪表盘所需的聚合指标。
+type Metrics struct {
+	AvgDurationMS float64    // 平均耗时（毫秒，仅统计已结束运行）
+	ToolCalls     int64      // 工具调用总数
+	Daily         []DayCount // 近若干天逐日运行计数
+}
+
+// DayCount 是某一天的运行计数；json 标签供仪表盘趋势图直接消费。
+type DayCount struct {
+	Day  string `json:"day"`
+	Runs int64  `json:"runs"`
 }
 
 // simpleError 是把字符串直接当作 error 的最小实现（Go 里 error 是接口，需实现 Error 方法）。

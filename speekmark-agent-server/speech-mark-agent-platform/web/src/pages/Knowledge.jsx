@@ -15,22 +15,28 @@ export default function Knowledge() {
   // items：已接入的知识文档列表；loading：列表加载中标志
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
+  // notice：后端对列表/检索返回的说明文案（如骨架未接入提示），用于空状态展示
+  const [notice, setNotice] = useState('');
   // query：检索输入框内容；results：检索结果（null 表示尚未检索过）
   const [query, setQuery] = useState('');
   const [results, setResults] = useState(null);
-  // 拉取文档列表：先置 loading，请求完成后写入 items，无论成败都关掉 loading
+  const [searchNotice, setSearchNotice] = useState('');
+  // 拉取文档列表：先置 loading，请求完成后写入 items 与说明文案，无论成败都关掉 loading
   const load = () => {
     setLoading(true);
     agentApi
       .listKnowledge()
-      .then((r) => setItems(r.items || []))
+      .then((r) => {
+        setItems(r.items || []);
+        setNotice(r.message || '');
+      })
       .finally(() => setLoading(false));
   };
   // 组件首次挂载时加载一次文档列表（空依赖数组 => 只执行一次，类似初始化）
   useEffect(() => {
     load();
   }, []);
-  // 执行知识检索：输入为空时提示并返回，否则调用后端检索接口并保存结果
+  // 执行知识检索：输入为空时提示并返回，否则调用后端检索接口并保存结果与说明文案
   const search = async () => {
     if (!query.trim()) {
       message.info('请输入检索内容');
@@ -38,6 +44,7 @@ export default function Knowledge() {
     }
     const r = await agentApi.searchKnowledge(query.trim());
     setResults(r.items || []);
+    setSearchNotice(r.message || '');
   };
   // 文档表格的列定义：render 用于自定义某列的显示内容
   const columns = [
@@ -133,7 +140,9 @@ export default function Knowledge() {
                 </div>
               ))
             ) : (
-              <Text type="secondary">没有匹配到文档，可尝试缩短或调整关键词。</Text>
+              <Text type="secondary">
+                {searchNotice || '没有匹配到文档，可尝试缩短或调整关键词。'}
+              </Text>
             )}
           </div>
         )}
@@ -145,6 +154,7 @@ export default function Knowledge() {
           columns={columns}
           loading={loading}
           pagination={false}
+          locale={{ emptyText: notice || '暂无数据' }}
         />
       </Card>
     </div>

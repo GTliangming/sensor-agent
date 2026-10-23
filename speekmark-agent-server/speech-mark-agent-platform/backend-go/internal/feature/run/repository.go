@@ -85,6 +85,48 @@ func (r *Repository) Stats(limit int) Stats {
 	r.db.Model(&model.AgentRun{}).Where("status = ?", "succeeded").Count(&s.Success)
 	r.db.Model(&model.AgentRun{}).Where("status = ?", "failed").Count(&s.Failed)
 	r.db.Model(&model.AgentRun{}).Where("status IN ?", []string{"queued", "running"}).Count(&s.Running)
+	r.db.Model(&model.AgentRun{}).Where("status = ?", "waiting_approval").Count(&s.Waiting)
 	r.db.Order("created_at desc").Limit(limit).Find(&s.Recent)
 	return s
+}
+
+// Metrics 汇总仪表盘所需的聚合指标：平均耗时、工具调用总数，以及近 days 天逐日运行计数。
+func (r *Repository) Metrics(days int) Metrics {
+	var m Metrics
+	// 平均耗时：仅统计已记录耗时（duration_ms > 0）的运行，避免排队中任务把均值拉低为 0。
+	r.db.Model(&model.AgentRun{}).Where("duration_ms > 0").
+		Select("COALESCE(AVG(duration_ms), 0)").Scan(&m.AvgDurationMS)
+	// 工具调用总数：各运行 tools 字段求和。
+	r.db.Model(&model.AgentRun{}).Select("COALESCE(SUM(tools), 0)").Scan(&m.ToolCalls)
+	// 近 days 天逐日计数：拉取窗口内的创建时间，在 Go 中按本地日期分桶，保证每天都有一项（含 0）。
+	m.Daily = r.dailyCounts(days)
+	return m
+}
+
+// dailyCounts 返回最近 days 天（含今天）的逐日运行计数，日期按本地时区归并，缺失的天补 0。
+func (r *Repository) dailyCounts(days int) []DayCount {
+	if days < 1 {
+		days = 7
+	}
+	now := time.Now()
+	startDay := time.Date(now.Year(), now.Month(), now.Day(), 0, 0, 0, 0, now.Location()).AddDate(0, 0, -(days - 1))
+
+	// 预建连续的日期桶，保证每天都出现（即便当天没有运行）。
+	buckets := make([]DayCount, days)
+	index := make(map[string]int, days)
+	for i := 0; i < days; i++ {
+		day := startDay.AddDate(0, 0, i).Format("01-02")
+		buckets[i] = DayCount{Day: day, Runs: 0}
+		index[day] = i
+	}
+
+	// 拉取窗口内所有运行的创建时间，在应用侧按本地日期分桶（避免依赖数据库时区函数）。
+	var times []time.Time
+	r.db.Model(&model.AgentRun{}).Where("created_at >= ?", startDay).Pluck("created_at", &times)
+	for _, t := range times {
+		if i, ok := index[t.In(now.Location()).Format("01-02")]; ok {
+			buckets[i].Runs++
+		}
+	}
+	return buckets
 }

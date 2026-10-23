@@ -29,8 +29,8 @@ export default function Settings() {
   // useState 相当于“带 setter 的局部可变状态”，组件重渲染时值会保留
   // base：接口基础地址，默认取构建环境变量 VITE_API_BASE_URL，没有则用 '/api'
   const [base, setBase] = useState(import.meta.env.VITE_API_BASE_URL || '/api');
-  // mock：是否使用本地模拟数据；环境变量是字符串，这里转成布尔值（'true' 才算开启）
-  const [mock, setMock] = useState(String(import.meta.env.VITE_USE_MOCK ?? 'true') === 'true');
+  // mock：是否使用本地模拟数据；环境变量是字符串，这里转成布尔值（缺省按 'false'，即默认真实接口）
+  const [mock, setMock] = useState(String(import.meta.env.VITE_USE_MOCK ?? 'false') === 'true');
   // timeout：请求超时时间（毫秒），用字符串存储以便和下拉选项的 value 对应
   const [timeout, setTimeoutValue] = useState('20000');
   // 把传入文本写入系统剪贴板，成功后弹出提示（?. 为可选链，剪贴板不可用时不报错）

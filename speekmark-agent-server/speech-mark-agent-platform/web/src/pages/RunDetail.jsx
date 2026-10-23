@@ -81,8 +81,9 @@ export default function RunDetail() {
         )}
       </div>
     ),
-    // dot：根据事件类型选择时间线节点图标（工具/完成/其它）。
-    dot: e.type?.startsWith('tool') ? (
+    // dot：根据事件类型选择时间线节点图标。工具事件以 tool_call_id 判定更稳健，
+    // 其次按 type 包含 completed 判定完成节点，否则用默认图标。
+    dot: e.tool_call_id || e.type?.startsWith('tool') ? (
       <ToolOutlined />
     ) : e.type?.includes('completed') ? (
       <CheckCircleOutlined />
@@ -134,11 +135,11 @@ export default function RunDetail() {
                 { key: 'started', label: '开始时间', children: formatTime(run?.started_at) },
                 { key: 'finished', label: '结束时间', children: formatTime(run?.finished_at) },
                 { key: 'duration', label: '执行耗时', children: formatDuration(run?.duration_ms) },
-                { key: 'steps', label: '执行节点', children: run?.steps ?? events.length },
+                { key: 'steps', label: '执行节点', children: run?.steps || events.length },
                 {
                   key: 'tools',
                   label: '工具调用',
-                  children: run?.tools ?? events.filter((e) => e.tool_call_id).length,
+                  children: run?.tools || events.filter((e) => e.tool_call_id).length,
                 },
                 {
                   key: 'tokens',
@@ -187,7 +188,7 @@ export default function RunDetail() {
                 <span>
                   <ToolOutlined /> 工具调用
                 </span>
-                <b>{run?.tools ?? events.filter((e) => e.tool_call_id).length}</b>
+                <b>{run?.tools || events.filter((e) => e.tool_call_id).length}</b>
               </div>
               <div>
                 <span>

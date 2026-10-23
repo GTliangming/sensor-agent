@@ -2,9 +2,9 @@ import client from './client';
 import { mockRuns, mockTrace, mockStats, mockApprovals, mockKnowledge } from '../mocks/data';
 
 // 是否使用本地 Mock 假数据:
-// 读环境变量 VITE_USE_MOCK,未配置时默认为 'true'(即默认走假数据,不依赖后端)。
-// 设为 'false' 后,下面所有请求都会真正发给 Go 后端。
-const MOCK = String(import.meta.env.VITE_USE_MOCK ?? 'true') === 'true';
+// 读环境变量 VITE_USE_MOCK,未配置时默认为 'false'(即默认走真实 Go 后端接口)。
+// 需要脱离后端单独调试前端时,在 .env 中显式设置 VITE_USE_MOCK=true。
+const MOCK = String(import.meta.env.VITE_USE_MOCK ?? 'false') === 'true';
 
 // 模拟网络延迟:让 Mock 模式下的交互更接近真实请求的等待体验。
 const wait = (ms = 220) => new Promise((resolve) => setTimeout(resolve, ms));
@@ -29,11 +29,11 @@ export const agentApi = {
       avgDuration: r.avg_duration ?? 0,
       toolCalls: r.tool_calls ?? 0,
       daily: r.daily ?? [],
-      statuses: r.statuses ?? [
+      statuses: [
         { type: '成功', value: r.success_runs ?? 0 },
         { type: '失败', value: r.failed_runs ?? 0 },
-        { type: '运行中', value: r.running_runs ?? 0 },
-        { type: '待审批', value: 0 },
+        { type: '进行中', value: r.running_runs ?? 0 },
+        { type: '待审批', value: r.waiting_runs ?? 0 },
       ],
     };
   },
