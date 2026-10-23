@@ -55,7 +55,7 @@ propcache==0.5.4
 pydantic==2.14.1
 pydantic-settings==2.16.0
 pydantic_core==2.50.1
-pypdf==6.20.0
+pypdf==6.21.1
 python-docx==1.2.0
 python-dotenv==1.2.4
 PyYAML==6.0.3
