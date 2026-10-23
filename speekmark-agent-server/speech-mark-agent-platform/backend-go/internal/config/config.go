@@ -26,10 +26,13 @@ func Load() Config {
 	_ = godotenv.Load(".env", "../.env", "../../.env")
 	return Config{
 		// 每个字段都通过 env(key, fallback) 读取：有环境变量用环境变量，否则用第二个参数的默认值。
-		Port: env("GO_PORT", "8080"), GinMode: env("GIN_MODE", "debug"),
-		DatabaseDriver: env("DATABASE_DRIVER", "sqlite"), SQLitePath: env("SQLITE_PATH", "./data/agent_platform.db"),
-		AgentBaseURL: env("AGENT_BASE_URL", "http://localhost:8000"), Environment: env("APP_ENV", "development"),
-		AgentTimeout: 45 * time.Second,
+		Port:           env("GO_PORT", "8080"),
+		GinMode:        env("GIN_MODE", "debug"),
+		DatabaseDriver: env("DATABASE_DRIVER", "sqlite"),
+		SQLitePath:     env("SQLITE_PATH", "./data/agent_platform.db"),
+		AgentBaseURL:   env("AGENT_BASE_URL", "http://localhost:8000"),
+		Environment:    env("APP_ENV", "development"),
+		AgentTimeout:   45 * time.Second,
 	}
 }
 
