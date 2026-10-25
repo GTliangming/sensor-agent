@@ -4,6 +4,7 @@
 # 后端
 backend/.env
 backend/data/
+langgraph-hitl-fastapi-demo/backend/langgraph_state.sqlite3*
 __pycache__/
 *.pyc
 

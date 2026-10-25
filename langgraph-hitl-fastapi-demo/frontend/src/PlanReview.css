@@ -1,0 +1,97 @@
+.plan-review-panel {
+  margin-top: 20px;
+  padding: 20px;
+  border: 1px solid #bdd6dc;
+  border-top: 3px solid #287aa2;
+  background: #f7fafb;
+}
+
+.plan-review-heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.plan-review-heading > div > span {
+  color: #287aa2;
+  font-size: 10px;
+  font-weight: 800;
+}
+
+.plan-review-heading h3 { margin: 6px 0; color: #20383f; font-size: 18px; }
+.plan-review-heading p { margin: 0; color: #5d7076; font-size: 12px; line-height: 1.6; }
+.plan-review-count { flex: 0 0 auto; color: #60777e; font-size: 11px; }
+
+.editable-plan-steps { display: grid; gap: 8px; margin-top: 17px; }
+.editable-plan-step {
+  display: grid;
+  grid-template-columns: 28px minmax(0, 1fr) 32px;
+  align-items: center;
+  gap: 8px;
+}
+.editable-plan-step > span {
+  color: #287aa2;
+  font: 10px ui-monospace, SFMono-Regular, Menlo, monospace;
+  text-align: center;
+}
+.editable-plan-step textarea,
+.plan-review-panel > textarea {
+  box-sizing: border-box;
+  width: 100%;
+  padding: 10px 11px;
+  border: 1px solid #c8d7da;
+  border-radius: 4px;
+  background: #fff;
+  color: #263b40;
+  font: 13px/1.55 -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif;
+  resize: vertical;
+}
+.editable-plan-step textarea:focus,
+.plan-review-panel > textarea:focus { outline: 2px solid #76b9c2; outline-offset: 1px; }
+
+.editable-plan-step button {
+  width: 30px;
+  height: 30px;
+  border: 1px solid #d1dddf;
+  border-radius: 4px;
+  background: #fff;
+  color: #52666c;
+  font-size: 18px;
+  cursor: pointer;
+}
+.editable-plan-step button:disabled { cursor: default; opacity: 0.4; }
+
+.plan-add-step {
+  margin: 10px 0 17px 36px;
+  padding: 4px 0;
+  border: 0;
+  background: transparent;
+  color: #176e85;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+}
+.plan-add-step:disabled { cursor: default; opacity: 0.45; }
+.plan-feedback-label { display: block; margin-bottom: 6px; color: #495e64; font-size: 11px; font-weight: 700; }
+
+.plan-review-actions { display: flex; flex-wrap: wrap; gap: 9px; margin-top: 14px; }
+.plan-review-actions button {
+  min-height: 40px;
+  padding: 0 13px;
+  border: 1px solid transparent;
+  border-radius: 5px;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+}
+.plan-confirm-button { background: #287aa2; color: #fff; }
+.plan-replan-button { border-color: #cbd7d9 !important; background: #fff; color: #415a61; }
+.plan-review-actions button:disabled { cursor: default; opacity: 0.45; }
+
+@media (max-width: 600px) {
+  .plan-review-panel { padding: 15px 12px; }
+  .plan-review-heading h3 { font-size: 16px; }
+  .editable-plan-step { grid-template-columns: 22px minmax(0, 1fr) 30px; gap: 6px; }
+  .plan-add-step { margin-left: 28px; }
+}
