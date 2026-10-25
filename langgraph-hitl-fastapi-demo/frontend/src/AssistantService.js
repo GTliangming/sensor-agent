@@ -1,20 +1,24 @@
 // AssistantService.js
-// Centralized service for assistant session/conversation API calls
+// 统一封装与后端会话/对话相关的所有 API 调用（类似后端的一个 service 层）
 
+// 后端地址，开发时后端跑在本机 8000 端口
 const BASE_URL = "http://localhost:8000";
 
 export default class AssistantService {
-  // Original blocking API methods
+  // ===== 阻塞式接口（一次请求，等完整结果返回）=====
+
+  // 发起一轮新对话
   static async startConversation(human_request) {
     const response = await fetch(`${BASE_URL}/graph/start`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ human_request })
     });
-    if (!response.ok) throw new Error("Network response was not ok");
+    if (!response.ok) throw new Error("网络请求失败");
     return response.json();
   }
 
+  // 提交审批结果：批准（approved）或反馈（feedback，带 human_comment）
   static async submitReview({ thread_id, review_action, human_comment }) {
     const body = { thread_id, review_action };
     if (human_comment) body.human_comment = human_comment;
@@ -23,21 +27,24 @@ export default class AssistantService {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(body)
     });
-    if (!response.ok) throw new Error("Network response was not ok");
+    if (!response.ok) throw new Error("网络请求失败");
     return response.json();
   }
 
-  // New streaming API methods
+  // ===== 流式接口（SSE，逐 token 返回）=====
+
+  // 创建流式会话，返回 thread_id（后续用它连 SSE 流）
   static async createStreamingConversation(human_request) {
     const response = await fetch(`${BASE_URL}/graph/stream/create`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ human_request })
     });
-    if (!response.ok) throw new Error("Network response was not ok");
+    if (!response.ok) throw new Error("网络请求失败");
     return response.json();
   }
 
+  // 流式地续接会话：提交批准或反馈
   static async resumeStreamingConversation({ thread_id, review_action, human_comment }) {
     const body = { thread_id, review_action };
     if (human_comment) body.human_comment = human_comment;
@@ -46,81 +53,83 @@ export default class AssistantService {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(body)
     });
-    if (!response.ok) throw new Error("Network response was not ok");
+    if (!response.ok) throw new Error("网络请求失败");
     return response.json();
   }
 
+  // 建立 SSE 连接，持续接收服务端推送的事件
+  // 三个回调：onMessageCallback（收到内容/状态）、onErrorCallback（出错）、onCompleteCallback（结束）
   static streamResponse(thread_id, onMessageCallback, onErrorCallback, onCompleteCallback) {
-    // Create a new EventSource connection to the streaming endpoint
+    // 用 EventSource 连到后端的流式端点
     const eventSource = new EventSource(`${BASE_URL}/graph/stream/${thread_id}`);
-    
-    // Handle token events (content streaming)
+
+    // token 事件：一段文字内容
     eventSource.addEventListener('token', (event) => {
       try {
         const data = JSON.parse(event.data);
         onMessageCallback({ content: data.content });
       } catch (error) {
-        console.error("Error parsing token event:", error, "Raw data:", event.data);
+        console.error("解析 token 事件出错:", error, "原始数据:", event.data);
         onErrorCallback(error);
       }
     });
-    
-    // Handle status events (user_feedback, finished)
+
+    // status 事件：状态变更（user_feedback 需要人工审批 / finished 已结束）
     eventSource.addEventListener('status', (event) => {
       try {
         const data = JSON.parse(event.data);
         onMessageCallback({ status: data.status });
-        
-        // Mark that we've received a status event for this connection
-        // This helps us distinguish between normal completion and errors
+
+        // 标记本连接已收到过 status 事件
+        // 用于区分「正常结束」和「真·报错」（SSE 正常关闭时浏览器也会触发 onerror）
         if (!window._hasReceivedStatusEvent) {
           window._hasReceivedStatusEvent = {};
         }
         window._hasReceivedStatusEvent[eventSource.url] = true;
-        console.log("Received status event, marking connection for normal closure");
+        console.log("已收到 status 事件，标记该连接可正常关闭");
       } catch (error) {
-        console.error("Error parsing status event:", error, "Raw data:", event.data);
+        console.error("解析 status 事件出错:", error, "原始数据:", event.data);
         onErrorCallback(error);
       }
     });
-    
-    // Handle start/resume events
+
+    // start / resume 事件：仅打日志
     eventSource.addEventListener('start', (event) => {
-      console.log("Stream started:", event.data);
+      console.log("流已开始:", event.data);
     });
-    
+
     eventSource.addEventListener('resume', (event) => {
-      console.log("Stream resumed:", event.data);
+      console.log("流已续接:", event.data);
     });
-    
-    // Handle errors
+
+    // 错误处理
     eventSource.onerror = (error) => {
-      console.log("SSE connection state change - readyState:", eventSource.readyState);
-      
-      // Check if we've received a status event indicating completion
+      console.log("SSE 连接状态变化 - readyState:", eventSource.readyState);
+
+      // 若之前已收到 status 事件，说明是正常结束而非报错
       const hasReceivedStatusEvent = window._hasReceivedStatusEvent && window._hasReceivedStatusEvent[eventSource.url];
-      
+
       if (hasReceivedStatusEvent) {
-        console.log("Stream completed normally after receiving status event");
+        console.log("收到 status 事件后流正常结束");
         eventSource.close();
         onCompleteCallback();
         return;
       }
-      
-      // Only call the error callback if it's a real error, not a normal close
+
+      // 只有在真正出错时才回调 onError，正常关闭则不算错误
       if (eventSource.readyState !== EventSource.CLOSED && eventSource.readyState !== EventSource.CONNECTING) {
-        console.error("SSE connection error:", error);
+        console.error("SSE 连接错误:", error);
         eventSource.close();
-        // Pass a proper error object with a message to avoid 'undefined' errors
-        onErrorCallback(new Error("Connection error or server disconnected"));
+        // 包装成带 message 的 Error 对象，避免出现 'undefined'
+        onErrorCallback(new Error("连接错误或服务端已断开"));
       } else {
-        // If it's a normal close or reconnecting, call the complete callback
-        console.log("Stream completed normally");
+        // 正常关闭或重连中，走完成回调
+        console.log("流正常结束");
         onCompleteCallback();
       }
     };
-    
-    // Return the eventSource so it can be closed externally if needed
+
+    // 返回 eventSource，便于外部需要时主动关闭
     return eventSource;
   }
 }

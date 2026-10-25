@@ -1,0 +1,61 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="360" height="600" viewBox="0 0 360 600" font-family="-apple-system, 'PingFang SC', 'Microsoft YaHei', sans-serif">
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L8,3 L0,6 Z" fill="#607d8b" />
+    </marker>
+    <marker id="arrowAmber" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L8,3 L0,6 Z" fill="#f9a825" />
+    </marker>
+  </defs>
+
+  <!-- 标题 -->
+  <text x="180" y="30" text-anchor="middle" font-size="18" font-weight="700" fill="#263238">人工介入（HITL）工作流</text>
+  <text x="180" y="52" text-anchor="middle" font-size="12" fill="#78909c">AI 先给草稿，由人决定批准或打回重写</text>
+
+  <!-- ① 用户提问 -->
+  <rect x="100" y="72" width="160" height="52" rx="10" fill="#e3f2fd" stroke="#1976d2" stroke-width="1.5" />
+  <text x="180" y="95" text-anchor="middle" font-size="14" font-weight="600" fill="#0d47a1">① 用户提出问题</text>
+  <text x="180" y="113" text-anchor="middle" font-size="11" fill="#1565c0">在输入框输入并发送</text>
+
+  <line x1="180" y1="124" x2="180" y2="150" stroke="#607d8b" stroke-width="1.5" marker-end="url(#arrow)" />
+
+  <!-- ② AI 生成回答 -->
+  <rect x="100" y="152" width="160" height="52" rx="10" fill="#ede7f6" stroke="#673ab7" stroke-width="1.5" />
+  <text x="180" y="175" text-anchor="middle" font-size="14" font-weight="600" fill="#4527a0">② AI 生成回答草稿</text>
+  <text x="180" y="193" text-anchor="middle" font-size="11" fill="#5e35b1">逐字流式输出（SSE）</text>
+
+  <line x1="180" y1="204" x2="180" y2="232" stroke="#607d8b" stroke-width="1.5" marker-end="url(#arrow)" />
+
+  <!-- ③ 人工审查（菱形） -->
+  <polygon points="180,234 272,300 180,366 88,300" fill="#fff8e1" stroke="#f9a825" stroke-width="1.5" />
+  <text x="180" y="295" text-anchor="middle" font-size="14" font-weight="600" fill="#e65100">③ 人工审查</text>
+  <text x="180" y="314" text-anchor="middle" font-size="11" fill="#ef6c00">满意吗？</text>
+
+  <!-- 批准分支：向下 -->
+  <line x1="180" y1="366" x2="180" y2="420" stroke="#607d8b" stroke-width="1.5" marker-end="url(#arrow)" />
+  <text x="196" y="396" font-size="12" font-weight="600" fill="#2e7d32">批准 ✓</text>
+
+  <!-- ④ 定稿结束 -->
+  <rect x="100" y="422" width="160" height="52" rx="10" fill="#e8f5e9" stroke="#43a047" stroke-width="1.5" />
+  <text x="180" y="445" text-anchor="middle" font-size="14" font-weight="600" fill="#1b5e20">④ 定稿并结束</text>
+  <text x="180" y="463" text-anchor="middle" font-size="11" fill="#2e7d32">展示「最终版本」</text>
+
+  <!-- 反馈分支：从菱形左侧绕回 ② -->
+  <polyline points="88,300 44,300 44,178 100,178" fill="none" stroke="#f9a825" stroke-width="1.5" stroke-dasharray="5,4" marker-end="url(#arrowAmber)" />
+  <text x="52" y="245" font-size="12" font-weight="600" fill="#ef6c00">提供</text>
+  <text x="52" y="262" font-size="12" font-weight="600" fill="#ef6c00">反馈 ↩</text>
+
+  <!-- 底部说明 -->
+  <text x="180" y="512" text-anchor="middle" font-size="11" fill="#90a4ae">不满意时填写反馈，AI 会结合意见重写，</text>
+  <text x="180" y="529" text-anchor="middle" font-size="11" fill="#90a4ae">可反复多轮，直到你点「批准」为止。</text>
+
+  <!-- 图例 -->
+  <rect x="60" y="552" width="14" height="14" rx="3" fill="#e3f2fd" stroke="#1976d2" />
+  <text x="80" y="563" font-size="10" fill="#546e7a">用户</text>
+  <rect x="120" y="552" width="14" height="14" rx="3" fill="#ede7f6" stroke="#673ab7" />
+  <text x="140" y="563" font-size="10" fill="#546e7a">AI</text>
+  <rect x="168" y="552" width="14" height="14" rx="3" fill="#fff8e1" stroke="#f9a825" />
+  <text x="188" y="563" font-size="10" fill="#546e7a">决策</text>
+  <rect x="226" y="552" width="14" height="14" rx="3" fill="#e8f5e9" stroke="#43a047" />
+  <text x="246" y="563" font-size="10" fill="#546e7a">结束</text>
+</svg>
