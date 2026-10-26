@@ -19,3 +19,5 @@ class CreateTaskRequest(BaseModel):
     material_policy: Literal["licensed_first_ai_fallback"] = "licensed_first_ai_fallback"
     max_scenes: int = Field(default=8, ge=1, le=20)
     max_generated_images: int = Field(default=6, ge=0, le=12)
+    # 人工介入（HITL）：为 True 时在各关键创作步骤后暂停，等待人工审核
+    hitl: bool = False

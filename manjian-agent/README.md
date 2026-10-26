@@ -134,6 +134,32 @@ cd web && npm install --include=dev && npm run dev   # http://localhost:5173
 - 调用的后端接口：`POST /internal/v1/tasks`、`GET …/{id}`、`…/{id}/cancel`、`…/{id}/runs`、`…/{id}/video`（新增，`FileResponse` 回传成片 MP4）。
 - 设计令牌在 `web/src/styles/tokens.css` + `base.css`（Hallmark 产出），页面样式 `web/src/styles/app.css`，首行是 Hallmark 印章；`sloplint` 检查通过。
 
+## 人工介入（HITL，按需开启）
+
+默认一口气跑完；创建任务时传 `"hitl": true` 可在每个关键创作步骤后**暂停等人工**，避免错误的分镜白白往下烧 token/时间。闸门共 6 个，依次为：`storyboard`（分镜）→ `assets`（素材方案）→ `images`（AI 补图）→ `tts`（配音）→ `clips`（图生视频）→ `subtitles`（字幕）。到达闸门时任务状态变为 `awaiting_review`，`stage` 即当前闸门。
+
+每个闸门支持 4 个动作：
+- `approve` 通过，继续下一步；
+- `edit` 直接改产物（字幕传 `{"srt":"..."}`，其余传替换用的 JSON），改完继续；
+- `regenerate` 打回重做本步，可带 `feedback`（分镜会把意见拼进提示词重生成）；
+- `cancel` 取消任务。
+
+```bash
+# 1) 开启 HITL 创建任务
+curl -X POST localhost:8099/internal/v1/tasks -H 'Content-Type: application/json' \
+  -d '{"request_id":"hitl1","topic":"雨后的街道","target_seconds":15,"hitl":true}'
+# 2) 轮询到 awaiting_review 后，看当前闸门的待审产物
+curl localhost:8099/internal/v1/tasks/<task_id>/review
+# 3) 提交决策（后台继续推进，客户端继续轮询 GET …/{id}）
+curl -X POST localhost:8099/internal/v1/tasks/<task_id>/review -H 'Content-Type: application/json' \
+  -d '{"action":"approve"}'
+# 打回重做（带意见）：{"action":"regenerate","feedback":"节奏再快一点"}
+# 直接编辑分镜：{"action":"edit","edit":{...完整分镜JSON...}}
+```
+
+实现：`app/graph/hitl_graph.py` 复用主图节点，在每个闸门前 `interrupt_before` 暂停，用 LangGraph checkpointer（`MemorySaver`，thread=task_id）保存暂停点；`task_service.resume_task` 注入决策后继续。待审产物在 `GET …/{id}` 的 `result.review` 里。
+> 注意：`MemorySaver` 为进程内存储，暂停中的任务**不跨进程重启存活**（后续可换 SqliteSaver 做持久化，参考 `langgraph-hitl-fastapi-demo`）。LLM 预算（`MAX_LLM_CALLS`）对 `regenerate` 仍累计强制，防止反复回炉烧额度。
+
 ## 升级到多 Agent（后续）
 
 主图骨架已为文档 04/05 留好扩展点：`domain/plans.py` 的交接契约、`graph/routing.py` 的 `RouteDecision`、把节点替换为子图并在 `validate_output` 后加入 `quality_router`，无需重写主图。

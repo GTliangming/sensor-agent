@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState, type FormEvent } from "react";
-import type { AgentRun, TaskView } from "./api";
-import { TERMINAL, cancelTask, createTask, getTask, listRuns, ready, videoUrl } from "./api";
+import type { AgentRun, ReviewAction, TaskView } from "./api";
+import { TERMINAL, cancelTask, createTask, getTask, listRuns, ready, submitReview, videoUrl } from "./api";
 
 // 后端阶段的推进顺序（用于判断每一步"已完成/进行中/待命"）
 const ORDER = [
@@ -20,7 +20,16 @@ const STEPS: { key: string; label: string }[] = [
 ];
 const STATUS_CN: Record<string, string> = {
   queued: "排队中", running: "烧制中", succeeded: "已出片", failed: "失败",
-  cancelled: "已取消", storyboard_ready: "分镜就绪",
+  cancelled: "已取消", storyboard_ready: "分镜就绪", awaiting_review: "待人工审核",
+};
+// HITL 闸门 -> 中文名 / 对应烧制计划的步骤 key
+const GATE_CN: Record<string, string> = {
+  storyboard: "分镜", assets: "素材方案", images: "AI 补图",
+  tts: "配音", clips: "图生视频", subtitles: "字幕",
+};
+const GATE_STEP: Record<string, string> = {
+  storyboard: "storyboarding", assets: "asset_search", images: "image_generation",
+  tts: "tts", clips: "animating", subtitles: "subtitles",
 };
 
 function uid() {
@@ -32,11 +41,16 @@ export function App() {
   const [style, setStyle] = useState("现代、温柔清冷");
   const [seconds, setSeconds] = useState(12);
   const [scenes, setScenes] = useState(5);
+  const [hitl, setHitl] = useState(false);
   const [task, setTask] = useState<TaskView | null>(null);
   const [runs, setRuns] = useState<AgentRun[]>([]);
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState<string | null>(null);
   const [prov, setProv] = useState<string>("");
+  // HITL 审核面板本地状态
+  const [feedback, setFeedback] = useState("");
+  const [editText, setEditText] = useState("");
+  const [reviewBusy, setReviewBusy] = useState(false);
   const timer = useRef<number | null>(null);
 
   useEffect(() => {
@@ -68,7 +82,7 @@ export function App() {
     try {
       const { task_id } = await createTask({
         request_id: uid(), topic, style, target_seconds: seconds, max_scenes: scenes,
-        max_generated_images: scenes,
+        max_generated_images: scenes, hitl,
       });
       const t = await getTask(task_id);
       setTask(t);
@@ -82,8 +96,50 @@ export function App() {
     if (task) { try { await cancelTask(task.task_id); } catch {} }
   }
 
+  const review = (task?.status === "awaiting_review" ? task?.result?.review : null) ?? null;
+  const awaiting = !!review;
+
+  // 进入新闸门（或回炉后重进）时，重置审核面板：编辑框预填当前产物。
+  // 故意只依赖任务标识字段：避免每轮轮询（review 对象引用变化）把用户的编辑冲掉。
+  useEffect(() => {
+    if (!review) return;
+    setFeedback("");
+    if (review.gate === "subtitles") setEditText("");
+    else setEditText(JSON.stringify(review.artifact ?? null, null, 2));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [task?.task_id, task?.stage, task?.status, task?.updated_at]);
+
+  async function onReview(action: ReviewAction) {
+    if (!task || !review) return;
+    setReviewBusy(true); setErr(null);
+    try {
+      let edit: any = undefined;
+      if (action === "edit") {
+        if (review.gate === "subtitles") {
+          edit = { srt: editText };
+        } else {
+          try { edit = JSON.parse(editText); }
+          catch { setErr("编辑内容不是合法 JSON，请检查后再提交"); setReviewBusy(false); return; }
+        }
+      }
+      await submitReview(task.task_id, {
+        action,
+        feedback: action === "regenerate" ? (feedback || undefined) : undefined,
+        edit,
+      });
+      // 后台继续推进；立即刷新一次，轮询会接着更新
+      const t = await getTask(task.task_id);
+      setTask(t);
+    } catch (e: any) {
+      setErr(String(e?.message ?? e));
+    } finally {
+      setReviewBusy(false);
+    }
+  }
+
   const stage = task?.stage ?? null;
-  const pos = stage ? ORDER.indexOf(stage) : -1;
+  const effStage = awaiting ? (GATE_STEP[review!.gate] ?? stage) : stage;
+  const pos = effStage ? ORDER.indexOf(effStage) : -1;
   const done = task && (task.status === "succeeded" || task.status === "storyboard_ready");
   const rampOn = done ? 6 : Math.max(0, Math.min(6, Math.round(((pos + 1) / ORDER.length) * 6)));
   const render = task?.result?.render_plan ?? null;
@@ -139,11 +195,15 @@ export function App() {
                   onChange={(e) => setScenes(+e.target.value)} />
               </label>
             </div>
+            <label className="field hitl-toggle">
+              <input type="checkbox" checked={hitl} onChange={(e) => setHitl(e.target.checked)} />
+              <span>人工介入：每个关键步骤后暂停，等我审核（通过 / 编辑 / 打回 / 取消）</span>
+            </label>
             <div className="actions">
               <button className="btn btn--primary" type="submit" disabled={busy || !topic.trim()}>
                 {busy ? "烧制中…" : "开始生成"}
               </button>
-              {busy && task && (
+              {busy && task && !awaiting && (
                 <button className="btn btn--ghost" type="button" onClick={onCancel}>取消</button>
               )}
             </div>
@@ -164,6 +224,38 @@ export function App() {
                   {[1, 2, 3, 4, 5, 6].map((i) => <i key={i} data-on={i <= rampOn ? 1 : 0} />)}
                 </div>
 
+                {awaiting && review && (
+                  <div className="review">
+                    <div className="review__head">
+                      <span className="review__gate">待审 · {GATE_CN[review.gate] ?? review.gate}</span>
+                      <span className="ready"><span className="k">闸门</span> {review.gate}</span>
+                    </div>
+                    <label className="field">
+                      <span>{review.gate === "subtitles"
+                        ? "字幕：如需修改，粘贴新的 SRT 文本（留空则不改）"
+                        : "产物（可直接编辑后「保存修改并继续」）"}</span>
+                      <textarea className="textarea review__edit" spellCheck={false}
+                        value={editText} onChange={(e) => setEditText(e.target.value)} />
+                    </label>
+                    <label className="field">
+                      <span>打回意见（可选，仅「打回重做」生效）</span>
+                      <input className="input" value={feedback} maxLength={300}
+                        placeholder="例：节奏再快一点、第一镜换个画面"
+                        onChange={(e) => setFeedback(e.target.value)} />
+                    </label>
+                    <div className="actions review__actions">
+                      <button className="btn btn--primary" type="button" disabled={reviewBusy}
+                        onClick={() => onReview("approve")}>通过</button>
+                      <button className="btn btn--ghost" type="button" disabled={reviewBusy}
+                        onClick={() => onReview("edit")}>保存修改并继续</button>
+                      <button className="btn btn--ghost" type="button" disabled={reviewBusy}
+                        onClick={() => onReview("regenerate")}>打回重做</button>
+                      <button className="btn btn--ghost" type="button" disabled={reviewBusy}
+                        onClick={() => onReview("cancel")}>取消任务</button>
+                    </div>
+                  </div>
+                )}
+
                 {showVideo ? (
                   <figure className="photo">
                     <video src={videoUrl(task.task_id)} controls playsInline />
@@ -179,7 +271,7 @@ export function App() {
                           <span style={{ display: "flex", alignItems: "center", gap: "var(--space-sm)" }}>
                             <span className="bar"><span style={{ transform: `scaleX(${frac})` }} /></span>
                             <span className="state">
-                              {st === "done" ? "已完成" : st === "active" ? "进行中" : "待命"}
+                              {st === "done" ? "已完成" : st === "active" ? (awaiting ? "待审" : "进行中") : "待命"}
                             </span>
                           </span>
                         </li>

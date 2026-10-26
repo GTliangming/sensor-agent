@@ -4,13 +4,13 @@
 """
 from __future__ import annotations
 
-from typing import Any
+from typing import Any, Literal
 
 from pydantic import BaseModel
 
 from app.domain.request import CreateTaskRequest
 
-__all__ = ["CreateTaskRequest", "CreateTaskResponse", "TaskView"]
+__all__ = ["CreateTaskRequest", "CreateTaskResponse", "TaskView", "ReviewRequest"]
 
 
 class CreateTaskResponse(BaseModel):
@@ -29,3 +29,10 @@ class TaskView(BaseModel):
     error_message: str | None = None
     created_at: str
     updated_at: str
+
+
+class ReviewRequest(BaseModel):
+    """人工审核决策。edit 为编辑后的产物（字幕传 {"srt": "..."}，其余传替换用的 JSON）。"""
+    action: Literal["approve", "edit", "regenerate", "cancel"]
+    feedback: str | None = None
+    edit: Any | None = None

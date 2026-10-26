@@ -54,8 +54,10 @@ class DeepSeekTextProvider:
         self._model = settings.deepseek_model
         self._timeout = settings.http_timeout_seconds
 
-    async def generate_storyboard(self, request: CreateTaskRequest, *, attempt: int = 1) -> dict:
-        system, user = build_storyboard_prompt(request)
+    async def generate_storyboard(
+        self, request: CreateTaskRequest, *, attempt: int = 1, feedback: str | None = None
+    ) -> dict:
+        system, user = build_storyboard_prompt(request, feedback)
         payload = {
             "model": self._model,
             "messages": [

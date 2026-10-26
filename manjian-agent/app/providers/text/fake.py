@@ -13,7 +13,9 @@ from app.domain.request import CreateTaskRequest
 class FakeTextProvider:
     name = "fake"
 
-    async def generate_storyboard(self, request: CreateTaskRequest, *, attempt: int = 1) -> dict:
+    async def generate_storyboard(
+        self, request: CreateTaskRequest, *, attempt: int = 1, feedback: str | None = None
+    ) -> dict:
         # 目标镜头数：在 [3, max_scenes] 内按目标时长估算，每镜约 3 秒
         est = max(3, min(request.max_scenes, round(request.target_seconds / 3) or 3))
         per = round(request.target_seconds / est, 2)

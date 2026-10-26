@@ -12,9 +12,11 @@ import shutil
 import uuid
 from datetime import UTC, datetime, timedelta
 from functools import lru_cache
+from pathlib import Path
 
 from app.config import Settings, get_settings
 from app.domain.request import CreateTaskRequest
+from app.graph.hitl_graph import GATE_BY_NODE, GATE_FIELD, build_hitl_graph
 from app.graph.state import TaskStatus
 from app.observability.logging import get_logger
 from app.repositories.sqlite import TaskRepository
@@ -24,6 +26,7 @@ logger = get_logger(__name__)
 
 _SOFT_CODES = {"duration_warning", "not_implemented"}
 _ACTIVE = {TaskStatus.QUEUED, TaskStatus.RUNNING, TaskStatus.CANCEL_REQUESTED}
+_REVIEW_ACTIONS = {"approve", "edit", "regenerate", "cancel"}
 
 
 class _Cancelled(Exception):
@@ -43,6 +46,8 @@ class TaskService:
         self._settings = settings
         self._repo = repo
         self._graph = _build_graph(settings, repo)
+        # HITL 专用图：进程内 MemorySaver 保存暂停点，仅 hitl=True 的任务走它
+        self._hitl_graph = build_hitl_graph(settings=settings, repo=repo)
         self._semaphore = asyncio.Semaphore(max(1, settings.max_concurrent_tasks))
         if settings.app_env == "dev":
             seed_demo_assets(repo)
@@ -131,6 +136,11 @@ class TaskService:
         if task is None:
             raise ValueError(f"task not found: {task_id}")
 
+        if bool((task.get("request") or {}).get("hitl")):
+            init_state = {"task_id": task_id, "request": task["request"],
+                          "status": TaskStatus.QUEUED, "errors": [], "llm_calls": 0, "hitl": True}
+            return await self._drive_hitl(task_id, init_state)
+
         async with self._semaphore:
             self._repo.update_task(task_id, status=TaskStatus.RUNNING)
             self._repo.add_event(task_id, "running", stage="running")
@@ -150,6 +160,106 @@ class TaskService:
                 logger.exception("graph 执行异常 task=%s", task_id)
                 return self._fail(task_id, "internal", str(exc))
             return self._persist_final(task_id, final)
+
+    # ---- HITL 人工介入 ----
+    async def resume_task(self, task_id: str, action: str,
+                          feedback: str | None = None, edit: object | None = None) -> dict:
+        """人工在某个闸门做出决策后，继续推进图。action: approve/edit/regenerate/cancel。"""
+        task = self._repo.get_task(task_id)
+        if task is None:
+            raise ValueError(f"task not found: {task_id}")
+        if task["status"] != TaskStatus.AWAITING_REVIEW:
+            raise ValueError(f"task {task_id} 不在待审状态（当前 {task['status']}）")
+        if action not in _REVIEW_ACTIONS:
+            raise ValueError(f"非法审核动作: {action}")
+
+        config = {"configurable": {"thread_id": task_id}}
+        gstate = await self._hitl_graph.aget_state(config)
+        pending = gstate.next[0] if gstate.next else None
+        gate = GATE_BY_NODE.get(pending or "")
+
+        if action == "cancel":
+            self._repo.update_task(task_id, status=TaskStatus.CANCELLED, stage="cancelled")
+            self._repo.add_event(task_id, "cancelled", stage="cancelled", payload={"gate": gate})
+            logger.info("task %s 人工取消于闸门 %s", task_id, gate)
+            return self._repo.get_task(task_id)
+
+        updates: dict = {"review_action": action, "review_feedback": feedback or None}
+        if action == "edit" and edit is not None and gate:
+            self._apply_edit(task_id, gate, edit, gstate.values, updates)
+        await self._hitl_graph.aupdate_state(config, updates)
+        self._repo.add_event(task_id, "review", stage=gate, payload={"action": action})
+        return await self._drive_hitl(task_id, None)
+
+    def _apply_edit(self, task_id: str, gate: str, edit: object,
+                    values: dict, updates: dict) -> None:
+        """把人工编辑的产物落地：字幕写回 srt 文件，其余替换对应 state 字段。"""
+        field = GATE_FIELD[gate]
+        if gate == "subtitles":
+            srt_path = values.get("subtitle_path")
+            text = edit.get("srt") if isinstance(edit, dict) else edit
+            if srt_path and isinstance(text, str) and text.strip():
+                Path(srt_path).write_text(text, encoding="utf-8")
+                logger.info("task %s 人工改写字幕 %s", task_id, srt_path)
+            return
+        updates[field] = edit
+
+    async def _drive_hitl(self, task_id: str, graph_input: dict | None) -> dict:
+        """运行一段 HITL 图：到下一个闸门暂停或跑完。graph_input=None 表示 resume。"""
+        async with self._semaphore:
+            self._repo.update_task(task_id, status=TaskStatus.RUNNING)
+            self._repo.add_event(task_id, "running", stage="running")
+            try:
+                values, pending = await asyncio.wait_for(
+                    self._stream_hitl(task_id, graph_input), self._settings.task_total_timeout_seconds)
+            except TimeoutError:
+                return self._fail(task_id, "resource_limit", "任务执行超时")
+            except _Cancelled:
+                self._repo.update_task(task_id, status=TaskStatus.CANCELLED, stage="cancelled")
+                self._repo.add_event(task_id, "cancelled", stage="cancelled")
+                return self._repo.get_task(task_id)
+            except Exception as exc:  # noqa: BLE001
+                logger.exception("hitl 图执行异常 task=%s", task_id)
+                return self._fail(task_id, "internal", str(exc))
+
+        if pending and pending in GATE_BY_NODE:
+            return self._persist_awaiting(task_id, GATE_BY_NODE[pending], values)
+        return self._persist_final(task_id, values)
+
+    async def _stream_hitl(self, task_id: str, graph_input: dict | None) -> tuple[dict, str | None]:
+        config = {"configurable": {"thread_id": task_id}}
+        async for _snap in self._hitl_graph.astream(graph_input, config, stream_mode="values"):
+            cur = self._repo.get_task(task_id)
+            if cur and cur["status"] == TaskStatus.CANCEL_REQUESTED:
+                raise _Cancelled()
+        gstate = await self._hitl_graph.aget_state(config)
+        pending = gstate.next[0] if gstate.next else None
+        return dict(gstate.values), pending
+
+    def _persist_awaiting(self, task_id: str, gate: str, values: dict) -> dict:
+        """在闸门暂停：落库 awaiting_review，并把待审产物放进 result 供前端展示。"""
+        field = GATE_FIELD[gate]
+        errors = values.get("errors", [])
+        result = {
+            "storyboard": values.get("storyboard"),
+            "asset_plan": values.get("asset_plan"),
+            "audio_plan": values.get("audio_plan"),
+            "render_plan": values.get("render_plan"),
+            "subtitle_path": values.get("subtitle_path"),
+            "scene_clips": values.get("scene_clips"),
+            "review": {
+                "gate": gate,
+                "field": field,
+                "artifact": values.get(field),
+                "actions": ["approve", "edit", "regenerate", "cancel"],
+            },
+            "warnings": [e for e in errors if e.get("code") in _SOFT_CODES],
+        }
+        self._repo.update_task(task_id, status=TaskStatus.AWAITING_REVIEW, stage=gate, result=result)
+        self._repo.add_event(task_id, "awaiting_review", stage=gate, payload={"gate": gate})
+        logger.info("task %s 暂停于闸门 %s 等待人工", task_id, gate)
+        return self._repo.get_task(task_id)
+
 
     async def _run_graph(self, task_id: str, init_state: dict) -> dict:
         final = init_state

@@ -34,6 +34,8 @@ class TaskStatus(StrEnum):
     CANCELLED = "cancelled"
     # 阶段 0-1：分镜已生成，后续链路（素材/配音/渲染）尚未实现
     STORYBOARD_READY = "storyboard_ready"
+    # HITL：在某个审核闸门暂停，等待人工 approve/edit/regenerate/cancel
+    AWAITING_REVIEW = "awaiting_review"
 
 
 class AgentState(TypedDict):
@@ -52,3 +54,11 @@ class AgentState(TypedDict):
     errors: Annotated[list[dict[str, Any]], operator.add]
     llm_calls: Annotated[int, operator.add]
     retry_counts: NotRequired[dict[str, int]]
+    # ---- HITL 人工介入（仅 hitl=True 的任务使用）----
+    hitl: NotRequired[bool]
+    # resume 时注入的人工决策：approve / edit / regenerate / cancel
+    review_action: NotRequired[str]
+    # regenerate 时携带的反馈（分镜重生成会带进提示词）
+    review_feedback: NotRequired[str]
+    # human 节点把 review_action 拷到这里供审核路由读取，避免跨闸门串味
+    route_hint: NotRequired[str]

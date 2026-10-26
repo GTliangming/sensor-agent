@@ -32,6 +32,8 @@ def make_generate_storyboard(provider: TextProvider, settings: Settings,
     async def generate_storyboard(state: AgentState) -> dict:
         t0 = time.perf_counter()
         request = CreateTaskRequest.model_validate(state["request"])
+        # HITL 返工意见：人工点"打回重生成"时带进提示词，引导模型按意见调整
+        feedback = state.get("review_feedback") or None
         # 预算强制（文档 01）：跨"返工"累计的 LLM 调用数不得超过 max_llm_calls
         used = state.get("llm_calls", 0)
         if used >= settings.max_llm_calls:
@@ -49,7 +51,7 @@ def make_generate_storyboard(provider: TextProvider, settings: Settings,
         for attempt in range(1, attempts_allowed + 1):
             calls += 1
             try:
-                raw = await provider.generate_storyboard(request, attempt=attempt)
+                raw = await provider.generate_storyboard(request, attempt=attempt, feedback=feedback)
                 storyboard = Storyboard.model_validate(raw)
                 logger.info(
                     "storyboard ok task=%s provider=%s attempt=%s scenes=%s total=%.2fs",

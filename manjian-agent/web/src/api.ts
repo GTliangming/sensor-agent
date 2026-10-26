@@ -6,6 +6,7 @@ export interface CreateTaskBody {
   target_seconds?: number;
   max_scenes?: number;
   max_generated_images?: number;
+  hitl?: boolean;
 }
 
 export interface TaskView {
@@ -62,6 +63,38 @@ export async function listRuns(id: string) {
 
 export function videoUrl(id: string) {
   return `${BASE}/${id}/video`;
+}
+
+// ---- HITL 人工审核 ----
+export type ReviewAction = "approve" | "edit" | "regenerate" | "cancel";
+
+export interface ReviewInfo {
+  gate: string;
+  field: string;
+  artifact: any;
+  actions: ReviewAction[];
+}
+
+export interface ReviewBody {
+  action: ReviewAction;
+  feedback?: string;
+  edit?: any;
+}
+
+export async function getReview(id: string) {
+  return j<{ task_id: string; stage: string | null; review: ReviewInfo | null }>(
+    await fetch(`${BASE}/${id}/review`),
+  );
+}
+
+export async function submitReview(id: string, body: ReviewBody) {
+  return j<{ task_id: string; action: string; accepted: boolean }>(
+    await fetch(`${BASE}/${id}/review`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body),
+    }),
+  );
 }
 
 export async function ready() {

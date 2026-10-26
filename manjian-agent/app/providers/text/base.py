@@ -32,8 +32,8 @@ STORYBOARD_SCHEMA_HINT = """\
 要求：order 从 1 连续递增；scene_id 唯一；所有 scenes 的 duration_seconds 总和尽量接近目标时长。"""
 
 
-def build_storyboard_prompt(request: CreateTaskRequest) -> tuple[str, str]:
-    """返回 (system, user) 提示词。"""
+def build_storyboard_prompt(request: CreateTaskRequest, feedback: str | None = None) -> tuple[str, str]:
+    """返回 (system, user) 提示词。feedback 为人工返工时的修改意见，会拼进提示词。"""
     system = (
         "你是资深短视频分镜编剧，擅长把一个主题拆成节奏紧凑的竖屏分镜。"
         "你只输出结构化 JSON，不输出解释。"
@@ -44,8 +44,10 @@ def build_storyboard_prompt(request: CreateTaskRequest) -> tuple[str, str]:
         f"目标时长：约 {request.target_seconds} 秒\n"
         f"语言：{request.language}\n"
         f"最大镜头数：{request.max_scenes}\n\n"
-        f"{STORYBOARD_SCHEMA_HINT}"
     )
+    if feedback:
+        user += f"【人工修改意见，请据此调整分镜】：{feedback}\n\n"
+    user += STORYBOARD_SCHEMA_HINT
     return system, user
 
 
@@ -53,6 +55,11 @@ def build_storyboard_prompt(request: CreateTaskRequest) -> tuple[str, str]:
 class TextProvider(Protocol):
     name: str
 
-    async def generate_storyboard(self, request: CreateTaskRequest, *, attempt: int = 1) -> dict:
-        """返回原始分镜 dict；合法性由调用方校验。attempt 用于让 provider 在重试时调整策略。"""
+    async def generate_storyboard(
+        self, request: CreateTaskRequest, *, attempt: int = 1, feedback: str | None = None
+    ) -> dict:
+        """返回原始分镜 dict；合法性由调用方校验。
+
+        attempt 用于让 provider 在重试时调整策略；feedback 为人工返工意见（可空）。
+        """
         ...
