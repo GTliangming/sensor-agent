@@ -1,0 +1,13 @@
+{
+    "compilerOptions": {
+        "target": "ES5",
+        "lib": ["ES2015"],
+        "module": "commonjs",
+        "strict": true,
+        "noEmit": true,
+        "skipLibCheck": true,
+        "types": [],
+        "forceConsistentCasingInFileNames": true
+    },
+    "include": ["../assets/scripts/core/**/*.ts"]
+}
