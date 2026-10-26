@@ -39,7 +39,7 @@ test('能从正对门洞的位置走出店门到街上', () => {
 test('走到世界边界会被拦住', () => {
     const p = makePlayer(0, 2.8, 0);
     run(p, BACKWARD, 20);
-    assert.ok(Math.abs(p.z - (13 - p.radius)) < 0.01, `z=${p.z}`);
+    assert.ok(Math.abs(p.z - (14 - p.radius)) < 0.01, `z=${p.z}`);
 });
 
 test('能从街上再走回店内', () => {

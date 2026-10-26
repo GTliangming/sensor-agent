@@ -26,8 +26,29 @@ export class InputController {
     private lookDX = 0;
     private lookDY = 0;
     private mouseDragging = false;
+    private interactPressed = false;
+    /** 打开面板等场景下为 true:忽略移动/转视角输入,避免点面板时视角乱转。 */
+    private blocked = false;
     private readonly keys = new Set<KeyCode>();
     private enabled = false;
+
+    /** 暂停/恢复游戏内操作(移动、转视角、交互键)。 */
+    setBlocked(blocked: boolean): void {
+        this.blocked = blocked;
+        if (blocked) {
+            this.releaseAll();
+            this.lookDX = 0;
+            this.lookDY = 0;
+            this.interactPressed = false;
+        }
+    }
+
+    /** 取走"交互键(E)被按下"的标记。 */
+    consumeInteract(): boolean {
+        const pressed = this.interactPressed;
+        this.interactPressed = false;
+        return pressed;
+    }
 
     enable(): void {
         if (this.enabled) return;
@@ -85,6 +106,7 @@ export class InputController {
     // ---------- 触摸 ----------
 
     private onTouchStart(e: EventTouch): void {
+        if (this.blocked) return;
         const halfWidth = view.getVisibleSize().width / 2;
         for (const t of this.touchesOf(e)) {
             const id = t.getID();
@@ -104,6 +126,7 @@ export class InputController {
     }
 
     private onTouchMove(e: EventTouch): void {
+        if (this.blocked) return;
         for (const t of this.touchesOf(e)) {
             const id = t.getID();
             const p = t.getUILocation();
@@ -159,6 +182,8 @@ export class InputController {
     // ---------- 键盘 / 鼠标(PC 预览) ----------
 
     private onKeyDown(e: EventKeyboard): void {
+        if (this.blocked) return;
+        if (e.keyCode === KeyCode.KEY_E) this.interactPressed = true;
         this.keys.add(e.keyCode);
     }
 
@@ -167,11 +192,12 @@ export class InputController {
     }
 
     private onMouseDown(): void {
+        if (this.blocked) return;
         this.mouseDragging = true;
     }
 
     private onMouseMove(e: EventMouse): void {
-        if (!this.mouseDragging) return;
+        if (!this.mouseDragging || this.blocked) return;
         this.lookDX += e.getUIDeltaX();
         this.lookDY += e.getUIDeltaY();
     }

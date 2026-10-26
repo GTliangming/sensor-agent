@@ -3,7 +3,7 @@
 import { Canvas, Color, Graphics, Label, Layers, Node, view } from 'cc';
 import type { StickState } from './InputController';
 
-const HINT_TEXT = '触屏:左半屏按住拖动 = 移动,右半屏拖动 = 转视角\nPC 预览:WASD / 方向键移动,按住鼠标拖动转视角';
+const HINT_TEXT = '触屏:左半屏拖动 = 移动,右半屏拖动 = 转视角;靠近电脑桌、门口纸箱、货架时右下角会出现操作按钮\nPC 预览:WASD / 方向键移动,按住鼠标拖动转视角,按 E 执行第一个按钮';
 
 export class JoystickView {
     private readonly graphics: Graphics;

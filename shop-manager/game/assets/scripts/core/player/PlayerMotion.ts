@@ -36,8 +36,8 @@ export class PlayerMotion {
     readonly radius: number;
     readonly speed: number;
     readonly pitchLimitDeg: number;
-    private readonly bounds: Rect;
-    private readonly obstacles: readonly Rect[];
+    private bounds: Rect;
+    private obstacles: readonly Rect[];
 
     constructor(spawn: SpawnPoint, options: PlayerMotionOptions) {
         this.x = spawn.x;
@@ -50,6 +50,12 @@ export class PlayerMotion {
         this.obstacles = options.obstacles;
     }
 
+    /** 更换可活动范围与障碍物(摆放设备、扩建后布局变了)。 */
+    setWorld(bounds: Rect, obstacles: readonly Rect[]): void {
+        this.bounds = bounds;
+        this.obstacles = obstacles;
+    }
+
     /** 转动视角:deltaYawDeg 正值向左转,deltaPitchDeg 正值抬头(自动限幅)。 */
     turn(deltaYawDeg: number, deltaPitchDeg: number): void {
         this.yawDeg = (((this.yawDeg + deltaYawDeg) % 360) + 360) % 360;
@@ -57,8 +63,8 @@ export class PlayerMotion {
         this.pitchDeg = Math.max(-this.pitchLimitDeg, Math.min(this.pitchLimitDeg, p));
     }
 
-    /** 按输入推进一帧。 */
-    step(input: MoveInput, dt: number): void {
+    /** 按输入推进一帧。speedScale < 1 表示减速(例如抱着纸箱时)。 */
+    step(input: MoveInput, dt: number, speedScale = 1): void {
         const step = Math.min(Math.max(dt, 0), MAX_STEP);
         let mx = input.moveX;
         let my = input.moveY;
@@ -77,8 +83,9 @@ export class PlayerMotion {
         const rx = Math.cos(yaw);
         const rz = -Math.sin(yaw);
 
-        let nx = this.x + (fx * my + rx * mx) * this.speed * step;
-        let nz = this.z + (fz * my + rz * mx) * this.speed * step;
+        const speed = this.speed * speedScale;
+        let nx = this.x + (fx * my + rx * mx) * speed * step;
+        let nz = this.z + (fz * my + rz * mx) * speed * step;
 
         const pushed = resolveCircleAgainstRects(nx, nz, this.radius, this.obstacles);
         const clamped = clampCircleInRect(pushed.x, pushed.z, this.radius, this.bounds);

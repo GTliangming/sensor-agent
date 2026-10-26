@@ -2,6 +2,7 @@
 // 记录场景初始的光照值作为"正午基准",之后只按倍数缩放,这样美术在编辑器里调的基准值依然有效。
 // 天空一律用纯色背景(不用天空盒),以节省微信 4MB 主包的体积。
 import { Camera, Color, DirectionalLight, director } from 'cc';
+import { WEATHER_TINT, WeatherKind } from '../core/events/Weather';
 import { lightingAt } from '../core/time/DayCycle';
 
 export class DayNightView {
@@ -10,6 +11,7 @@ export class DayNightView {
     private readonly sunColor = new Color();
     private readonly skyColor = new Color();
     private lastHour = -1;
+    private lastWeather: WeatherKind | null = null;
 
     constructor(
         private readonly sun: DirectionalLight,
@@ -21,11 +23,15 @@ export class DayNightView {
     }
 
     /** 每帧调用,hour 为游戏内小时(浮点数)。变化很小时跳过,省去无谓的属性写入。 */
-    apply(hour: number): void {
-        if (Math.abs(hour - this.lastHour) < 0.01) return;
+    apply(hour: number, weather: WeatherKind): void {
+        if (Math.abs(hour - this.lastHour) < 0.01 && weather === this.lastWeather) return;
         this.lastHour = hour;
+        this.lastWeather = weather;
 
         const l = lightingAt(hour);
+        const tint = WEATHER_TINT[weather];
+        l.intensity *= tint.intensityMul;
+        for (let i = 0; i < 3; i++) l.skyColor[i] = l.skyColor[i] * (1 - tint.skyAmount) + tint.sky[i] * tint.skyAmount;
         this.sun.node.setRotationFromEuler(l.sunPitchDeg, -35, 0);
         this.sunColor.set(l.sunColor[0], l.sunColor[1], l.sunColor[2], 255);
         this.sun.color = this.sunColor;
