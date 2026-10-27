@@ -32,6 +32,7 @@ import { JoystickView } from './JoystickView';
 import { PlacementGhost, PlacementPanel } from './PlacementPanel';
 import { ReportPanel } from './ReportPanel';
 import { ModelLibrary } from './ModelLibrary';
+import { loadUiSkin } from './UiKit';
 import { StoreBuilder } from './StoreBuilder';
 import { GuideMarker, TutorialBanner } from './TutorialBanner';
 import { WorldItemsView } from './WorldItemsView';
@@ -128,7 +129,7 @@ export class GameBootstrap extends Component {
                 return;
             }
             // 3D 模型是可选的:加载失败时 StoreBuilder 自动退回方块占位
-            ModelLibrary.load((models) => this.buildWorld(baseMaterial, models));
+            loadUiSkin(() => ModelLibrary.load((models) => this.buildWorld(baseMaterial, models)));
         });
     }
 
@@ -219,9 +220,9 @@ export class GameBootstrap extends Component {
         const camera = this.setupCamera();
         this.camera = camera;
         this.cameraNode = camera.node;
-        this.worldItems = new WorldItemsView(this.node, camera.node, boxes, this.session.layout);
+        this.worldItems = new WorldItemsView(this.node, camera.node, boxes, this.session.layout, models);
         this.dayNight = new DayNightView(sun, camera);
-        this.customersView = new CustomersView(this.node, boxes);
+        this.customersView = new CustomersView(this.node, boxes, models);
         this.ghost = new PlacementGhost(this.node, boxes);
         this.guideMarker = new GuideMarker(this.node, boxes);
 

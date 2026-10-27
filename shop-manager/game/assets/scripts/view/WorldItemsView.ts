@@ -5,6 +5,7 @@ import { ContainerKind, GOODS, getCatalogItem } from '../core/data/Catalog';
 import type { Carton, ContainerStock, GameState } from '../core/state/GameState';
 import type { StoreLayout } from '../core/world/StoreLayout';
 import { BoxFactory } from './BoxFactory';
+import { GOODS_MODELS, MODEL_SIZES, ModelLibrary } from './ModelLibrary';
 
 /** 商品方块颜色:按目录里的顺序循环取色,相邻商品颜色不同,方便肉眼区分库存。 */
 const GOODS_COLORS = [
@@ -24,6 +25,9 @@ const CARTON_COLORS: Record<ContainerKind | 'equipment', Color> = {
     glass: new Color(220, 150, 180, 255),
     equipment: new Color(140, 144, 156, 255),
 };
+
+/** 商品模型的最大高度(米);一层货架净高约 0.5 米。 */
+const MAX_GOODS_HEIGHT = 0.4;
 
 const COLOR_TRUCK_BODY = new Color(236, 238, 242, 255);
 const COLOR_TRUCK_CAB = new Color(60, 110, 200, 255);
@@ -87,6 +91,7 @@ export class WorldItemsView {
         cameraNode: Node,
         private readonly boxes: BoxFactory,
         initialLayout: StoreLayout,
+        private readonly models: ModelLibrary | null = null,
     ) {
         this.layout = initialLayout;
         this.cartonsRoot = new Node('Cartons');
@@ -208,10 +213,29 @@ export class WorldItemsView {
                     const x = f.x + lat.x * along + f.front.x * out;
                     const z = f.z + lat.z * along + f.front.z * out;
                     const y = 0.3 + Math.floor(index / perTier) * 0.5 + size / 2;
-                    this.boxes.addBox(this.stockRoot, `${id}_${index}`, x, y, z, size, size, size * 0.8, color);
+                    if (!this.addGoodsModel(id, x, y - size / 2, z, size, f.front.x, f.front.z)) {
+                        this.boxes.addBox(this.stockRoot, `${id}_${index}`, x, y, z, size, size, size * 0.8, color);
+                    }
                 }
             }
         }
+    }
+
+    /**
+     * 在 (x, y, z)(y 是底面高度)放一件商品模型:等比缩放到占地不超过 cell、高度不超过一层的空间,并朝向设施正面。
+     * 没有这件商品的模型返回 false,调用方画方块。
+     */
+    private addGoodsModel(goodsId: string, x: number, y: number, z: number, cell: number, frontX: number, frontZ: number): boolean {
+        const name = GOODS_MODELS[goodsId];
+        const dims = name ? MODEL_SIZES[name] : undefined;
+        const node = name && this.models ? this.models.create(name) : null;
+        if (!node || !dims) return false;
+        const scale = Math.min(cell / Math.max(dims.x, dims.z), MAX_GOODS_HEIGHT / dims.y);
+        node.setPosition(x, y, z);
+        node.setScale(scale, scale, scale);
+        node.setRotationFromEuler(0, (Math.atan2(frontX, frontZ) * 180) / Math.PI, 0);
+        this.stockRoot.addChild(node);
+        return true;
     }
 
     /** 停在卸货区旁边的一辆简易货车,有纸箱在地上时才显示。 */

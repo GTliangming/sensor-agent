@@ -59,6 +59,13 @@ export class StoreBuilder {
         const wallColor = rgb(theme.wall);
         layout.walls.forEach((w, i) => this.addRect(root, `Wall_${i}`, w, 0, layout.wallHeight, wallColor));
 
+        // 踢脚线:每段墙脚下一圈比墙略宽的深色条,颜色取主题强调色压暗,让墙和地面有层次
+        const baseboard = new Color(Math.round(theme.accent[0] * 0.55), Math.round(theme.accent[1] * 0.55), Math.round(theme.accent[2] * 0.55), 255);
+        layout.walls.forEach((w, i) => {
+            const strip: Rect = { x: w.x, z: w.z, w: w.w + 0.06, d: w.d + 0.06 };
+            this.addRect(root, `Baseboard_${i}`, strip, 0, 0.18, baseboard);
+        });
+
         // 门头招牌:横在门洞上方,颜色随主题
         const southZ = layout.interior.z + layout.interior.d / 2;
         this.boxes.addBox(root, 'Sign', 0, layout.wallHeight - 0.4, southZ + 0.3, 3.2, 0.7, 0.12, rgb(theme.accent));

@@ -1,0 +1,123 @@
+{
+  "ver": "2.3.14",
+  "importer": "gltf",
+  "imported": true,
+  "uuid": "431c5785-6a39-463c-a020-39b5179eb47c",
+  "files": [],
+  "subMetas": {
+    "27430": {
+      "importer": "gltf-scene",
+      "uuid": "431c5785-6a39-463c-a020-39b5179eb47c@27430",
+      "displayName": "",
+      "id": "27430",
+      "name": "bag-flat.prefab",
+      "userData": {
+        "gltfIndex": 0
+      },
+      "ver": "1.0.14",
+      "imported": true,
+      "files": [
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "3c935": {
+      "importer": "gltf-mesh",
+      "uuid": "431c5785-6a39-463c-a020-39b5179eb47c@3c935",
+      "displayName": "",
+      "id": "3c935",
+      "name": "bag-flat.mesh",
+      "userData": {
+        "gltfIndex": 0,
+        "triangleCount": 114
+      },
+      "ver": "1.1.1",
+      "imported": true,
+      "files": [
+        ".bin",
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "96c50": {
+      "importer": "texture",
+      "uuid": "431c5785-6a39-463c-a020-39b5179eb47c@96c50",
+      "displayName": "",
+      "id": "96c50",
+      "name": "colormap.texture",
+      "userData": {
+        "wrapModeS": "repeat",
+        "wrapModeT": "repeat",
+        "minfilter": "nearest",
+        "magfilter": "nearest",
+        "mipfilter": "nearest",
+        "anisotropy": 0,
+        "isUuid": false,
+        "imageUuidOrDatabaseUri": "db://assets/resources/models/food/Textures/colormap.png"
+      },
+      "ver": "1.0.22",
+      "imported": true,
+      "files": [
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "9991c": {
+      "importer": "gltf-material",
+      "uuid": "431c5785-6a39-463c-a020-39b5179eb47c@9991c",
+      "displayName": "",
+      "id": "9991c",
+      "name": "colormap.material",
+      "userData": {
+        "gltfIndex": 0
+      },
+      "ver": "1.0.14",
+      "imported": true,
+      "files": [
+        ".json"
+      ],
+      "subMetas": {}
+    }
+  },
+  "userData": {
+    "imageMetas": [
+      {
+        "name": "colormap",
+        "uri": "db://assets/resources/models/food/Textures/colormap.png"
+      }
+    ],
+    "lods": {
+      "enable": false,
+      "hasBuiltinLOD": false,
+      "options": [
+        {
+          "screenRatio": 0.25,
+          "faceCount": 1
+        },
+        {
+          "screenRatio": 0.125,
+          "faceCount": 0.25
+        },
+        {
+          "screenRatio": 0.01,
+          "faceCount": 0.1
+        }
+      ]
+    },
+    "assetFinder": {
+      "meshes": [
+        "431c5785-6a39-463c-a020-39b5179eb47c@3c935"
+      ],
+      "skeletons": [],
+      "textures": [
+        "431c5785-6a39-463c-a020-39b5179eb47c@96c50"
+      ],
+      "materials": [
+        "431c5785-6a39-463c-a020-39b5179eb47c@9991c"
+      ],
+      "scenes": [
+        "431c5785-6a39-463c-a020-39b5179eb47c@27430"
+      ]
+    }
+  }
+}

@@ -7,7 +7,7 @@ import { WEATHER } from '../core/events/Weather';
 import type { GameState } from '../core/state/GameState';
 import { DayPhase, formatClock } from '../core/time/GameClock';
 import type { HudInsets } from '../platform/SafeArea';
-import { COLOR_WHITE, UiButton, makeButton, makeLabel } from './UiKit';
+import { COLOR_WHITE, UiButton, makeButton, makeLabel, makeRect } from './UiKit';
 
 const PHASE_NAMES: Record<DayPhase, string> = { morning: '早上', noon: '中午', evening: '傍晚', night: '夜间' };
 const BTN_W = 220;
@@ -51,6 +51,11 @@ export class HudView {
         const leftY = halfH - insets.top - MARGIN;
         const rightX = halfW - insets.right - MARGIN;
         const rightY = halfH - insets.rightTop - MARGIN;
+
+        // 文字底下垫一块半透明的深色面板(皮肤加载成功时是 Kenney 九宫格),任何背景下都读得清
+        const panelColor = new Color(24, 30, 48, 170);
+        makeRect(root, 'StatsBg', 270, 118, leftX + 125, leftY - 52, panelColor, 12);
+        makeRect(root, 'ClockBg', 270, 80, rightX - 125, rightY - 34, panelColor, 12);
 
         this.stats = makeLabel(root, 'Stats', '', { size: 26, align: Label.HorizontalAlign.LEFT, ax: 0, ay: 1, outline: true }, leftX, leftY);
         this.clock = makeLabel(root, 'Clock', '', { size: 26, align: Label.HorizontalAlign.RIGHT, ax: 1, ay: 1, outline: true }, rightX, rightY);

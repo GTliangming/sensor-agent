@@ -1,0 +1,123 @@
+{
+  "ver": "2.3.14",
+  "importer": "gltf",
+  "imported": true,
+  "uuid": "66e5fddf-af15-474e-bfe3-6a763d154764",
+  "files": [],
+  "subMetas": {
+    "bd9dc": {
+      "importer": "gltf-mesh",
+      "uuid": "66e5fddf-af15-474e-bfe3-6a763d154764@bd9dc",
+      "displayName": "",
+      "id": "bd9dc",
+      "name": "display-fruit.mesh",
+      "userData": {
+        "gltfIndex": 0,
+        "triangleCount": 650
+      },
+      "ver": "1.1.1",
+      "imported": true,
+      "files": [
+        ".bin",
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "96c50": {
+      "importer": "texture",
+      "uuid": "66e5fddf-af15-474e-bfe3-6a763d154764@96c50",
+      "displayName": "",
+      "id": "96c50",
+      "name": "colormap.texture",
+      "userData": {
+        "wrapModeS": "repeat",
+        "wrapModeT": "repeat",
+        "minfilter": "nearest",
+        "magfilter": "nearest",
+        "mipfilter": "nearest",
+        "anisotropy": 0,
+        "isUuid": false,
+        "imageUuidOrDatabaseUri": "db://assets/resources/models/market/Textures/colormap.png"
+      },
+      "ver": "1.0.22",
+      "imported": true,
+      "files": [
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "9991c": {
+      "importer": "gltf-material",
+      "uuid": "66e5fddf-af15-474e-bfe3-6a763d154764@9991c",
+      "displayName": "",
+      "id": "9991c",
+      "name": "colormap.material",
+      "userData": {
+        "gltfIndex": 0
+      },
+      "ver": "1.0.14",
+      "imported": true,
+      "files": [
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "2cd33": {
+      "importer": "gltf-scene",
+      "uuid": "66e5fddf-af15-474e-bfe3-6a763d154764@2cd33",
+      "displayName": "",
+      "id": "2cd33",
+      "name": "display-fruit.prefab",
+      "userData": {
+        "gltfIndex": 0
+      },
+      "ver": "1.0.14",
+      "imported": true,
+      "files": [
+        ".json"
+      ],
+      "subMetas": {}
+    }
+  },
+  "userData": {
+    "imageMetas": [
+      {
+        "name": "colormap",
+        "uri": "db://assets/resources/models/market/Textures/colormap.png"
+      }
+    ],
+    "lods": {
+      "enable": false,
+      "hasBuiltinLOD": false,
+      "options": [
+        {
+          "screenRatio": 0.25,
+          "faceCount": 1
+        },
+        {
+          "screenRatio": 0.125,
+          "faceCount": 0.25
+        },
+        {
+          "screenRatio": 0.01,
+          "faceCount": 0.1
+        }
+      ]
+    },
+    "assetFinder": {
+      "meshes": [
+        "66e5fddf-af15-474e-bfe3-6a763d154764@bd9dc"
+      ],
+      "skeletons": [],
+      "textures": [
+        "66e5fddf-af15-474e-bfe3-6a763d154764@96c50"
+      ],
+      "materials": [
+        "66e5fddf-af15-474e-bfe3-6a763d154764@9991c"
+      ],
+      "scenes": [
+        "66e5fddf-af15-474e-bfe3-6a763d154764@2cd33"
+      ]
+    }
+  }
+}

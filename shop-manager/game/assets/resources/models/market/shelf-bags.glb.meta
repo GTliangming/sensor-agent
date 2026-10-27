@@ -1,0 +1,275 @@
+{
+  "ver": "2.3.14",
+  "importer": "gltf",
+  "imported": true,
+  "uuid": "48111922-a6a4-4907-b810-653f967eadd8",
+  "files": [],
+  "subMetas": {
+    "9a065": {
+      "importer": "gltf-mesh",
+      "uuid": "48111922-a6a4-4907-b810-653f967eadd8@9a065",
+      "displayName": "",
+      "id": "9a065",
+      "name": "shelf-bags-0.mesh",
+      "userData": {
+        "gltfIndex": 0,
+        "triangleCount": 156
+      },
+      "ver": "1.1.1",
+      "imported": true,
+      "files": [
+        ".bin",
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "9a7b4": {
+      "importer": "gltf-mesh",
+      "uuid": "48111922-a6a4-4907-b810-653f967eadd8@9a7b4",
+      "displayName": "",
+      "id": "9a7b4",
+      "name": "bag-1.mesh",
+      "userData": {
+        "gltfIndex": 1,
+        "triangleCount": 92
+      },
+      "ver": "1.1.1",
+      "imported": true,
+      "files": [
+        ".bin",
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "46a99": {
+      "importer": "gltf-mesh",
+      "uuid": "48111922-a6a4-4907-b810-653f967eadd8@46a99",
+      "displayName": "",
+      "id": "46a99",
+      "name": "bag-2.mesh",
+      "userData": {
+        "gltfIndex": 2,
+        "triangleCount": 92
+      },
+      "ver": "1.1.1",
+      "imported": true,
+      "files": [
+        ".bin",
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "714e8": {
+      "importer": "gltf-mesh",
+      "uuid": "48111922-a6a4-4907-b810-653f967eadd8@714e8",
+      "displayName": "",
+      "id": "714e8",
+      "name": "bag-3.mesh",
+      "userData": {
+        "gltfIndex": 3,
+        "triangleCount": 92
+      },
+      "ver": "1.1.1",
+      "imported": true,
+      "files": [
+        ".bin",
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "a9d6e": {
+      "importer": "gltf-mesh",
+      "uuid": "48111922-a6a4-4907-b810-653f967eadd8@a9d6e",
+      "displayName": "",
+      "id": "a9d6e",
+      "name": "bag-4.mesh",
+      "userData": {
+        "gltfIndex": 4,
+        "triangleCount": 92
+      },
+      "ver": "1.1.1",
+      "imported": true,
+      "files": [
+        ".bin",
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "910f8": {
+      "importer": "gltf-mesh",
+      "uuid": "48111922-a6a4-4907-b810-653f967eadd8@910f8",
+      "displayName": "",
+      "id": "910f8",
+      "name": "bag-5.mesh",
+      "userData": {
+        "gltfIndex": 5,
+        "triangleCount": 92
+      },
+      "ver": "1.1.1",
+      "imported": true,
+      "files": [
+        ".bin",
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "873d5": {
+      "importer": "gltf-mesh",
+      "uuid": "48111922-a6a4-4907-b810-653f967eadd8@873d5",
+      "displayName": "",
+      "id": "873d5",
+      "name": "bag-6.mesh",
+      "userData": {
+        "gltfIndex": 6,
+        "triangleCount": 92
+      },
+      "ver": "1.1.1",
+      "imported": true,
+      "files": [
+        ".bin",
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "2492b": {
+      "importer": "gltf-mesh",
+      "uuid": "48111922-a6a4-4907-b810-653f967eadd8@2492b",
+      "displayName": "",
+      "id": "2492b",
+      "name": "bag-7.mesh",
+      "userData": {
+        "gltfIndex": 7,
+        "triangleCount": 92
+      },
+      "ver": "1.1.1",
+      "imported": true,
+      "files": [
+        ".bin",
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "3b274": {
+      "importer": "gltf-mesh",
+      "uuid": "48111922-a6a4-4907-b810-653f967eadd8@3b274",
+      "displayName": "",
+      "id": "3b274",
+      "name": "bag-8.mesh",
+      "userData": {
+        "gltfIndex": 8,
+        "triangleCount": 92
+      },
+      "ver": "1.1.1",
+      "imported": true,
+      "files": [
+        ".bin",
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "96c50": {
+      "importer": "texture",
+      "uuid": "48111922-a6a4-4907-b810-653f967eadd8@96c50",
+      "displayName": "",
+      "id": "96c50",
+      "name": "colormap.texture",
+      "userData": {
+        "wrapModeS": "repeat",
+        "wrapModeT": "repeat",
+        "minfilter": "nearest",
+        "magfilter": "nearest",
+        "mipfilter": "nearest",
+        "anisotropy": 0,
+        "isUuid": false,
+        "imageUuidOrDatabaseUri": "db://assets/resources/models/market/Textures/colormap.png"
+      },
+      "ver": "1.0.22",
+      "imported": true,
+      "files": [
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "9991c": {
+      "importer": "gltf-material",
+      "uuid": "48111922-a6a4-4907-b810-653f967eadd8@9991c",
+      "displayName": "",
+      "id": "9991c",
+      "name": "colormap.material",
+      "userData": {
+        "gltfIndex": 0
+      },
+      "ver": "1.0.14",
+      "imported": true,
+      "files": [
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "fd152": {
+      "importer": "gltf-scene",
+      "uuid": "48111922-a6a4-4907-b810-653f967eadd8@fd152",
+      "displayName": "",
+      "id": "fd152",
+      "name": "shelf-bags.prefab",
+      "userData": {
+        "gltfIndex": 0
+      },
+      "ver": "1.0.14",
+      "imported": true,
+      "files": [
+        ".json"
+      ],
+      "subMetas": {}
+    }
+  },
+  "userData": {
+    "imageMetas": [
+      {
+        "name": "colormap",
+        "uri": "db://assets/resources/models/market/Textures/colormap.png"
+      }
+    ],
+    "lods": {
+      "enable": false,
+      "hasBuiltinLOD": false,
+      "options": [
+        {
+          "screenRatio": 0.25,
+          "faceCount": 1
+        },
+        {
+          "screenRatio": 0.125,
+          "faceCount": 0.25
+        },
+        {
+          "screenRatio": 0.01,
+          "faceCount": 0.1
+        }
+      ]
+    },
+    "assetFinder": {
+      "meshes": [
+        "48111922-a6a4-4907-b810-653f967eadd8@9a065",
+        "48111922-a6a4-4907-b810-653f967eadd8@9a7b4",
+        "48111922-a6a4-4907-b810-653f967eadd8@46a99",
+        "48111922-a6a4-4907-b810-653f967eadd8@714e8",
+        "48111922-a6a4-4907-b810-653f967eadd8@a9d6e",
+        "48111922-a6a4-4907-b810-653f967eadd8@910f8",
+        "48111922-a6a4-4907-b810-653f967eadd8@873d5",
+        "48111922-a6a4-4907-b810-653f967eadd8@2492b",
+        "48111922-a6a4-4907-b810-653f967eadd8@3b274"
+      ],
+      "skeletons": [],
+      "textures": [
+        "48111922-a6a4-4907-b810-653f967eadd8@96c50"
+      ],
+      "materials": [
+        "48111922-a6a4-4907-b810-653f967eadd8@9991c"
+      ],
+      "scenes": [
+        "48111922-a6a4-4907-b810-653f967eadd8@fd152"
+      ]
+    }
+  }
+}
