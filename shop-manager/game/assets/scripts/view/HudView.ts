@@ -38,6 +38,7 @@ export class HudView {
     private readonly carried: Label;
     private readonly actionBtns: UiButton[] = [];
     private toastLeft = 0;
+    private readonly toastColor = new Color(255, 255, 255, 255);
     private last = { stats: '', clock: '', btn: '', actions: '', carried: '' };
 
     constructor(canvas: Canvas, insets: HudInsets, handlers: HudHandlers) {
@@ -110,7 +111,8 @@ export class HudView {
         if (this.toastLeft > 0) {
             this.toastLeft = Math.max(0, this.toastLeft - dt);
             const alpha = Math.min(1, this.toastLeft / 0.5); // 最后 0.5 秒淡出
-            this.toast.color = new Color(255, 255, 255, Math.round(255 * alpha));
+            this.toastColor.a = Math.round(255 * alpha);
+            this.toast.color = this.toastColor;
             if (this.toastLeft === 0) this.toast.string = '';
         }
     }

@@ -4,7 +4,8 @@ const assert = require('node:assert/strict');
 
 import { EXPANSIONS, getCatalogItem } from '../../assets/scripts/core/data/Catalog';
 import { checkPlacement, makeFixture, unreachablePlace } from '../../assets/scripts/core/world/Placement';
-import { EXPANSION_SIZES, STREET_STORE_LAYOUT as L, buildLayout, initialFixtures, interiorFor, obstaclesOf, wallsFor } from '../../assets/scripts/core/world/StoreLayout';
+import { EXPANSION_SIZES, buildLayout, initialFixtures, interiorFor, obstaclesOf, wallsFor } from '../../assets/scripts/core/world/StoreLayout';
+import { STREET_STORE_LAYOUT as L } from './fixtures';
 import { newSession } from './sim-helpers';
 
 const def = (id: string) => getCatalogItem(`equip:${id}`) as any;

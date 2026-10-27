@@ -3,24 +3,20 @@ const { test } = require('node:test');
 const assert = require('node:assert/strict');
 
 import { GameSession } from '../../assets/scripts/core/GameSession';
-import { LEVEL_XP, MAX_LEVEL, levelForXp, nextLevelXp, unlocksAtLevel } from '../../assets/scripts/core/data/Levels';
+import { LEVEL_XP, MAX_LEVEL, nextLevelXp, unlocksAtLevel } from '../../assets/scripts/core/data/Levels';
 import { parseSave, serializeState } from '../../assets/scripts/core/save/SaveGame';
 import { createInitialState } from '../../assets/scripts/core/state/GameState';
 import { DEFAULT_CLOCK_CONFIG } from '../../assets/scripts/core/time/GameClock';
 import { TUTORIAL_STEP_COUNT, advanceTutorial, tutorialTarget } from '../../assets/scripts/core/tutorial/Tutorial';
 import { listActions, runAction } from '../../assets/scripts/core/world/Actions';
 import { resolveCircleAgainstRects } from '../../assets/scripts/core/player/Collision';
-import { STREET_STORE_LAYOUT as L } from '../../assets/scripts/core/world/StoreLayout';
+import { STREET_STORE_LAYOUT as L } from './fixtures';
 import { browseSpot, queuePosition } from '../../assets/scripts/core/world/Interaction';
 import { addShopper, newSession } from './sim-helpers';
 
 const CFG = { ...DEFAULT_CLOCK_CONFIG, dayLengthSec: 240 };
 
-test('等级阈值:按累计经验升级,满级封顶', () => {
-    assert.equal(levelForXp(0), 1);
-    assert.equal(levelForXp(LEVEL_XP[2] - 1), 1);
-    assert.equal(levelForXp(LEVEL_XP[2]), 2);
-    assert.equal(levelForXp(LEVEL_XP[MAX_LEVEL] + 99999), MAX_LEVEL);
+test('等级阈值:逐级递增,满级没有下一级', () => {
     assert.equal(nextLevelXp(MAX_LEVEL), null);
     for (let i = 2; i <= MAX_LEVEL; i++) assert.ok(LEVEL_XP[i] > LEVEL_XP[i - 1], `第 ${i} 级门槛应递增`);
 });

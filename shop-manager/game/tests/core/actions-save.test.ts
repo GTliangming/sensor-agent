@@ -7,7 +7,7 @@ import { parseSave, serializeState } from '../../assets/scripts/core/save/SaveGa
 import { createInitialState } from '../../assets/scripts/core/state/GameState';
 import { DEFAULT_CLOCK_CONFIG } from '../../assets/scripts/core/time/GameClock';
 import { listActions, runAction } from '../../assets/scripts/core/world/Actions';
-import { STREET_STORE_LAYOUT as L } from '../../assets/scripts/core/world/StoreLayout';
+import { STREET_STORE_LAYOUT as L } from './fixtures';
 
 const CFG = { ...DEFAULT_CLOCK_CONFIG, dayLengthSec: 240 };
 

@@ -4,10 +4,12 @@ import { Canvas, Color, Graphics, Label, Node, view } from 'cc';
 import { describeEvent } from '../core/events/EventSystem';
 import type { GameState } from '../core/state/GameState';
 import type { HudInsets } from '../platform/SafeArea';
-import { UiButton, fillRoundRect, makeButton, makeLabel, makeNode, makeRect } from './UiKit';
+import { UiButton, makeButton, makeLabel, makeNode, makeRect } from './UiKit';
 
 const CARD_W = 380;
-const CARD_H = 270;
+const CARD_H = 350;
+/** 最多同时显示的应对选项数(价格战有 3 个)。 */
+const MAX_OPTIONS = 3;
 const GOLD = new Color(255, 214, 90, 255);
 const BLUE = new Color(52, 120, 220, 240);
 const GRAY = new Color(96, 98, 108, 240);
@@ -35,12 +37,13 @@ export class EventPanel {
         const left = -CARD_W / 2 + 18;
         this.title = makeLabel(this.root, 'Title', '', { size: 26, color: GOLD, align: Label.HorizontalAlign.LEFT, ax: 0 }, left, CARD_H / 2 - 28);
         this.body = makeLabel(this.root, 'Body', '', { size: 19, align: Label.HorizontalAlign.LEFT, ax: 0, ay: 1, wrapWidth: CARD_W - 36 }, left, CARD_H / 2 - 52);
-        this.timer = makeLabel(this.root, 'Timer', '', { size: 18, color: new Color(170, 178, 196, 255), align: Label.HorizontalAlign.LEFT, ax: 0 }, left, -20);
-        this.bar = makeNode(this.root, 'Bar', 0, -42).addComponent(Graphics);
-        this.more = makeLabel(this.root, 'More', '', { size: 16, color: new Color(170, 178, 196, 255), align: Label.HorizontalAlign.RIGHT, ax: 1 }, CARD_W / 2 - 18, -20);
+        this.timer = makeLabel(this.root, 'Timer', '', { size: 18, color: new Color(170, 178, 196, 255), align: Label.HorizontalAlign.LEFT, ax: 0 }, left, 24);
+        this.bar = makeNode(this.root, 'Bar', 0, 4).addComponent(Graphics);
+        this.more = makeLabel(this.root, 'More', '', { size: 16, color: new Color(170, 178, 196, 255), align: Label.HorizontalAlign.RIGHT, ax: 1 }, CARD_W / 2 - 18, 24);
 
-        for (let i = 0; i < 2; i++) {
-            const btn = makeButton(this.root, `Option_${i}`, '', CARD_W - 36, 46, 0, -78 - i * 54, i === 0 ? BLUE : GRAY, () => {
+        // 选项按钮从卡片底部往上排;选项少于 3 个时上面的位置空着
+        for (let i = 0; i < MAX_OPTIONS; i++) {
+            const btn = makeButton(this.root, `Option_${i}`, '', CARD_W - 36, 42, 0, -128 + (MAX_OPTIONS - 1 - i) * 50, i === 0 ? BLUE : GRAY, () => {
                 if (this.currentId >= 0 && this.optionIds[i]) onChoose(this.currentId, this.optionIds[i]);
             });
             this.buttons.push(btn);
@@ -58,9 +61,10 @@ export class EventPanel {
         }
         this.root.active = true;
         this.currentId = ev.id;
-        const desc = describeEvent(ev);
+        const desc = describeEvent(ev, state);
 
-        const key = `${ev.id}|${state.events.length}`;
+        // 选项文字会随店里情况变化(如灭火器),所以把相关状态也放进 key
+        const key = `${ev.id}|${state.events.length}|${state.fixtures.length}`;
         if (key !== this.last.key) {
             this.last.key = key;
             this.title.string = `突发事件 · ${desc.title}`;

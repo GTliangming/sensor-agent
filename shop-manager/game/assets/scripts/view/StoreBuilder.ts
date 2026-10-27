@@ -1,10 +1,12 @@
 // 根据店铺布局和外观主题,用基础几何体(方块)程序化生成 3D 场景。
-// 这是占位美术:后续换成低模模型时,只需要替换这里的生成逻辑,布局数据和玩法不受影响。
+// 货架、冷柜、展柜、堆头、收银机优先用 Kenney Mini Market 的低模(见 ModelLibrary),模型不可用时退回方块占位;
+// 墙、地面、招牌仍是方块,因为它们的颜色要随外观主题变化。布局数据和玩法不受影响。
 // 布局(设施、扩建)或主题变化后,整个店铺会销毁重建(只有几十个方块,开销很小)。
 import { Color, Node } from 'cc';
 import type { RGB, ThemeDef } from '../core/data/Catalog';
 import type { Fixture, FixtureKind, Rect, StoreLayout } from '../core/world/StoreLayout';
 import { BoxFactory } from './BoxFactory';
+import { MODEL_SIZES, ModelLibrary } from './ModelLibrary';
 
 const COLOR_STREET = new Color(96, 98, 104, 255);
 const COLOR_DARK = new Color(50, 52, 60, 255);
@@ -38,7 +40,10 @@ function colorOfFixture(f: Fixture): Color {
 }
 
 export class StoreBuilder {
-    constructor(private readonly boxes: BoxFactory) {}
+    constructor(
+        private readonly boxes: BoxFactory,
+        private readonly models: ModelLibrary | null = null,
+    ) {}
 
     /** 在 parent 下生成整个店铺,返回店铺根节点。 */
     build(layout: StoreLayout, theme: ThemeDef, parent: Node): Node {
@@ -59,16 +64,56 @@ export class StoreBuilder {
         this.boxes.addBox(root, 'Sign', 0, layout.wallHeight - 0.4, southZ + 0.3, 3.2, 0.7, 0.12, rgb(theme.accent));
 
         for (const f of layout.fixtures) {
-            this.addRect(root, f.id, f, 0, f.height, colorOfFixture(f));
+            if (!this.addFixtureModel(root, f)) this.addRect(root, f.id, f, 0, f.height, colorOfFixture(f));
             this.addFixtureDetail(root, f.kind, f, f.height);
         }
         return root;
     }
 
+    /** 设施用哪个模型:货架 / 堆头 / 冷柜 / 展柜有对应模型,其余(收银台、电脑桌、小装饰)没有。 */
+    private modelNameOf(f: Fixture): string | null {
+        if (f.kind === 'shelf') return f.equipId === 'promo_stand' ? 'display-fruit' : 'shelf-bags';
+        if (f.kind === 'fridge') return 'freezers-standing';
+        if (f.kind === 'glass') return 'display-bread';
+        return null;
+    }
+
+    /**
+     * 用模型表现一个设施:正面朝向对齐设施的 front,沿正面的方向(宽)和进深分别缩放到设施的占地,高度缩放到设施高度。
+     * 成功返回 true;没有模型(或模型库没加载成功)返回 false,由调用方画方块。
+     */
+    private addFixtureModel(parent: Node, f: Fixture): boolean {
+        const name = this.modelNameOf(f);
+        if (!name) return false;
+        // 设施的 w、d 是世界 x、z 方向的尺寸;正面朝 ±x 时,"宽"沿 z、"进深"沿 x
+        const sideways = f.front.x !== 0;
+        const width = sideways ? f.d : f.w;
+        const depth = sideways ? f.w : f.d;
+        const yaw = (Math.atan2(f.front.x, f.front.z) * 180) / Math.PI;
+        return this.placeModel(parent, name, f.x, 0, f.z, width, f.height, depth, yaw, true) !== null;
+    }
+
+    /**
+     * 放一个模型。dimsAreTarget 为 true 时 (sx, sy, sz) 是目标尺寸(米,按模型原始尺寸换算成缩放);
+     * 否则它们直接是缩放倍数。没有该模型返回 null。
+     */
+    private placeModel(parent: Node, name: string, x: number, y: number, z: number, sx: number, sy: number, sz: number, yawDeg: number, dimsAreTarget = false): Node | null {
+        const node = this.models ? this.models.create(name) : null;
+        const size = MODEL_SIZES[name];
+        if (!node || !size) return null;
+        node.setPosition(x, y, z);
+        node.setRotationFromEuler(0, yawDeg, 0);
+        if (dimsAreTarget) node.setScale(sx / size.x, sy / size.y, sz / size.z);
+        else node.setScale(sx, sy, sz);
+        parent.addChild(node);
+        return node;
+    }
+
     /** 给个别设施加一点辨识度细节(收银机、电脑屏幕)。 */
     private addFixtureDetail(parent: Node, kind: FixtureKind, r: Rect, top: number): void {
         if (kind === 'counter') {
-            this.boxes.addBox(parent, 'Register', r.x - 0.5, top + 0.12, r.z, 0.4, 0.24, 0.35, COLOR_DARK);
+            const register = this.placeModel(parent, 'cash-register', r.x - 0.5, top, r.z, 0.55, 0.55, 0.55, 180);
+            if (!register) this.boxes.addBox(parent, 'Register', r.x - 0.5, top + 0.12, r.z, 0.4, 0.24, 0.35, COLOR_DARK);
         } else if (kind === 'computer') {
             this.boxes.addBox(parent, 'Screen', r.x, top + 0.3, r.z - 0.1, 0.55, 0.38, 0.05, COLOR_SCREEN);
             this.boxes.addBox(parent, 'ScreenStand', r.x, top + 0.06, r.z - 0.1, 0.12, 0.12, 0.12, COLOR_DARK);

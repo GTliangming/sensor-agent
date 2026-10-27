@@ -3,7 +3,7 @@ const { test } = require('node:test');
 const assert = require('node:assert/strict');
 
 import { EventBus } from '../../assets/scripts/core/base/EventBus';
-import { MemoryStorage } from '../../assets/scripts/core/save/KeyValueStorage';
+import { MemoryStorage } from './fixtures';
 import { SaveManager, parseSave } from '../../assets/scripts/core/save/SaveGame';
 
 test('空字符串和 undefined 都当作"没有存档"(微信存储对不存在的 key 返回空串)', () => {

@@ -3,15 +3,21 @@
 // 命令只校验游戏规则,不校验"玩家站在哪"——位置判定在 core/world/Actions 里,员工有自己的位置逻辑。
 import { EventBus } from './base/EventBus';
 import { Rng } from './base/Rng';
-import { CustomerNotice, addSatisfaction, collectPayment, dismissAllCustomers, scanCustomer, updateCustomers } from './customers/CustomerSystem';
-import { EVENTS, TRASH, XP } from './data/Balance';
-import { DELIVERY_GAME_MINUTES, EXPANSIONS, MAX_ORDER_QUANTITY, THEMES, getCatalogItem, unitOrderCost } from './data/Catalog';
+import { CustomerNotice, addSatisfaction, collectPayment, dismissAllCustomers, queueOf, scanCustomer, updateCustomers } from './customers/CustomerSystem';
+import { ADS, DISTRESS, EVENTS, MERCHANT, STAFF, SURVEY, TRASH, XP } from './data/Balance';
+import { AD_COIN_REWARD, DELIVERY_GAME_MINUTES, EXPANSIONS, MAX_ORDER_QUANTITY, THEMES, getCatalogItem, unitOrderCost } from './data/Catalog';
 import { MAX_LEVEL, nextLevelXp, unlocksAtLevel } from './data/Levels';
-import { pickEvent, respondToEvent, timeoutEvent } from './events/EventSystem';
+import { getMerchant } from './data/Merchants';
+import { MerchantNotice, leaseAt, merchantsUnlocked, renewFee, settleMerchantsNewDay, slotCount } from './merchants/MerchantSystem';
+import type { AdPlacement } from './services/AdProvider';
+import { adRemaining as adLeft, consumeAd, refundAd } from './economy/AdLimiter';
+import { grantRelief, isDistressed, nextDistressDays } from './economy/Distress';
+import { StaffNotice, hasStaff, settleWagesNewDay } from './staff/StaffSystem';
+import { activeFactor, applyFactor, pickEvent, respondToEvent, timeoutEvent } from './events/EventSystem';
 import { WEATHER, WeatherKind, rollWeather } from './events/Weather';
 import { containerMismatch, fixtureLabel, maxUnitsFit, unitsForOrder } from './inventory/Inventory';
 import { createDayStats } from './state/GameState';
-import type { ActiveEvent, Carton, DayReport, EventType, GameState, Order } from './state/GameState';
+import type { ActiveEvent, Carton, DayReport, EventType, FeedbackRecord, GameState, Order, StaffRole } from './state/GameState';
 import { acknowledgeTutorial, advanceTutorial, isTutorialActive } from './tutorial/Tutorial';
 import { ClockConfig, DEFAULT_CLOCK_CONFIG, DayPhase, absoluteMinutes, advanceTime, phaseAt } from './time/GameClock';
 import { DOOR_INSIDE, distanceToRect } from './world/Interaction';
@@ -35,6 +41,12 @@ export interface GameEvents {
     weatherChanged: { weather: WeatherKind; note: string | null };
     eventStarted: { event: ActiveEvent };
     eventResolved: { event: ActiveEvent; message: string; handled: boolean };
+    /** 收到一条顾客反馈(问卷客结账、暗访客离店)。 */
+    feedbackReceived: { record: FeedbackRecord };
+    merchantNotice: MerchantNotice;
+    staffNotice: StaffNotice;
+    /** 进入或脱离资金紧张状态。 */
+    distressChanged: { distress: boolean; /** 刚进入紧张时送出的救济商品名。 */ relief: string[] };
 }
 
 /** 失败代码:界面需要据此做不同处理(例如金币不足时提供"看广告")。 */
@@ -50,6 +62,9 @@ export class GameSession {
     private readonly rng: Rng;
     /** 布局(设施、扩建、主题)每变一次加 1,表现层据此重建 3D 场景。不存档。 */
     layoutVersion = 0;
+    /** 员工上次干活后过了多少秒(不存档,读档后从头计时)。 */
+    private cashierTimer = 0;
+    private stockerTimer = 0;
     private layoutCache: { expansion: number; fixtures: Fixture[]; layout: StoreLayout } | null = null;
 
     constructor(
@@ -109,17 +124,20 @@ export class GameSession {
         }
 
         this.processDeliveries();
+        const feedbackFrom = this.state.nextFeedbackId;
         const weather = WEATHER[this.state.weather];
         const notices = updateCustomers(this.state, this.layout, this.rng, dtSec, this.state.isOpen, isTutorialActive(this.state), {
-            trafficMul: weather.trafficMul,
+            trafficMul: weather.trafficMul * activeFactor(this.state, this.state.market.traffic),
             coldBoost: weather.coldBoost,
         });
         for (const n of notices) this.events.emit('customerNotice', n);
+        this.emitFeedbackSince(feedbackFrom);
         const trash = this.state.trash.length;
         if (this.state.isOpen && trash > TRASH.freeCount) {
             addSatisfaction(this.state, -(trash - TRASH.freeCount) * TRASH.penaltyPerPiecePerSec * dtSec);
         }
         this.updateEvents(dtSec);
+        this.runStaff(dtSec);
         this.progressTutorial();
     }
 
@@ -143,6 +161,7 @@ export class GameSession {
     placeOrder(itemKey: string, quantity = 1): CommandResult {
         const item = getCatalogItem(itemKey);
         if (!item) return fail('没有这件商品', 'invalid');
+        if (item.kind === 'equipment' && this.distress) return fail('资金紧张,先恢复经营再采购设备(可以看广告、卖设备或辞退员工)', 'state');
         if (!Number.isInteger(quantity) || quantity < 1 || quantity > MAX_ORDER_QUANTITY) {
             return fail(`数量必须在 1~${MAX_ORDER_QUANTITY} 之间`, 'invalid');
         }
@@ -172,7 +191,7 @@ export class GameSession {
         const item = getCatalogItem(itemKey);
         if (!item) return 0;
         const d = this.state.supplierDiscount;
-        const factor = d && d.untilDay >= this.state.day ? d.factor : 1;
+        const factor = (d && d.untilDay >= this.state.day ? d.factor : 1) * activeFactor(this.state, this.state.market.supplyCost);
         return Math.round(unitOrderCost(item) * quantity * factor);
     }
 
@@ -219,6 +238,11 @@ export class GameSession {
     stockContainer(fixtureId: string, count: number | 'all'): CommandResult {
         const carton = this.carried;
         if (!carton) return fail('先搬起一个纸箱', 'state');
+        return this.stockCarton(carton, fixtureId, count);
+    }
+
+    /** 把纸箱里的商品放进指定容器(玩家抱着的箱子和理货员处理的卸货区箱子共用这段规则)。 */
+    private stockCarton(carton: Carton, fixtureId: string, count: number | 'all'): CommandResult {
         const item = getCatalogItem(carton.itemId);
         if (!item || item.kind !== 'goods') return fail('设备不能放上货架,请收进仓库', 'invalid');
         const fixture = this.layout.fixtures.find((f) => f.id === fixtureId);
@@ -274,6 +298,10 @@ export class GameSession {
     storeEquipment(): CommandResult {
         const carton = this.carried;
         if (!carton) return fail('先搬起一个纸箱', 'state');
+        return this.storeCarton(carton);
+    }
+
+    private storeCarton(carton: Carton): CommandResult {
         const item = getCatalogItem(carton.itemId);
         if (!item || item.kind !== 'equipment') return fail('商品要放进货架或冷柜', 'invalid');
         this.state.warehouse[item.id] = (this.state.warehouse[item.id] ?? 0) + carton.units;
@@ -293,11 +321,15 @@ export class GameSession {
 
     /** 收银第二步:收款,金币入账。 */
     collectPayment(customerId: number): CommandResult {
+        const feedbackFrom = this.state.nextFeedbackId;
         const r = collectPayment(this.state, customerId);
         if (!r.ok) return fail(r.reason, 'state');
         this.addXp(XP.perSale + XP.perSoldUnit * r.units);
+        if (r.surveyReward) this.addXp(SURVEY.rewardXp);
         if (this.rng.next() < TRASH.chancePerSale) this.spawnTrash();
-        return { ok: true, info: `收款 +${r.total} 金币` };
+        this.emitFeedbackSince(feedbackFrom);
+        const bonus = r.surveyReward ? `;完成问卷 +${SURVEY.rewardCoins} 金币` : '';
+        return { ok: true, info: `收款 +${r.total} 金币${bonus}` };
     }
 
     // ---------- 摆放、扩建、外观、清扫 ----------
@@ -389,6 +421,181 @@ export class GameSession {
         }
     }
 
+    // ---------- 招商 ----------
+
+    /** 和商户签约,入驻到空档口(缴押金)。 */
+    signMerchant(slot: number, merchantId: string): CommandResult {
+        if (!merchantsUnlocked(this.state)) return fail(`需要超市 ${MERCHANT.unlockLevel} 级并至少扩建 ${MERCHANT.minExpansion} 次`, 'locked');
+        const def = getMerchant(merchantId);
+        if (!def) return fail('没有这个商户', 'invalid');
+        if (!Number.isInteger(slot) || slot < 0 || slot >= slotCount(this.state)) return fail('没有这个档口', 'invalid');
+        if (leaseAt(this.state, slot)) return fail('这个档口已经有商户了', 'state');
+        if (this.state.level < def.unlockLevel) return fail(`需要超市达到 ${def.unlockLevel} 级`, 'locked');
+        if (this.state.coins < def.deposit) return fail(`押金不够,还差 ${def.deposit - this.state.coins}`, 'insufficient_coins');
+        this.state.coins -= def.deposit;
+        this.state.merchants = [
+            ...this.state.merchants,
+            { slot, merchantId, signedDay: this.state.day, expiresDay: this.state.day + MERCHANT.termDays - 1, badDays: 0 },
+        ];
+        return { ok: true, info: `${def.name}入驻了,每天收租 ${def.rentPerDay} 金币` };
+    }
+
+    /** 续约:租期延长一个周期,收一笔续约费。 */
+    renewMerchant(slot: number): CommandResult {
+        const lease = leaseAt(this.state, slot);
+        if (!lease) return fail('这个档口没有商户', 'invalid');
+        const fee = renewFee(lease.merchantId);
+        if (this.state.coins < fee) return fail(`续约费不够,还差 ${fee - this.state.coins}`, 'insufficient_coins');
+        this.state.coins -= fee;
+        lease.expiresDay = Math.max(lease.expiresDay, this.state.day) + MERCHANT.termDays;
+        return { ok: true, info: `续约成功,租期到第 ${lease.expiresDay} 天` };
+    }
+
+    /** 收回铺面(商户搬走,退还押金)。收回后可以重新招商或留空;换商户 = 先收回再签约。 */
+    reclaimMerchant(slot: number): CommandResult {
+        const lease = leaseAt(this.state, slot);
+        const def = lease ? getMerchant(lease.merchantId) : undefined;
+        if (!lease) return fail('这个档口没有商户', 'invalid');
+        this.state.coins += def ? def.deposit : 0;
+        this.state.merchants = this.state.merchants.filter((l) => l.slot !== slot);
+        return { ok: true, info: `已收回铺面${def ? `,退还押金 ${def.deposit}` : ''}` };
+    }
+
+    // ---------- 员工 ----------
+
+    hireStaff(role: StaffRole): CommandResult {
+        const rule = STAFF[role];
+        if (!rule) return fail('没有这个岗位', 'invalid');
+        if (this.state.level < rule.unlockLevel) return fail(`需要超市达到 ${rule.unlockLevel} 级`, 'locked');
+        if (hasStaff(this.state, role)) return fail(`已经雇了${rule.name}`, 'state');
+        if (this.state.coins < rule.hireFee) return fail(`金币不足,还差 ${rule.hireFee - this.state.coins}`, 'insufficient_coins');
+        this.state.coins -= rule.hireFee;
+        this.state.staff = [...this.state.staff, { id: this.state.nextStaffId++, role, hiredDay: this.state.day }];
+        return { ok: true, info: `雇了${rule.name},每天工资 ${rule.wage} 金币` };
+    }
+
+    fireStaff(staffId: number): CommandResult {
+        const s = this.state.staff.find((x) => x.id === staffId);
+        if (!s) return fail('没有这位员工', 'invalid');
+        this.state.staff = this.state.staff.filter((x) => x.id !== staffId);
+        return { ok: true, info: `辞退了${STAFF[s.role].name}` };
+    }
+
+    /** 员工干活:和玩家用同一批命令。 */
+    private runStaff(dtSec: number): void {
+        if (hasStaff(this.state, 'cashier')) {
+            this.cashierTimer += dtSec;
+            if (this.cashierTimer >= STAFF.cashier.stepSec) {
+                this.cashierTimer = 0;
+                const head = queueOf(this.state)[0];
+                if (head) head.scanned ? this.collectPayment(head.id) : this.scanCustomer(head.id);
+            }
+        } else {
+            this.cashierTimer = 0;
+        }
+        if (hasStaff(this.state, 'stocker')) {
+            this.stockerTimer += dtSec;
+            if (this.stockerTimer >= STAFF.stocker.stepSec) {
+                this.stockerTimer = 0;
+                this.stockOneDoorCarton();
+            }
+        } else {
+            this.stockerTimer = 0;
+        }
+    }
+
+    /** 理货员处理卸货区的一个纸箱:设备收仓库;商品放进第一个类型匹配且放得下的货架/冷柜。 */
+    private stockOneDoorCarton(): void {
+        for (const carton of this.state.cartons.slice()) {
+            if (carton.location !== 'door') continue;
+            const item = getCatalogItem(carton.itemId);
+            if (!item) continue;
+            if (item.kind === 'equipment') {
+                this.storeCarton(carton);
+                return;
+            }
+            const target = this.layout.fixtures.find((f) => containerMismatch(item, f) === null && maxUnitsFit(f, this.state.stock[f.id], item) > 0);
+            if (target && this.stockCarton(carton, target.id, 'all').ok) return;
+        }
+    }
+
+    // ---------- 广告(每日次数上限)与资金紧张 ----------
+
+    /** 今天这个场景还能看几次广告(查询,不改状态)。 */
+    adRemaining(placement: AdPlacement): number {
+        return adLeft(this.state, placement, this.distress);
+    }
+
+    private consumeAd(placement: AdPlacement): CommandResult {
+        if (!consumeAd(this.state, placement, this.distress)) return fail('今天的广告次数用完了,明天再来吧', 'state');
+        return { ok: true };
+    }
+
+    private refundAd(placement: AdPlacement): void {
+        refundAd(this.state, placement);
+    }
+
+    /** 看完广告后领金币(受每日次数限制)。界面必须在广告回调"看完"之后才调用。 */
+    rewardCoinsFromAd(): CommandResult {
+        const c = this.consumeAd('coins');
+        return c.ok ? this.rewardCoins(AD_COIN_REWARD) : c;
+    }
+
+    /** 看完广告后让订单立刻送达。 */
+    expediteOrderFromAd(orderId: number): CommandResult {
+        const c = this.consumeAd('expedite_order');
+        if (!c.ok) return c;
+        const r = this.expediteOrder(orderId);
+        if (!r.ok) this.refundAd('expedite_order');
+        return r;
+    }
+
+    /** 看完广告后解锁外观主题。 */
+    unlockThemeFromAd(themeId: string): CommandResult {
+        const c = this.consumeAd('theme');
+        if (!c.ok) return c;
+        const r = this.unlockTheme(themeId);
+        if (!r.ok) this.refundAd('theme');
+        return r;
+    }
+
+    /** 看完广告后开启限时人气 buff(客流增加)。 */
+    activateBuffFromAd(): CommandResult {
+        const c = this.consumeAd('buff');
+        if (!c.ok) return c;
+        applyFactor(this.state, 'traffic', ADS.buffTraffic, ADS.buffDays);
+        return { ok: true, info: `人气 buff 开启:客流 ×${ADS.buffTraffic}` };
+    }
+
+    /** 资金紧张:连续几天金币很少又没货可卖;金币回到 DISTRESS.recoverCoins 就脱离。紧张期间不能采购设备。 */
+    get distress(): boolean {
+        return isDistressed(this.state);
+    }
+
+    private updateDistress(): void {
+        const before = this.distress;
+        this.state.distressDays = nextDistressDays(this.state);
+        if (before === this.distress) return;
+        // 刚进入紧张:给一次救济,避免掉进"没货可卖 -> 满意度跌光 -> 客流极少"的死循环
+        const relief = this.distress ? grantRelief(this.state) : [];
+        this.events.emit('distressChanged', { distress: this.distress, relief });
+    }
+
+    /** 卖掉店里能搬动的设备换金币(返还原价的一部分)。里面有商品要先拿走。 */
+    sellFixture(fixtureId: string): CommandResult {
+        const f = this.state.fixtures.find((x) => x.id === fixtureId);
+        if (!f) return fail('找不到这件设备', 'invalid');
+        if (!f.movable || !f.equipId) return fail('这个卖不了', 'state');
+        const contents = this.state.stock[f.id];
+        if (contents && Object.keys(contents).length > 0) return fail('请先把里面的商品拿走', 'state');
+        const def = getCatalogItem(`equip:${f.equipId}`);
+        const refund = def && def.kind === 'equipment' ? Math.round(def.price * DISTRESS.sellRatio) : 0;
+        this.state.fixtures = this.state.fixtures.filter((x) => x.id !== fixtureId);
+        this.state.coins += refund;
+        this.layoutVersion++;
+        return { ok: true, info: `卖掉了${def ? def.name : f.id},获得 ${refund} 金币` };
+    }
+
     // ---------- 天气与突发事件 ----------
 
     /** 响应一个突发事件的应对选项(optionId 见 describeEvent;"ignore" 等同超时)。 */
@@ -409,6 +616,11 @@ export class GameSession {
             if (this.state.priceFactors[id].untilDay < this.state.day) delete this.state.priceFactors[id];
         }
         if (this.state.supplierDiscount && this.state.supplierDiscount.untilDay < this.state.day) this.state.supplierDiscount = null;
+        const market = this.state.market;
+        for (const slot of ['traffic', 'supplyCost', 'salePrice'] as const) {
+            const f = market[slot];
+            if (f && f.untilDay < this.state.day) market[slot] = null;
+        }
 
         this.state.weather = this.state.forecast[0];
         this.state.forecast = [this.state.forecast[1], rollWeather(this.rng, this.state.day + 2)];
@@ -422,6 +634,12 @@ export class GameSession {
             }
         }
         this.events.emit('weatherChanged', { weather: this.state.weather, note });
+
+        // 新的一天:商户收租与解约评估 -> 发员工工资 -> 判断资金紧张 -> 清零昨天的事故数
+        for (const n of settleMerchantsNewDay(this.state)) this.events.emit('merchantNotice', n);
+        for (const n of settleWagesNewDay(this.state)) this.events.emit('staffNotice', n);
+        this.updateDistress();
+        this.state.incidentsToday = 0;
     }
 
     private pushEvent(type: EventType, itemId: string | null): void {
@@ -437,6 +655,7 @@ export class GameSession {
 
     private finishEvent(ev: ActiveEvent, message: string, handled: boolean): void {
         this.state.events = this.state.events.filter((e) => e.id !== ev.id);
+        if (!handled) this.state.incidentsToday++;
         this.events.emit('eventResolved', { event: ev, message, handled });
     }
 
@@ -552,12 +771,21 @@ export class GameSession {
         if (carton.orderId !== null) this.state.orders = this.state.orders.filter((o) => o.id !== carton.orderId);
     }
 
+    /** 把编号 >= fromId 的新反馈逐条通知出去。 */
+    private emitFeedbackSince(fromId: number): void {
+        for (const record of this.state.feedback) {
+            if (record.id >= fromId) this.events.emit('feedbackReceived', { record });
+        }
+    }
+
     /** 状态真正变化时才改值并发事件。 */
     private setOpen(isOpen: boolean, reason: StoreCloseReason): void {
         if (this.state.isOpen === isOpen) return;
         this.state.isOpen = isOpen;
         if (!isOpen) {
+            const feedbackFrom = this.state.nextFeedbackId;
             for (const n of dismissAllCustomers(this.state, this.layout)) this.events.emit('customerNotice', n);
+            this.emitFeedbackSince(feedbackFrom);
         }
         this.events.emit('storeOpenChanged', { isOpen, reason });
     }

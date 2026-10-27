@@ -5,21 +5,10 @@ const assert = require('node:assert/strict');
 import { Rng } from '../../assets/scripts/core/base/Rng';
 import { EVENTS } from '../../assets/scripts/core/data/Balance';
 import { WEATHER, WeatherKind, rollWeather } from '../../assets/scripts/core/events/Weather';
-import { GameSession } from '../../assets/scripts/core/GameSession';
-import { parseSave, serializeState } from '../../assets/scripts/core/save/SaveGame';
-import { EventType, createInitialState } from '../../assets/scripts/core/state/GameState';
-import { DEFAULT_CLOCK_CONFIG } from '../../assets/scripts/core/time/GameClock';
+import { createInitialState } from '../../assets/scripts/core/state/GameState';
 import { newSession } from './sim-helpers';
 
 const SEC_PER_GAME_MINUTE = 240 / 1080;
-
-/** 手工放一个待处理事件,并关掉自动触发,让测试只关注这一个事件。 */
-function addEvent(g: GameSession, type: EventType, itemId: string | null = null): number {
-    const id = g.state.nextEventId++;
-    g.state.events.push({ id, type, itemId, remainingSec: EVENTS.durationSec, totalSec: EVENTS.durationSec });
-    g.state.eventCooldown = 1e9;
-    return id;
-}
 
 test('天气抽取:第 1 天一定是晴天;新手保护期只会晴/雨/高温;之后五种都会出现', () => {
     const rng = new Rng({ rngState: 99 });

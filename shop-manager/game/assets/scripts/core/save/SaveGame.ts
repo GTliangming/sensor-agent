@@ -7,17 +7,20 @@
 //   v4:新增 xp、customers、统计(today/pendingReport/totalServed)、随机数状态、新手引导进度;纸箱增加 xpLeft
 //   v5:新增 fixtures(店内设施,可摆放)、expansion(扩建等级)、theme/unlockedThemes(外观)、trash(垃圾)
 //   v6:新增 weather/forecast(天气与预报)、events(突发事件)、eventCooldown、priceFactors(促销价)、supplierDiscount(进货折扣)
+//   v7:新增 market(竞争带来的限时客流/进货价/售价影响);事件类型增加火情、抽查、价格战、竞品、供货商被抢
+//   v8:顾客增加 kind(普通/问卷/暗访)与 missedItems;新增 feedback(顾客反馈记录)与 nextFeedbackId
+//   v9:新增 merchants(招商)、staff/nextStaffId(员工)、ads(每日广告次数)、distressDays(资金紧张)、incidentsToday
 import { DEFAULT_THEME_ID, THEMES } from '../data/Catalog';
 import { isWeatherKind } from '../events/Weather';
 import { xpForLevel } from '../data/Levels';
 import { unitsForOrder } from '../inventory/Inventory';
-import { createDayStats } from '../state/GameState';
-import type { ActiveEvent, Carton, CartLine, Customer, DayReport, DayStats, EventType, GameState, Order, PriceFactor, TrashPiece, TutorialState, WantLine } from '../state/GameState';
+import { EVENT_TYPES, createDayStats } from '../state/GameState';
+import type { ActiveEvent, Carton, CartLine, Customer, CustomerKind, DayReport, DayStats, AdUsage, FeedbackRecord, GameState, MarketState, MerchantLease, StaffMember, StaffRole, Order, PriceFactor, TrashPiece, TutorialState, WantLine } from '../state/GameState';
 import { TUTORIAL_STEP_COUNT } from '../tutorial/Tutorial';
 import { EXPANSION_SIZES, FRONTS, Fixture, FixtureKind, initialFixtures } from '../world/StoreLayout';
 import type { KeyValueStorage } from './KeyValueStorage';
 
-export const SAVE_SCHEMA_VERSION = 6;
+export const SAVE_SCHEMA_VERSION = 9;
 
 export type LoadResult =
     | { kind: 'empty' }
@@ -130,12 +133,54 @@ function migrateV5toV6(obj: any): any {
     return obj;
 }
 
+/** v6 -> v7:没有进行中的市场影响。 */
+function migrateV6toV7(obj: any): any {
+    const s = obj.state;
+    if (typeof s === 'object' && s !== null) s.market = { traffic: null, supplyCost: null, salePrice: null };
+    obj.schema_version = 7;
+    return obj;
+}
+
+/** v7 -> v8:已有的顾客都是普通客人;没有反馈记录。 */
+function migrateV7toV8(obj: any): any {
+    const s = obj.state;
+    if (typeof s === 'object' && s !== null) {
+        if (Array.isArray(s.customers)) {
+            for (const c of s.customers) {
+                if (c && typeof c === 'object') {
+                    c.kind = 'normal';
+                    c.missedItems = [];
+                }
+            }
+        }
+        s.feedback = [];
+        s.nextFeedbackId = 1;
+    }
+    obj.schema_version = 8;
+    return obj;
+}
+
+/** v8 -> v9:没有商户和员工,广告次数从今天算起。 */
+function migrateV8toV9(obj: any): any {
+    const s = obj.state;
+    if (typeof s === 'object' && s !== null) {
+        s.merchants = [];
+        s.staff = [];
+        s.nextStaffId = 1;
+        s.ads = { day: isInt(s.day) ? s.day : 1, used: {} };
+        s.distressDays = 0;
+        s.incidentsToday = 0;
+    }
+    obj.schema_version = 9;
+    return obj;
+}
+
 // ---------------------------------------------------------------- 校验
 
-const EVENT_TYPES: EventType[] = ['rain_puddle', 'heat_fridge', 'wind_sign', 'supplier_discount', 'expiring', 'blackout'];
+const EVENT_TYPE_LIST: ReadonlyArray<string> = EVENT_TYPES;
 
 function parseEvent(e: any): ActiveEvent | null {
-    if (typeof e !== 'object' || e === null || !isInt(e.id) || e.id < 1 || EVENT_TYPES.indexOf(e.type) < 0) return null;
+    if (typeof e !== 'object' || e === null || !isInt(e.id) || e.id < 1 || EVENT_TYPE_LIST.indexOf(e.type) < 0) return null;
     if (e.itemId !== null && !isStr(e.itemId)) return null;
     if (!isNum(e.remainingSec) || !isNum(e.totalSec) || e.totalSec <= 0) return null;
     return { id: e.id, type: e.type, itemId: e.itemId, remainingSec: e.remainingSec, totalSec: e.totalSec };
@@ -230,15 +275,42 @@ function parseList<T>(list: any, parse: (x: any) => T | null): T[] | null {
     return out;
 }
 
+const CUSTOMER_KINDS: CustomerKind[] = ['normal', 'survey', 'secret'];
+
+function parseFeedback(f: any): FeedbackRecord | null {
+    if (typeof f !== 'object' || f === null || !isInt(f.id) || f.id < 1 || !isInt(f.day) || f.day < 1) return null;
+    if (f.kind !== 'survey' && f.kind !== 'secret') return null;
+    if (!isInt(f.rating) || f.rating < 1 || f.rating > 5) return null;
+    if (!isInt(f.find) || f.find < 0 || f.find > 2 || !isInt(f.wait) || f.wait < 0 || f.wait > 2) return null;
+    if (f.wishItemId !== null && !isStr(f.wishItemId)) return null;
+    if (!Array.isArray(f.reasons) || !f.reasons.every(isStr) || typeof f.paid !== 'boolean') return null;
+    return { id: f.id, day: f.day, kind: f.kind, rating: f.rating, find: f.find, wait: f.wait, wishItemId: f.wishItemId, reasons: f.reasons.slice(), paid: f.paid };
+}
+
+const STAFF_ROLES: StaffRole[] = ['cashier', 'stocker'];
+
+function parseLease(l: any): MerchantLease | null {
+    if (typeof l !== 'object' || l === null || !isInt(l.slot) || l.slot < 0 || !isStr(l.merchantId)) return null;
+    if (!isInt(l.signedDay) || !isInt(l.expiresDay) || !isInt(l.badDays) || l.badDays < 0) return null;
+    return { slot: l.slot, merchantId: l.merchantId, signedDay: l.signedDay, expiresDay: l.expiresDay, badDays: l.badDays };
+}
+
+function parseStaff(m: any): StaffMember | null {
+    if (typeof m !== 'object' || m === null || !isInt(m.id) || m.id < 1 || STAFF_ROLES.indexOf(m.role) < 0 || !isInt(m.hiredDay)) return null;
+    return { id: m.id, role: m.role, hiredDay: m.hiredDay };
+}
+
 function parseCustomer(c: any): Customer | null {
     if (typeof c !== 'object' || c === null) return null;
     if (!isInt(c.id) || c.id < 1 || (c.phase !== 'browsing' && c.phase !== 'queuing')) return null;
     if (!isNum(c.timer) || !isNum(c.waited) || c.waited < 0 || typeof c.scanned !== 'boolean') return null;
     if (!isInt(c.joinSeq) || c.joinSeq < 0) return null;
+    if (CUSTOMER_KINDS.indexOf(c.kind) < 0) return null;
+    if (!Array.isArray(c.missedItems) || !c.missedItems.every(isStr)) return null;
     const wants = parseList(c.wants, parseWant);
     const cart = parseList(c.cart, parseCartLine);
     if (!wants || !cart) return null;
-    return { id: c.id, phase: c.phase, timer: c.timer, waited: c.waited, wants, cart, scanned: c.scanned, joinSeq: c.joinSeq };
+    return { id: c.id, kind: c.kind, missedItems: c.missedItems.slice(), phase: c.phase, timer: c.timer, waited: c.waited, wants, cart, scanned: c.scanned, joinSeq: c.joinSeq };
 }
 
 function parseStats(t: any): DayStats | null {
@@ -298,6 +370,9 @@ export function parseSave(raw: string | null | undefined): LoadResult {
     if (version <= 3) obj = migrateV3toV4(obj);
     if (version <= 4) obj = migrateV4toV5(obj);
     if (version <= 5) obj = migrateV5toV6(obj);
+    if (version <= 6) obj = migrateV6toV7(obj);
+    if (version <= 7) obj = migrateV7toV8(obj);
+    if (version <= 8) obj = migrateV8toV9(obj);
 
     const s = obj.state;
     const bad = (reason: string): LoadResult => ({ kind: 'corrupt', reason });
@@ -377,6 +452,34 @@ export function parseSave(raw: string | null | undefined): LoadResult {
         supplierDiscount = parsePriceFactor(s.supplierDiscount);
         if (!supplierDiscount) return bad('supplierDiscount 无效');
     }
+    if (typeof s.market !== 'object' || s.market === null) return bad('market 无效');
+    const market: MarketState = { traffic: null, supplyCost: null, salePrice: null };
+    for (const slot of ['traffic', 'supplyCost', 'salePrice'] as const) {
+        if (s.market[slot] === null) continue;
+        const f = parsePriceFactor(s.market[slot]);
+        if (!f) return bad(`market.${slot} 无效`);
+        market[slot] = f;
+    }
+
+    const feedback = parseList(s.feedback, parseFeedback);
+    if (!feedback) return bad('feedback 无效');
+    if (!isInt(s.nextFeedbackId) || s.nextFeedbackId < 1) return bad('nextFeedbackId 无效');
+
+    const merchants = parseList(s.merchants, parseLease);
+    if (!merchants) return bad('merchants 无效');
+    if (new Set(merchants.map((m) => m.slot)).size !== merchants.length) return bad('merchants 的档口有重复');
+    const staff = parseList(s.staff, parseStaff);
+    if (!staff) return bad('staff 无效');
+    if (!isInt(s.nextStaffId) || s.nextStaffId < 1) return bad('nextStaffId 无效');
+    if (typeof s.ads !== 'object' || s.ads === null || !isInt(s.ads.day) || typeof s.ads.used !== 'object' || s.ads.used === null || Array.isArray(s.ads.used)) return bad('ads 无效');
+    const adsUsed: { [placement: string]: number } = {};
+    for (const k of Object.keys(s.ads.used)) {
+        if (!isInt(s.ads.used[k]) || s.ads.used[k] < 0) return bad(`ads.used.${k} 无效`);
+        adsUsed[k] = s.ads.used[k];
+    }
+    const ads: AdUsage = { day: s.ads.day, used: adsUsed };
+    if (!isInt(s.distressDays) || s.distressDays < 0) return bad('distressDays 无效');
+    if (!isInt(s.incidentsToday) || s.incidentsToday < 0) return bad('incidentsToday 无效');
 
     // 主题:只保留还存在的主题,默认主题永远已解锁;当前主题不在已解锁里就回到默认
     const known = THEMES.map((t) => t.id);
@@ -430,6 +533,15 @@ export function parseSave(raw: string | null | undefined): LoadResult {
             eventCooldown: s.eventCooldown,
             priceFactors,
             supplierDiscount,
+            market,
+            feedback,
+            nextFeedbackId: Math.max(s.nextFeedbackId, maxOf(feedback.map((f) => f.id)) + 1),
+            merchants,
+            staff,
+            nextStaffId: Math.max(s.nextStaffId, maxOf(staff.map((m) => m.id)) + 1),
+            ads,
+            distressDays: s.distressDays,
+            incidentsToday: s.incidentsToday,
         },
     };
 }

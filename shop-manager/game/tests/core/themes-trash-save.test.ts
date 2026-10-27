@@ -7,7 +7,8 @@ import { TRASH } from '../../assets/scripts/core/data/Balance';
 import { listActions, runAction } from '../../assets/scripts/core/world/Actions';
 import { parseSave, serializeState } from '../../assets/scripts/core/save/SaveGame';
 import { distanceToRect } from '../../assets/scripts/core/world/Interaction';
-import { STREET_STORE_LAYOUT as L, initialFixtures, obstaclesOf } from '../../assets/scripts/core/world/StoreLayout';
+import { initialFixtures, obstaclesOf } from '../../assets/scripts/core/world/StoreLayout';
+import { STREET_STORE_LAYOUT as L } from './fixtures';
 import { addShopper, newSession } from './sim-helpers';
 
 test('主题:默认主题免费且已解锁;其余需要等级,解锁后才能切换', () => {

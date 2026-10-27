@@ -3,7 +3,7 @@ import { BlockInputEvents, Canvas, Color, Label, Node, view } from 'cc';
 import { getCatalogItem } from '../core/data/Catalog';
 import type { Rect } from '../core/world/StoreLayout';
 import { BoxFactory } from './BoxFactory';
-import { COLOR_WHITE, UiButton, makeButton, makeLabel, makeNode, makeRect } from './UiKit';
+import { UiButton, makeButton, makeLabel, makeNode, makeRect } from './UiKit';
 
 const PANEL_W = 560;
 const PANEL_H = 480;

@@ -2,7 +2,7 @@ declare function require(name: string): any;
 const { test } = require('node:test');
 const assert = require('node:assert/strict');
 
-import { MemoryStorage } from '../../assets/scripts/core/save/KeyValueStorage';
+import { MemoryStorage } from './fixtures';
 import { SaveManager, parseSave, serializeState, SAVE_SCHEMA_VERSION } from '../../assets/scripts/core/save/SaveGame';
 import { createInitialState } from '../../assets/scripts/core/state/GameState';
 

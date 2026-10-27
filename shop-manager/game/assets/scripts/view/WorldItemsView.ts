@@ -2,7 +2,7 @@
 // 只读取 GameState 来显示;状态没变就不重建(用签名字符串判断)。仍是方块占位美术。
 import { Color, Node } from 'cc';
 import { ContainerKind, GOODS, getCatalogItem } from '../core/data/Catalog';
-import type { Carton, GameState } from '../core/state/GameState';
+import type { Carton, ContainerStock, GameState } from '../core/state/GameState';
 import type { StoreLayout } from '../core/world/StoreLayout';
 import { BoxFactory } from './BoxFactory';
 
@@ -37,6 +37,29 @@ function clearChildren(node: Node): void {
     }
 }
 
+/** 逐项比较两份库存(不产生临时对象):a 的每一项在 b 里都一样,并且 b 里没有多出来的项。 */
+function sameStock(a: ContainerStock, b: ContainerStock): boolean {
+    for (const f in a) {
+        const x = a[f];
+        const y = b[f];
+        if (!y) return false;
+        for (const id in x) if (y[id] !== x[id]) return false;
+        for (const id in y) if (x[id] === undefined) return false;
+    }
+    for (const f in b) if (a[f] === undefined) return false;
+    return true;
+}
+
+function cloneStock(a: ContainerStock): ContainerStock {
+    const out: ContainerStock = {};
+    for (const f in a) {
+        const row: { [itemId: string]: number } = {};
+        for (const id in a[f]) row[id] = a[f][id];
+        out[f] = row;
+    }
+    return out;
+}
+
 function cartonColor(carton: Carton): Color {
     const item = getCatalogItem(carton.itemId);
     return item && item.kind === 'goods' ? CARTON_COLORS[item.container] : CARTON_COLORS.equipment;
@@ -48,7 +71,14 @@ export class WorldItemsView {
     private readonly truck: Node;
     private readonly hands: Node;
     private readonly trashRoot: Node;
-    private sig = { cartons: '', stock: '', hands: '', trash: '' };
+    // 上一次画出来时的快照,用来判断要不要重建
+    private doorIds: number[] = [];
+    private doorItems: string[] = [];
+    private stockSnap: ContainerStock = {};
+    private fixturesRef: unknown = null;
+    private trashKeys: string[] = [];
+    private heldId = -1;
+    private heldItem = '';
     /** 卸货区位置不随扩建变化,所以货车和纸箱可以直接用初始布局里的。 */
     private readonly layout: StoreLayout;
 
@@ -71,37 +101,66 @@ export class WorldItemsView {
         cameraNode.addChild(this.hands); // 挂在相机下,跟着视角走
     }
 
-    /** layout 是当前布局(摆放设备、扩建后会变)。 */
+    /**
+     * layout 是当前布局(摆放设备、扩建后会变)。
+     * 每帧都会调用,所以变化检测不能产生垃圾:直接和上次的快照逐项比较,只有真的变了才重建并更新快照。
+     */
     update(state: GameState, layout: StoreLayout): void {
-        const door = state.cartons.filter((c) => c.location === 'door');
-        const cartonsSig = door.map((c) => `${c.id}:${c.itemId}`).join(',');
-        if (cartonsSig !== this.sig.cartons) {
-            this.sig.cartons = cartonsSig;
+        if (this.doorCartonsChanged(state)) {
+            const door = state.cartons.filter((c) => c.location === 'door');
+            this.doorIds = door.map((c) => c.id);
+            this.doorItems = door.map((c) => c.itemId);
             this.rebuildCartons(door);
             this.truck.active = door.length > 0;
         }
 
-        const layoutKey = layout.fixtures.map((f) => `${f.id}:${f.x}:${f.z}:${f.w}:${f.d}`).join('|');
-        const stockSig = `${JSON.stringify(state.stock)}#${layoutKey}`;
-        if (stockSig !== this.sig.stock) {
-            this.sig.stock = stockSig;
+        // 设施数组整体替换才算布局变化(见 GameSession.layout 的缓存),库存逐项比较
+        if (layout.fixtures !== this.fixturesRef || !sameStock(state.stock, this.stockSnap)) {
+            this.fixturesRef = layout.fixtures;
+            this.stockSnap = cloneStock(state.stock);
             this.rebuildStock(state, layout);
         }
 
-        const trashSig = state.trash.map((t) => `${t.id}:${t.x}:${t.z}`).join(',');
-        if (trashSig !== this.sig.trash) {
-            this.sig.trash = trashSig;
+        if (this.trashChanged(state)) {
+            this.trashKeys = state.trash.map((t) => `${t.id}:${t.x}:${t.z}`);
             clearChildren(this.trashRoot);
             for (const t of state.trash) this.boxes.addBox(this.trashRoot, `Trash_${t.id}`, t.x, 0.05, t.z, 0.3, 0.1, 0.24, COLOR_TRASH);
         }
 
-        const held = state.cartons.find((c) => c.location === 'hands') ?? null;
-        const handsSig = held ? `${held.id}:${held.itemId}` : '';
-        if (handsSig !== this.sig.hands) {
-            this.sig.hands = handsSig;
+        let held: Carton | null = null;
+        for (const c of state.cartons) {
+            if (c.location === 'hands') {
+                held = c;
+                break;
+            }
+        }
+        const heldId = held ? held.id : -1;
+        const heldItem = held ? held.itemId : '';
+        if (heldId !== this.heldId || heldItem !== this.heldItem) {
+            this.heldId = heldId;
+            this.heldItem = heldItem;
             clearChildren(this.hands);
             if (held) this.boxes.addBox(this.hands, 'Box', 0.3, -0.32, -0.7, 0.42, 0.3, 0.42, cartonColor(held));
         }
+    }
+
+    private doorCartonsChanged(state: GameState): boolean {
+        let k = 0;
+        for (const c of state.cartons) {
+            if (c.location !== 'door') continue;
+            if (this.doorIds[k] !== c.id || this.doorItems[k] !== c.itemId) return true;
+            k++;
+        }
+        return k !== this.doorIds.length;
+    }
+
+    private trashChanged(state: GameState): boolean {
+        if (state.trash.length !== this.trashKeys.length) return true;
+        for (let i = 0; i < state.trash.length; i++) {
+            const t = state.trash[i];
+            if (this.trashKeys[i] !== `${t.id}:${t.x}:${t.z}`) return true; // 垃圾很少(最多 12 处),比较时的字符串开销可以忽略
+        }
+        return false;
     }
 
     /** 卸货区里按网格摆放纸箱,超过两排就往上叠。 */

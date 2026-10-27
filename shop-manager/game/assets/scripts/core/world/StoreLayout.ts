@@ -120,9 +120,6 @@ export function buildLayout(expansion: number, fixtures: Fixture[]): StoreLayout
     };
 }
 
-/** 初始小店布局(扩建 0 级、初始设施),测试和新游戏用。 */
-export const STREET_STORE_LAYOUT: StoreLayout = buildLayout(0, initialFixtures());
-
 /** 会挡住玩家的东西:墙体加上所有 collides !== false 的设施。 */
 export function obstaclesOf(layout: StoreLayout): Rect[] {
     return [...layout.walls, ...layout.fixtures.filter((f) => f.collides !== false)];

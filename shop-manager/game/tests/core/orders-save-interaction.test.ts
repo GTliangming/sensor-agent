@@ -4,7 +4,7 @@ const assert = require('node:assert/strict');
 
 import { parseSave, serializeState } from '../../assets/scripts/core/save/SaveGame';
 import { createInitialState } from '../../assets/scripts/core/state/GameState';
-import { STREET_STORE_LAYOUT as L } from '../../assets/scripts/core/world/StoreLayout';
+import { STREET_STORE_LAYOUT as L } from './fixtures';
 import { distanceToRect, findNearbyFixture } from '../../assets/scripts/core/world/Interaction';
 
 const order = (over: any = {}) => ({

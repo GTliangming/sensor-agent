@@ -6,13 +6,6 @@ export const MAX_LEVEL = 10;
 /** LEVEL_XP[n] = 升到 n 级所需的累计经验(下标 0 不用)。 */
 export const LEVEL_XP = [0, 0, 100, 300, 600, 1000, 1600, 2400, 3400, 4600, 6000];
 
-/** 该经验值对应的等级。 */
-export function levelForXp(xp: number): number {
-    let level = 1;
-    while (level < MAX_LEVEL && xp >= LEVEL_XP[level + 1]) level++;
-    return level;
-}
-
 /** 升到某级所需的累计经验。 */
 export function xpForLevel(level: number): number {
     return LEVEL_XP[Math.min(Math.max(level, 1), MAX_LEVEL)];

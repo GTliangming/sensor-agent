@@ -58,12 +58,35 @@ export interface CartLine {
 
 export type CustomerPhase = 'browsing' | 'queuing';
 
+/** 顾客类型:普通客人;问卷客(头顶有问卷图标,结账后给出调研);暗访客(外表和普通客人一样,离店后直接影响满意度)。 */
+export type CustomerKind = 'normal' | 'survey' | 'secret';
+
+/** 一份顾客反馈,显示在店长电脑的【顾客反馈】页。 */
+export interface FeedbackRecord {
+    id: number;
+    day: number;
+    kind: 'survey' | 'secret';
+    /** 综合评分 1~5。 */
+    rating: number;
+    /** 货架好找吗:0 好找 / 1 一般 / 2 不好找。 */
+    find: number;
+    /** 等待时间:0 很快 / 1 还行 / 2 等太久。 */
+    wait: number;
+    /** 想要新增(或补货)的商品 id;没有则为 null。 */
+    wishItemId: string | null;
+    /** 扣分/不满的具体原因(对应真实发生的事)。 */
+    reasons: string[];
+    /** 是否完成了结账(没买成就离开的顾客只记录原因)。 */
+    paid: boolean;
+}
+
 /**
  * 一位顾客。核心层只记录"状态与计时",不记录位置;3D 里走到哪由表现层根据状态推算。
  * 这样顾客的行为是确定的、可存档、可单元测试。
  */
 export interface Customer {
     id: number;
+    kind: CustomerKind;
     phase: CustomerPhase;
     /** 逛店阶段:剩余逛的秒数;排队阶段:剩余耐心秒数。 */
     timer: number;
@@ -71,6 +94,8 @@ export interface Customer {
     waited: number;
     wants: WantLine[];
     cart: CartLine[];
+    /** 逛店时想买却没货的商品 id(调研反馈据此说明"货架上缺什么")。 */
+    missedItems: string[];
     /** 收银员是否已经扫过码。 */
     scanned: boolean;
     /** 进入队列的先后序号(越小越靠前);逛店时为 0。 */
@@ -110,7 +135,23 @@ export interface TrashPiece {
     z: number;
 }
 
-export type EventType = 'rain_puddle' | 'heat_fridge' | 'wind_sign' | 'supplier_discount' | 'expiring' | 'blackout';
+/** 所有突发事件类型(唯一来源:事件抽取、存档校验都引用它)。 */
+export const EVENT_TYPES = [
+    'rain_puddle',
+    'heat_fridge',
+    'wind_sign',
+    'supplier_discount',
+    'expiring',
+    'blackout',
+    'fire',
+    'inspection',
+    'price_war',
+    'competitor_open',
+    'competitor_close',
+    'supplier_stolen',
+] as const;
+
+export type EventType = (typeof EVENT_TYPES)[number];
 
 /** 一个等待玩家处理的突发事件,有倒计时。 */
 export interface ActiveEvent {
@@ -126,6 +167,40 @@ export interface ActiveEvent {
 export interface PriceFactor {
     factor: number;
     untilDay: number;
+}
+
+/** 一份商户租约。slot = 档口序号(0 起);到 expiresDay(含)当天结束到期。 */
+export interface MerchantLease {
+    slot: number;
+    merchantId: string;
+    signedDay: number;
+    expiresDay: number;
+    /** 连续糟糕的天数(满意度低 / 事故多),达到上限商户解约。 */
+    badDays: number;
+}
+
+export type StaffRole = 'cashier' | 'stocker';
+
+export interface StaffMember {
+    id: number;
+    role: StaffRole;
+    hiredDay: number;
+}
+
+/** 今天各广告场景已经看了几次。day 变了就当作清零。 */
+export interface AdUsage {
+    day: number;
+    used: { [placement: string]: number };
+}
+
+/** 市场竞争带来的限时影响(竞品、价格战、供货商被抢)。各项到 untilDay(含)当天结束为止有效。 */
+export interface MarketState {
+    /** 客流倍率。 */
+    traffic: PriceFactor | null;
+    /** 进货价倍率。 */
+    supplyCost: PriceFactor | null;
+    /** 全部商品的售价倍率(跟着降价)。 */
+    salePrice: PriceFactor | null;
 }
 
 /** 新手引导进度。step 到达步骤总数即为完成。 */
@@ -196,6 +271,20 @@ export interface GameState {
     priceFactors: { [itemId: string]: PriceFactor };
     /** 供货商限时打折:进货价乘以该系数。 */
     supplierDiscount: PriceFactor | null;
+    market: MarketState;
+    /** 顾客反馈记录(最新的在最后,最多保留 FEEDBACK_LIMIT 条)。 */
+    feedback: FeedbackRecord[];
+    nextFeedbackId: number;
+    /** 入驻的商户(招商)。 */
+    merchants: MerchantLease[];
+    /** 雇佣的员工。 */
+    staff: StaffMember[];
+    nextStaffId: number;
+    ads: AdUsage;
+    /** 连续处于"金币很少且没货可卖"的天数,>= DISTRESS.days 即资金紧张。 */
+    distressDays: number;
+    /** 今天超时没处理的事件数(商户据此判断事故多不多)。 */
+    incidentsToday: number;
 }
 
 export function createDayStats(day: number, satisfaction: number): DayStats {
@@ -241,6 +330,15 @@ export function createInitialState(seed = 20261026): GameState {
         eventCooldown: 60,
         priceFactors: {},
         supplierDiscount: null,
+        market: { traffic: null, supplyCost: null, salePrice: null },
+        feedback: [],
+        nextFeedbackId: 1,
+        merchants: [],
+        staff: [],
+        nextStaffId: 1,
+        ads: { day: 1, used: {} },
+        distressDays: 0,
+        incidentsToday: 0,
     };
     // 天气由种子决定:第 1 天固定晴天,预报第 2、3 天
     const rng = new Rng(state);

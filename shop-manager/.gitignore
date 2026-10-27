@@ -1,0 +1,7 @@
+# 第三方素材原包(Kenney,CC0)不进仓库:体积大且含 FBX/OBJ 重复格式。
+# 已经用到的模型和授权文件在 game/assets/resources/models/;需要原包时从 https://kenney.nl/assets 重新下载
+# (UI Pack、Mini Market、Mini Characters)。
+art-source/
+
+# 微信开发者工具的本机私有配置
+project.private.config.json

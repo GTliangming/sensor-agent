@@ -2,7 +2,7 @@ declare function require(name: string): any;
 const { test } = require('node:test');
 const assert = require('node:assert/strict');
 
-import { STREET_STORE_LAYOUT as L } from '../../assets/scripts/core/world/StoreLayout';
+import { STREET_STORE_LAYOUT as L } from './fixtures';
 import { resolveCircleAgainstRects } from '../../assets/scripts/core/player/Collision';
 
 const overlaps = (a: any, b: any) =>

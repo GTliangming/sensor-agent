@@ -1,5 +1,5 @@
 import { PlayerMotion, MoveInput } from '../../assets/scripts/core/player/PlayerMotion';
-import { STREET_STORE_LAYOUT } from '../../assets/scripts/core/world/StoreLayout';
+import { STREET_STORE_LAYOUT } from './fixtures';
 
 /** 用真实店铺布局创建一个玩家,可指定出生点。 */
 export function makePlayer(x?: number, z?: number, yawDeg?: number): PlayerMotion {

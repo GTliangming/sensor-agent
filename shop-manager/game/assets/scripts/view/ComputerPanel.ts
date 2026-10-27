@@ -3,15 +3,20 @@
 import { BlockInputEvents, Canvas, Color, Label, Node, view } from 'cc';
 import type { GameSession } from '../core/GameSession';
 import { AD_COIN_REWARD, CONTAINER_NAMES, CatalogItem, EQUIPMENT, EXPANSIONS, GOODS, THEMES, catalogKey, getCatalogItem, unitOrderCost } from '../core/data/Catalog';
-import type { AdProvider } from '../core/services/AdProvider';
+import { ADS, DISTRESS, MERCHANT, STAFF } from '../core/data/Balance';
+import { MERCHANTS, getMerchant } from '../core/data/Merchants';
+import { leaseAt, merchantsUnlocked, renewFee, slotCount } from '../core/merchants/MerchantSystem';
+import type { AdPlacement, AdProvider } from '../core/services/AdProvider';
+import { STAFF_ROLES, dailyWages } from '../core/staff/StaffSystem';
+import { SURVEY_QUESTIONS, wishText } from '../core/customers/Feedback';
 import { WEATHER } from '../core/events/Weather';
 import { describeAbsoluteMinute } from '../core/time/GameClock';
 import { EXPANSION_SIZES } from '../core/world/StoreLayout';
 import { COLOR_WHITE, UiButton, makeButton, makeLabel, makeNode, makeRect } from './UiKit';
 
-type Tab = 'goods' | 'equipment' | 'expand' | 'themes' | 'orders' | 'weather';
-const TABS: Tab[] = ['goods', 'equipment', 'expand', 'themes', 'orders', 'weather'];
-const TAB_NAMES = ['商品', '设备', '扩建', '外观', '订单', '天气'];
+type Tab = 'goods' | 'equipment' | 'expand' | 'themes' | 'orders' | 'weather' | 'feedback' | 'merchants' | 'staff' | 'perks';
+const TABS: Tab[] = ['goods', 'equipment', 'expand', 'themes', 'orders', 'weather', 'feedback', 'merchants', 'staff', 'perks'];
+const TAB_NAMES = ['商品', '设备', '扩建', '外观', '订单', '天气', '反馈', '招商', '员工', '福利'];
 
 const PANEL_W = 960;
 const PANEL_H = 600;
@@ -72,7 +77,7 @@ export class ComputerPanel {
         makeButton(this.root, 'Close', '关闭', 100, 48, PANEL_W / 2 - 70, top - 38, GRAY, () => this.close());
 
         TABS.forEach((t, i) => {
-            const btn = makeButton(this.root, `Tab_${t}`, TAB_NAMES[i], 140, 52, left + 70 + i * 148, top - 96, GRAY, () => this.switchTab(t));
+            const btn = makeButton(this.root, `Tab_${t}`, TAB_NAMES[i], 84, 52, left + 42 + i * 90, top - 96, GRAY, () => this.switchTab(t));
             this.tabButtons.push(btn);
         });
 
@@ -119,7 +124,7 @@ export class ComputerPanel {
     private signature(): string {
         const s = this.deps.session.state;
         const orders = s.orders.map((o) => `${o.id}${o.status[0]}`).join(',');
-        return `${this.tab}|${this.page}|${this.needCoins}|${s.coins}|${s.level}|${orders}|${s.expansion}|${s.theme}|${s.unlockedThemes.join(',')}|${s.weather}|${s.forecast.join(',')}|${s.supplierDiscount ? s.supplierDiscount.factor : 1}`;
+        return `${this.tab}|${this.page}|${this.needCoins}|${s.coins}|${s.level}|${orders}|${s.expansion}|${s.theme}|${s.unlockedThemes.join(',')}|${s.weather}|${s.forecast.join(',')}|${s.supplierDiscount ? s.supplierDiscount.factor : 1}|${s.feedback.length}:${s.nextFeedbackId}|${s.merchants.map((l) => `${l.slot}${l.merchantId}${l.expiresDay}`).join(',')}|${s.staff.length}|${s.distressDays}|${s.ads.day}:${JSON.stringify(s.ads.used)}|${s.fixtures.length}`;
     }
 
     // ---------- 交互 ----------
@@ -165,11 +170,12 @@ export class ComputerPanel {
 
     /** 主题要先看广告才能解锁(默认主题除外)。 */
     private unlockThemeByAd(id: string): void {
+        if (!this.adLeft('theme')) return;
         this.deps.ads.showRewarded('theme', (rewarded) => {
             if (!rewarded) {
                 this.setMessage('没有看完广告,没有解锁');
             } else {
-                const r = this.deps.session.unlockTheme(id);
+                const r = this.deps.session.unlockThemeFromAd(id);
                 this.setMessage(r.ok ? r.info ?? '已解锁' : r.reason);
             }
             this.render();
@@ -177,28 +183,58 @@ export class ComputerPanel {
     }
 
     private expedite(orderId: number): void {
+        if (!this.adLeft('expedite_order')) return;
         this.deps.ads.showRewarded('expedite_order', (rewarded) => {
             if (!rewarded) {
                 this.setMessage('没有看完广告,订单没有加急');
             } else {
-                const r = this.deps.session.expediteOrder(orderId);
+                const r = this.deps.session.expediteOrderFromAd(orderId);
                 this.setMessage(r.ok ? '货车马上就到了!' : r.reason);
             }
             this.render();
         });
     }
 
+    /** 今天这个广告场景还有次数吗?没有就提示玩家(广告次数上限由 core 统一执行,这里只是提前告知)。 */
+    private adLeft(placement: AdPlacement): boolean {
+        if (this.deps.session.adRemaining(placement) > 0) return true;
+        this.setMessage('今天的广告次数用完了,明天再来吧');
+        this.render();
+        return false;
+    }
+
     private watchAdForCoins(): void {
+        if (!this.adLeft('coins')) return;
         this.deps.ads.showRewarded('coins', (rewarded) => {
             if (rewarded) {
-                this.deps.session.rewardCoins(AD_COIN_REWARD);
-                this.needCoins = false;
-                this.setMessage(`获得 ${AD_COIN_REWARD} 金币`);
+                const r = this.deps.session.rewardCoinsFromAd();
+                this.needCoins = !r.ok ? this.needCoins : false;
+                this.setMessage(r.ok ? `获得 ${AD_COIN_REWARD} 金币` : r.reason);
             } else {
                 this.setMessage('没有看完广告,没有获得金币');
             }
             this.render();
         });
+    }
+
+    private watchAdForBuff(): void {
+        if (!this.adLeft('buff')) return;
+        this.deps.ads.showRewarded('buff', (rewarded) => {
+            if (rewarded) {
+                const r = this.deps.session.activateBuffFromAd();
+                this.setMessage(r.ok ? r.info ?? '人气 buff 已开启' : r.reason);
+            } else {
+                this.setMessage('没有看完广告,没有开启 buff');
+            }
+            this.render();
+        });
+    }
+
+    /** 执行一个返回 CommandResult 的命令,把结果显示在底部提示里。 */
+    private run(r: { ok: true; info?: string } | { ok: false; reason: string; code?: string }): void {
+        this.setMessage(r.ok ? r.info ?? '完成' : r.reason);
+        this.needCoins = !r.ok && r.code === 'insufficient_coins';
+        this.render();
     }
 
     // ---------- 显示 ----------
@@ -243,6 +279,40 @@ export class ComputerPanel {
                 onAction: () => undefined,
             }));
         }
+        if (this.tab === 'merchants') return this.merchantRows();
+        if (this.tab === 'staff') return this.staffRows();
+        if (this.tab === 'perks') return this.perkRows();
+        if (this.tab === 'feedback') {
+            if (s.feedback.length === 0) {
+                return [{
+                    name: '还没有顾客反馈',
+                    detail: '头顶有黄色问卷标记的顾客结账后会留下问卷;暗访顾客(2 级起)离店后会留下评价',
+                    price: '',
+                    actionText: '',
+                    actionColor: BLUE,
+                    actionEnabled: false,
+                    actionVisible: false,
+                    onAction: () => undefined,
+                }];
+            }
+            return s.feedback
+                .slice()
+                .reverse()
+                .map((f) => {
+                    const answers = `货架${SURVEY_QUESTIONS[0].options[f.find]} · 等待${SURVEY_QUESTIONS[1].options[f.wait]} · 想要:${wishText(f)}`;
+                    const notes = f.reasons.length > 0 ? ` · 意见:${f.reasons.slice(0, 2).join('、')}` : ' · 没有意见';
+                    return {
+                        name: `第 ${f.day} 天 · ${f.kind === 'survey' ? '问卷' : '暗访'} · ${f.rating} / 5 分${f.paid ? '' : '(没买成)'}`,
+                        detail: answers + notes,
+                        price: '',
+                        actionText: '',
+                        actionColor: BLUE,
+                        actionEnabled: false,
+                        actionVisible: false,
+                        onAction: () => undefined,
+                    };
+                });
+        }
         if (this.tab === 'expand') {
             const rows: RowModel[] = [];
             for (let i = 1; i < EXPANSIONS.length; i++) {
@@ -274,9 +344,9 @@ export class ComputerPanel {
                     name: t.name,
                     detail: `${status} · 只改变外观,没有收益加成`,
                     price: '',
-                    actionText: active ? '使用中' : unlocked ? '使用' : levelOk ? '看广告解锁' : `${t.unlockLevel} 级解锁`,
+                    actionText: active ? '使用中' : unlocked ? '使用' : !levelOk ? `${t.unlockLevel} 级解锁` : this.deps.ads.available ? '看广告解锁' : '暂无广告',
                     actionColor: unlocked ? BLUE : ORANGE,
-                    actionEnabled: !active && (unlocked || levelOk),
+                    actionEnabled: !active && (unlocked || (levelOk && this.deps.ads.available)),
                     actionVisible: true,
                     onAction: () => (unlocked ? this.useTheme(t.id) : this.unlockThemeByAd(t.id)),
                 };
@@ -297,7 +367,7 @@ export class ComputerPanel {
                         actionText: '看广告加急',
                         actionColor: ORANGE,
                         actionEnabled: true,
-                        actionVisible: delivering,
+                        actionVisible: delivering && this.deps.ads.available,
                         onAction: () => this.expedite(o.id),
                     };
                 });
@@ -322,6 +392,127 @@ export class ComputerPanel {
                 onAction: () => this.buy(key, item.name),
             };
         });
+    }
+
+    private info(name: string, detail: string): RowModel {
+        return { name, detail, price: '', actionText: '', actionColor: BLUE, actionEnabled: false, actionVisible: false, onAction: () => undefined };
+    }
+
+    private merchantRows(): RowModel[] {
+        const s = this.deps.session.state;
+        if (!merchantsUnlocked(s)) {
+            return [this.info('招商还没解锁', `需要超市 ${MERCHANT.unlockLevel} 级,并且至少扩建 ${MERCHANT.minExpansion} 次(扩建后每次多一个档口)`)];
+        }
+        const rows: RowModel[] = [];
+        for (let slot = 0; slot < slotCount(s); slot++) {
+            const lease = leaseAt(s, slot);
+            const def = lease ? getMerchant(lease.merchantId) : undefined;
+            if (lease && def) {
+                const warn = lease.badDays > 0 ? ` · 预警:满意度太低或事故太多,再这样商户会搬走` : '';
+                rows.push({
+                    name: `档口 ${slot + 1} · ${def.name}`,
+                    detail: `每天租金 ${def.rentPerDay} · 租期到第 ${lease.expiresDay} 天${warn}`,
+                    price: '',
+                    actionText: `续约(${renewFee(def.id)})`,
+                    actionColor: GREEN,
+                    actionEnabled: true,
+                    actionVisible: true,
+                    onAction: () => this.run(this.deps.session.renewMerchant(slot)),
+                });
+                rows.push({
+                    name: `档口 ${slot + 1} · 收回铺面`,
+                    detail: `退还押金 ${def.deposit};之后可以换别的商户`,
+                    price: '',
+                    actionText: '收回',
+                    actionColor: ORANGE,
+                    actionEnabled: true,
+                    actionVisible: true,
+                    onAction: () => this.run(this.deps.session.reclaimMerchant(slot)),
+                });
+                continue;
+            }
+            for (const m of MERCHANTS) {
+                const locked = s.level < m.unlockLevel;
+                rows.push({
+                    name: `档口 ${slot + 1} · 招${m.name}`,
+                    detail: `${m.desc} · 租金 ${m.rentPerDay}/天 · 租期 ${MERCHANT.termDays} 天`,
+                    price: `押金 ${m.deposit}`,
+                    actionText: locked ? `${m.unlockLevel} 级解锁` : '签约',
+                    actionColor: BLUE,
+                    actionEnabled: !locked,
+                    actionVisible: true,
+                    onAction: () => this.run(this.deps.session.signMerchant(slot, m.id)),
+                });
+            }
+        }
+        return rows;
+    }
+
+    private staffRows(): RowModel[] {
+        const s = this.deps.session.state;
+        const rows: RowModel[] = STAFF_ROLES.map((role) => {
+            const rule = STAFF[role];
+            const member = s.staff.filter((x) => x.role === role)[0];
+            const locked = s.level < rule.unlockLevel;
+            return {
+                name: rule.name,
+                detail: `${rule.desc} · 工资 ${rule.wage}/天,发不出就离职`,
+                price: member ? '' : `雇佣费 ${rule.hireFee}`,
+                actionText: member ? '辞退' : locked ? `${rule.unlockLevel} 级解锁` : '雇佣',
+                actionColor: member ? ORANGE : BLUE,
+                actionEnabled: member !== undefined || !locked,
+                actionVisible: true,
+                onAction: () => this.run(member ? this.deps.session.fireStaff(member.id) : this.deps.session.hireStaff(role)),
+            };
+        });
+        rows.push(this.info('今日工资合计', `${dailyWages(s)} 金币/天;员工和你用同一套规则,结果和亲手做一样`));
+        return rows;
+    }
+
+    private perkRows(): RowModel[] {
+        const s = this.deps.session.state;
+        const left = (p: AdPlacement) => this.deps.session.adRemaining(p);
+        const rows: RowModel[] = [
+            {
+                name: `看广告领 ${AD_COIN_REWARD} 金币`,
+                detail: `自愿观看 · 今天还能看 ${left('coins')} 次`,
+                price: '',
+                actionText: '看广告',
+                actionColor: ORANGE,
+                actionEnabled: left('coins') > 0 && this.deps.ads.available,
+                actionVisible: true,
+                onAction: () => this.watchAdForCoins(),
+            },
+            {
+                name: '看广告开启人气 buff',
+                detail: `今天客流 ×${ADS.buffTraffic} · 今天还能看 ${left('buff')} 次`,
+                price: '',
+                actionText: '看广告',
+                actionColor: ORANGE,
+                actionEnabled: left('buff') > 0 && this.deps.ads.available,
+                actionVisible: true,
+                onAction: () => this.watchAdForBuff(),
+            },
+        ];
+        if (this.deps.session.distress) {
+            rows.unshift(this.info('资金紧张', `金币很少又没货可卖:不能采购设备。可以看广告、卖设备或辞退员工;金币回到 ${DISTRESS.recoverCoins} 就恢复`));
+            for (const f of s.fixtures) {
+                if (!f.movable || !f.equipId) continue;
+                const def = getCatalogItem(`equip:${f.equipId}`);
+                if (!def || def.kind !== 'equipment') continue;
+                rows.push({
+                    name: `卖掉:${def.name}`,
+                    detail: `返还原价 ${def.price} 的 ${Math.round(DISTRESS.sellRatio * 100)}%;里面有商品要先拿走`,
+                    price: `+${Math.round(def.price * DISTRESS.sellRatio)} 金币`,
+                    actionText: '卖掉',
+                    actionColor: ORANGE,
+                    actionEnabled: true,
+                    actionVisible: true,
+                    onAction: () => this.run(this.deps.session.sellFixture(f.id)),
+                });
+            }
+        }
+        return rows;
     }
 
     /** 采购价文字;供货商限时折扣期间同时显示折后价。 */
@@ -358,7 +549,7 @@ export class ComputerPanel {
         this.pageLabel.string = `第 ${this.page + 1} / ${pages} 页`;
         this.prevButton.setEnabled(this.page > 0);
         this.nextButton.setEnabled(this.page < pages - 1);
-        this.adButton.setVisible(this.needCoins);
+        this.adButton.setVisible(this.needCoins && this.deps.ads.available);
         this.lastSignature = this.signature();
     }
 }

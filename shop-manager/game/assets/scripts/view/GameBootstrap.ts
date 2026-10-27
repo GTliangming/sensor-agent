@@ -17,7 +17,10 @@ import { checkPlacement, makeFixture, normalizeRotation, snap } from '../core/wo
 import { obstaclesOf } from '../core/world/StoreLayout';
 import { CocosStorage } from '../platform/CocosStorage';
 import { getHudInsets } from '../platform/SafeArea';
-import { StubAdProvider } from '../platform/StubAdProvider';
+import { createAdProvider } from '../platform/AdFactory';
+import { FrameMonitor, QUALITY, QualityLevel } from '../platform/Quality';
+import { getMerchant } from '../core/data/Merchants';
+import { STAFF } from '../core/data/Balance';
 import { BoxFactory } from './BoxFactory';
 import { ComputerPanel } from './ComputerPanel';
 import { CustomersView } from './CustomersView';
@@ -28,6 +31,7 @@ import { InputController } from './InputController';
 import { JoystickView } from './JoystickView';
 import { PlacementGhost, PlacementPanel } from './PlacementPanel';
 import { ReportPanel } from './ReportPanel';
+import { ModelLibrary } from './ModelLibrary';
 import { StoreBuilder } from './StoreBuilder';
 import { GuideMarker, TutorialBanner } from './TutorialBanner';
 import { WorldItemsView } from './WorldItemsView';
@@ -36,6 +40,10 @@ const { ccclass, property } = _decorator;
 const DEG2RAD = Math.PI / 180;
 /** 自动存档间隔(现实秒)。另外在开/关门、跨天、切到后台、销毁时也会存。 */
 const AUTOSAVE_SECONDS = 30;
+/** 事件触发的存档最多隔多久真正写一次(秒)。 */
+const SAVE_DEBOUNCE_SECONDS = 3;
+/** 动作清单(附近能做什么)的刷新间隔(秒)。 */
+const ACTION_REFRESH_SECONDS = 0.1;
 /** 单帧最多推进的时间,避免卡顿或切后台回来后时间猛跳。 */
 const MAX_FRAME_SECONDS = 1;
 /** 抱着纸箱时的移动速度倍率(规则:抱着箱子缓慢移动)。 */
@@ -69,14 +77,15 @@ export class GameBootstrap extends Component {
     /** 当前是否有全屏面板打开(此时暂停玩家的移动与转视角)。 */
     private modalOpen = false;
     private movedMeters = 0;
-    /** 开发期用占位广告;步骤 15 换成真实的微信激励视频。 */
-    private readonly ads: AdProvider = new StubAdProvider();
+    /** 广告实现由环境决定(见 platform/AdFactory);每日次数上限在 core 里统一执行。 */
+    private readonly ads: AdProvider = createAdProvider();
+    private readonly frameMonitor = new FrameMonitor();
+    private camera: Camera | null = null;
     private worldItems: WorldItemsView | null = null;
     /** 当前位置可做的动作(每帧刷新),HUD 按钮的序号与它一一对应。 */
     private actions: GameAction[] = [];
     private dayNight: DayNightView | null = null;
     private cameraNode!: Node;
-    private boxes!: BoxFactory;
     private storeBuilder!: StoreBuilder;
     private storeRoot: Node | null = null;
     /** 上次按哪个布局版本搭的 3D 店铺;session.layoutVersion 变了就重建。 */
@@ -87,6 +96,11 @@ export class GameBootstrap extends Component {
     private placing: { equipId: string; rot: number } | null = null;
     private placingCheck = { key: '', problem: null as string | null };
     private ready = false;
+    private saveDirty = false;
+    private saveWait = 0;
+    /** 当前位置可做的动作的文字,与 actions 一一对应(只在动作清单刷新时重建)。 */
+    private actionLabels: string[] = [];
+    private actionTimer = 0;
     private readonly unsubscribers: Array<() => void> = [];
 
     private readonly qYaw = new Quat();
@@ -104,8 +118,8 @@ export class GameBootstrap extends Component {
         this.input = new InputController();
         this.input.enable();
 
-        this.schedule(this.persist, AUTOSAVE_SECONDS);
-        game.on(Game.EVENT_HIDE, this.persist, this);
+        this.schedule(this.flushSave, AUTOSAVE_SECONDS);
+        game.on(Game.EVENT_HIDE, this.flushSave, this);
 
         // 材质必须通过资源加载(原因见 StoreBuilder),加载完成后才能搭建场景
         resources.load('materials/block', Material, (err, baseMaterial) => {
@@ -113,7 +127,8 @@ export class GameBootstrap extends Component {
                 console.error('[GameBootstrap] 加载基础材质 resources/materials/block 失败', err);
                 return;
             }
-            this.buildWorld(baseMaterial);
+            // 3D 模型是可选的:加载失败时 StoreBuilder 自动退回方块占位
+            ModelLibrary.load((models) => this.buildWorld(baseMaterial, models));
         });
     }
 
@@ -131,14 +146,14 @@ export class GameBootstrap extends Component {
         this.unsubscribers.push(
             this.session.events.on('dayChanged', (e) => {
                 this.hud?.showMessage(`第 ${e.day} 天开始了`);
-                this.persist();
+                this.requestSave();
             }),
             this.session.events.on('storeOpenChanged', (e) => {
                 if (e.reason === 'nightfall') this.hud?.showMessage('天黑了,已自动打烊');
                 if (e.reason === 'newDay') this.hud?.showMessage('新的一天,记得开门营业');
-                this.persist();
+                this.requestSave();
             }),
-            this.session.events.on('orderPlaced', () => this.persist()),
+            this.session.events.on('orderPlaced', () => this.requestSave()),
             this.session.events.on('customerNotice', (n) => {
                 const text =
                     n.type === 'angry' ? '有顾客等太久,生气地走了(满意度下降)'
@@ -150,37 +165,59 @@ export class GameBootstrap extends Component {
             this.session.events.on('levelUp', (e) => {
                 const unlocked = e.unlocked.length > 0 ? `,解锁:${e.unlocked.join('、')}` : '';
                 this.hud?.showMessage(`升级了!现在是 ${e.level} 级${unlocked}`);
-                this.persist();
+                this.requestSave();
             }),
-            this.session.events.on('tutorialAdvanced', () => this.persist()),
+            this.session.events.on('tutorialAdvanced', () => this.requestSave()),
             this.session.events.on('weatherChanged', (e) => {
                 this.hud?.showMessage(`今天天气:${WEATHER[e.weather].name}${e.note ? `。${e.note}` : ''}`);
-                this.persist();
+                this.requestSave();
             }),
             this.session.events.on('eventStarted', (e) => {
                 this.hud?.showMessage(`突发事件:${describeEvent(e.event).title}`);
-                this.persist();
+                this.requestSave();
             }),
             this.session.events.on('eventResolved', (e) => {
                 this.hud?.showMessage(e.message);
-                this.persist();
+                this.requestSave();
             }),
-            this.session.events.on('dayReport', () => this.persist()),
+            this.session.events.on('feedbackReceived', (e) => {
+                const who = e.record.kind === 'survey' ? '收到一份顾客问卷' : '有位暗访顾客留下了评价';
+                this.hud?.showMessage(`${who}:${e.record.rating} / 5 分(在电脑的「反馈」页查看)`);
+                this.requestSave();
+            }),
+            this.session.events.on('merchantNotice', (n) => {
+                const name = getMerchant(n.merchantId)?.name ?? n.merchantId;
+                if (n.type === 'rent') this.hud?.showMessage(`${name}交租 +${n.amount} 金币`);
+                else if (n.type === 'warning') this.hud?.showMessage(`${name}对店里不满意,再这样会解约`);
+                else this.hud?.showMessage(n.reason === 'expired' ? `${name}租约到期搬走了(已退押金)` : `${name}不满意,解约搬走了(已退押金)`);
+                this.requestSave();
+            }),
+            this.session.events.on('staffNotice', (n) => {
+                if (n.type === 'paid') this.hud?.showMessage(`发了员工工资 ${n.total} 金币`);
+                else this.hud?.showMessage(`发不出工资,${STAFF[n.role].name}离职了`);
+                this.requestSave();
+            }),
+            this.session.events.on('distressChanged', (e) => {
+                const names = e.relief.length > 0 ? `。供货商先赊给你一批货放在卸货区(${e.relief.join('、')}),街坊也愿意再给一次机会` : '';
+                this.hud?.showMessage(e.distress ? `资金紧张:金币很少又没货卖${names}。电脑的「福利」页有补救办法` : '资金恢复了');
+                this.requestSave();
+            }),
+            this.session.events.on('dayReport', () => this.requestSave()),
             this.session.events.on('orderArrived', (e) => {
                 const item = getCatalogItem(e.order.itemId);
                 this.hud?.showMessage(`货车到了:${item ? item.name : e.order.itemId} 已送到店门口`);
-                this.persist();
+                this.requestSave();
             }),
         );
     }
 
-    private buildWorld(baseMaterial: Material): void {
+    private buildWorld(baseMaterial: Material, models: ModelLibrary): void {
         const boxes = new BoxFactory(baseMaterial);
-        this.boxes = boxes;
-        this.storeBuilder = new StoreBuilder(boxes);
+        this.storeBuilder = new StoreBuilder(boxes, models);
         this.rebuildStore();
         const sun = this.ensureSunLight();
         const camera = this.setupCamera();
+        this.camera = camera;
         this.cameraNode = camera.node;
         this.worldItems = new WorldItemsView(this.node, camera.node, boxes, this.session.layout);
         this.dayNight = new DayNightView(sun, camera);
@@ -208,7 +245,7 @@ export class GameBootstrap extends Component {
             });
             this.reportPanel = new ReportPanel(canvas, () => {
                 this.session.dismissReport();
-                this.persist();
+                this.requestSave();
             });
         } else {
             console.warn('[GameBootstrap] 场景里没有 Canvas:HUD、摇杆和操作提示不会显示,但触摸/键盘操作仍然有效。');
@@ -233,9 +270,9 @@ export class GameBootstrap extends Component {
     }
 
     onDestroy(): void {
-        this.persist();
+        this.flushSave();
         this.input?.disable();
-        game.off(Game.EVENT_HIDE, this.persist, this);
+        game.off(Game.EVENT_HIDE, this.flushSave, this);
         this.unsubscribers.forEach((off) => off());
     }
 
@@ -243,6 +280,12 @@ export class GameBootstrap extends Component {
         if (!this.ready) return; // 材质还在加载,场景尚未搭好
         const state = this.session.state;
 
+        if (this.saveDirty) {
+            this.saveWait += dt;
+            if (this.saveWait >= SAVE_DEBOUNCE_SECONDS) this.flushSave();
+        }
+        const quality = this.frameMonitor.sample(dt);
+        if (quality) this.applyQuality(quality);
         this.session.tick(Math.min(dt, MAX_FRAME_SECONDS));
         if (this.session.layoutVersion !== this.builtLayoutVersion) this.rebuildStore();
         const layout = this.session.layout;
@@ -271,7 +314,23 @@ export class GameBootstrap extends Component {
         }
 
         // 当前位置能做的动作:走近电脑桌、收银台、卸货区、货架/冷柜时会出现按钮(PC 预览按 E 执行第一个)
-        this.actions = modal ? [] : this.placing ? this.placingActions(layout) : listActions(state, layout, this.motion.x, this.motion.z);
+        if (modal) {
+            this.actions = [];
+            this.actionLabels = [];
+            this.actionTimer = 0;
+        } else if (this.placing) {
+            this.actions = this.placingActions(layout);
+            this.actionLabels = this.actions.map((a) => a.label);
+            this.actionTimer = 0;
+        } else {
+            // 动作清单一秒刷新约 10 次就够了(走路速度下位置变化很小),每帧重算会产生不少临时对象
+            this.actionTimer -= dt;
+            if (this.actionTimer <= 0) {
+                this.actionTimer = ACTION_REFRESH_SECONDS;
+                this.actions = listActions(state, layout, this.motion.x, this.motion.z);
+                this.actionLabels = this.actions.map((a) => a.label);
+            }
+        }
         if (this.input.consumeInteract()) this.runActionAt(0);
 
         if (!this.placing) this.ghost?.update(null, 0, false);
@@ -283,7 +342,15 @@ export class GameBootstrap extends Component {
         this.panel?.update();
         this.tutorialBanner?.update(state);
         this.eventPanel?.update(state);
-        this.hud?.update(state, this.session.phase, dt, this.actions.map((a) => a.label), this.carriedText());
+        this.hud?.update(state, this.session.phase, dt, this.actionLabels, this.carriedText());
+    }
+
+    /** 帧率低就降档:少画几位顾客、缩短相机远裁剪面。 */
+    private applyQuality(level: QualityLevel): void {
+        const low = level === 'low';
+        this.customersView?.setMaxVisible(low ? QUALITY.lowMaxCustomers : QUALITY.highMaxCustomers);
+        if (this.camera) this.camera.far = low ? QUALITY.lowCameraFar : QUALITY.highCameraFar;
+        console.log(`[GameBootstrap] 性能档位:${level}`);
     }
 
     /** 屏幕下方显示手里抱着的东西。 */
@@ -298,6 +365,7 @@ export class GameBootstrap extends Component {
     private runActionAt(index: number): void {
         const action = this.actions[index];
         if (!action) return;
+        this.actionTimer = 0; // 执行后状态变了,下一帧立刻重算动作清单
         if (action.type === 'openComputer') {
             if (this.panel && !this.panel.isOpen) this.panel.open();
             return;
@@ -319,7 +387,7 @@ export class GameBootstrap extends Component {
             const r = this.session.placeFixture(this.placing.equipId, t.x, t.z, this.placing.rot);
             this.hud?.showMessage(r.ok ? r.info ?? '已摆放' : r.reason);
             if (r.ok) {
-                this.persist();
+                this.requestSave();
                 if ((this.session.state.warehouse[this.placing.equipId] ?? 0) < 1) this.placing = null; // 这种设备放完了
             }
             return;
@@ -328,7 +396,7 @@ export class GameBootstrap extends Component {
         if (result.ok) {
             const fallback = action.type === 'pickUpCarton' ? '搬起了纸箱' : action.type === 'putDownCarton' ? '放回了卸货区' : action.type === 'scan' ? '扫码完成,可以收款了' : '';
             this.hud?.showMessage(result.info ?? fallback);
-            this.persist();
+            this.requestSave();
         } else {
             this.hud?.showMessage(result.reason);
         }
@@ -368,7 +436,7 @@ export class GameBootstrap extends Component {
     private respondToEvent(eventId: number, optionId: string): void {
         const r = this.session.respondEvent(eventId, optionId);
         if (!r.ok) this.hud?.showMessage(r.reason); // 成功的提示由 eventResolved 事件统一显示
-        else this.persist();
+        else this.requestSave();
     }
 
     /** HUD 按钮:开门 / 打烊。失败时把原因告诉玩家。 */
@@ -377,7 +445,21 @@ export class GameBootstrap extends Component {
         if (!result.ok) this.hud?.showMessage(result.reason);
     }
 
-    private persist(): void {
+    /**
+     * 请求存档:只打上"有改动"的标记,update 里最多每 SAVE_DEBOUNCE_SECONDS 秒真正写一次。
+     * 下单、事件、反馈等事件会连续触发,逐次序列化整个状态并同步写存储会拖慢低端机。
+     */
+    private requestSave(): void {
+        if (!this.saveDirty) {
+            this.saveDirty = true;
+            this.saveWait = 0;
+        }
+    }
+
+    /** 立刻存档(定时自动存档、切到后台、销毁时用)。 */
+    private flushSave(): void {
+        this.saveDirty = false;
+        this.saveWait = 0;
         this.saveManager?.save(this.session.state);
     }
 
