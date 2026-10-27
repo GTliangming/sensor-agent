@@ -14,7 +14,7 @@ from fastapi.responses import FileResponse
 
 from app.api.schemas import CreateTaskRequest, CreateTaskResponse, ReviewRequest, TaskView
 from app.graph.state import TaskStatus
-from app.services.task_service import TaskService, get_task_service
+from app.services.task_service import ReviewError, TaskService, get_task_service
 
 router = APIRouter(prefix="/internal/v1/tasks", tags=["tasks"])
 
@@ -74,11 +74,13 @@ async def submit_review(
     service: TaskService = Depends(get_task_service),
 ) -> dict:
     """提交人工决策：approve / edit / regenerate / cancel。后台继续推进，客户端轮询 GET。"""
-    task = service.get_task(task_id)
-    if task is None:
-        raise HTTPException(status_code=404, detail="task not found")
-    if task["status"] != TaskStatus.AWAITING_REVIEW:
-        raise HTTPException(status_code=409, detail=f"task 不在待审状态（{task['status']}）")
+    try:
+        service.validate_review(task_id, body.action, body.edit)
+    except ReviewError as exc:
+        status = 409 if "待审状态" in str(exc) else 422
+        raise HTTPException(status_code=status, detail=str(exc)) from exc
+    except ValueError as exc:
+        raise HTTPException(status_code=404, detail="task not found") from exc
     background.add_task(service.resume_task, task_id, body.action, body.feedback, body.edit)
     return {"task_id": task_id, "action": body.action, "accepted": True}
 

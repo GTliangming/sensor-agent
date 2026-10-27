@@ -11,7 +11,7 @@ import pytest
 
 from app.domain.request import CreateTaskRequest
 from app.graph.state import TaskStatus
-from app.services.task_service import get_task_service
+from app.services.task_service import ReviewError, TaskService, get_task_service
 
 ALL_GATES = ["storyboard", "assets", "images", "tts", "clips", "subtitles"]
 
@@ -101,3 +101,63 @@ async def test_hitl_disabled_runs_without_pausing():
     task, _ = svc.create_task(req)
     final = await svc.run_task(task["task_id"])
     assert final["status"] == TaskStatus.SUCCEEDED
+
+
+@pytest.mark.asyncio
+async def test_hitl_invalid_edit_rejected_without_side_effects():
+    svc = get_task_service()
+    task_id = _create(svc)
+    await svc.run_task(task_id)
+    for bad in (None, {"title": "缺字段"}, {"title": "t", "hook": "h", "closing_line": "c", "scenes": []}):
+        with pytest.raises(ReviewError):
+            svc.validate_review(task_id, "edit", bad)
+        with pytest.raises(ReviewError):
+            await svc.resume_task(task_id, "edit", edit=bad)
+    # 非法编辑不应改变任务状态，仍停在分镜闸门
+    task = svc.get_task(task_id)
+    assert task["status"] == TaskStatus.AWAITING_REVIEW and task["stage"] == "storyboard"
+
+
+@pytest.mark.asyncio
+async def test_hitl_pause_survives_service_restart():
+    """checkpoint 落 SQLite：换一个全新的 TaskService 实例（模拟进程重启）仍能 resume。"""
+    svc = get_task_service()
+    task_id = _create(svc)
+    await svc.run_task(task_id)
+
+    fresh = TaskService(svc._settings, svc._repo)
+    assert await fresh.reconcile_review_tasks() == []
+    task = await fresh.resume_task(task_id, "approve")
+    assert task["status"] == TaskStatus.AWAITING_REVIEW and task["stage"] == "assets"
+    await fresh.aclose()
+
+
+@pytest.mark.asyncio
+async def test_hitl_lost_checkpoint_fails_instead_of_hanging():
+    svc = get_task_service()
+    task_id = _create(svc)
+    # 伪造"待审但无 checkpoint"的孤儿任务
+    svc._repo.update_task(task_id, status=TaskStatus.AWAITING_REVIEW, stage="storyboard", result={})
+    assert task_id in await svc.reconcile_review_tasks()
+    task = svc.get_task(task_id)
+    assert task["status"] == TaskStatus.FAILED and task["error_code"] == "checkpoint_lost"
+
+
+@pytest.mark.asyncio
+async def test_cancel_interrupts_running_node():
+    """取消监视器应能打断正在执行的长节点，而不是等到节点边界。"""
+    import asyncio
+
+    svc = get_task_service()
+    task_id = _create(svc)
+
+    async def slow():
+        await asyncio.sleep(30)
+
+    async def cancel_soon():
+        await asyncio.sleep(0.3)
+        svc._repo.update_task(task_id, status=TaskStatus.CANCEL_REQUESTED)
+
+    asyncio.ensure_future(cancel_soon())
+    result, terminal = await asyncio.wait_for(svc._guarded(task_id, slow), 10)
+    assert result is None and terminal["status"] == TaskStatus.CANCELLED

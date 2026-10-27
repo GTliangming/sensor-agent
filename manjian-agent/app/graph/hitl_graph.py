@@ -3,7 +3,9 @@
 与 single_graph 复用同一批节点函数，区别在于：
 - 分镜 / 素材 / 补图 / 配音 / 图生视频 / 字幕 后各插入一个 human_* 审核节点；
 - compile 时用 interrupt_before 在这些 human 节点前暂停，等待人工 resume；
-- 用 checkpointer（MemorySaver，thread_id=task_id）保存暂停点的完整状态。
+- 用 checkpointer（thread_id=task_id）保存暂停点的完整状态；生产由 task_service 传入
+  AsyncSqliteSaver 做持久化，未传时退回进程内 MemorySaver（仅测试/脚本用）；
+- graph_mode=multi 时，渲染后同样接质检 + Supervisor 受控返工。
 
 人工在每个闸门可做 4 件事（由 task_service 注入到 state.review_action）：
 - approve：通过，继续下一步；
@@ -11,7 +13,6 @@
 - regenerate：打回重做本步（可带 review_feedback，分镜会用它重生成）；
 - cancel：取消（在 task_service 层处理，不回到图里）。
 
-注意：MemorySaver 为进程内存储，暂停中的任务不跨进程重启存活（可后续换 SqliteSaver）。
 """
 from __future__ import annotations
 
@@ -19,7 +20,7 @@ from langgraph.checkpoint.memory import MemorySaver
 from langgraph.graph import END, START, StateGraph
 
 from app.config import Settings, get_settings
-from app.graph.nodes import assets, media, persist, validate
+from app.graph.nodes import assets, media, persist, quality, validate
 from app.graph.nodes.storyboard import make_generate_storyboard
 from app.graph.routing import continue_or_fail
 from app.graph.state import AgentState
@@ -72,7 +73,7 @@ def _review_route(state: AgentState) -> str:
     return "regen" if state.get("route_hint") == "regenerate" else "next"
 
 
-# BUILD_PLACEHOLDER
+
 def build_hitl_graph(
     provider: TextProvider | None = None,
     settings: Settings | None = None,
@@ -113,6 +114,9 @@ def build_hitl_graph(
     g.add_node("render_video", media.make_render_video(render_service))
     g.add_node("validate_output", validate.validate_output)
     g.add_node("save_result", persist.save_result)
+    if settings.graph_mode == "multi":
+        g.add_node("quality_check", quality.quality_check)
+        g.add_node("supervisor", quality.make_supervisor(settings))
     for node_name, gate in GATE_BY_NODE.items():
         g.add_node(node_name, _make_human(gate))
 
@@ -144,7 +148,18 @@ def build_hitl_graph(
     _branch("build_subtitles", "human_subtitles")
     _gate("human_subtitles", "build_subtitles", "render_video")
 
-    _branch("render_video", "validate_output")
+    if settings.graph_mode == "multi":
+        # 多 Agent + HITL：渲染后接质检与受控路由（返工回到分镜时会重新经过人工闸门）
+        _branch("render_video", "quality_check")
+        g.add_edge("quality_check", "supervisor")
+        g.add_conditional_edges("supervisor", quality.route_from_supervisor, {
+            "validate_output": "validate_output",
+            "generate_storyboard": "generate_storyboard",
+            "retrieve_assets": "retrieve_assets",
+            "save_result": "save_result",
+        })
+    else:
+        _branch("render_video", "validate_output")
     g.add_edge("validate_output", "save_result")
     g.add_edge("save_result", END)
 

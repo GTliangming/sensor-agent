@@ -82,6 +82,8 @@ class Settings(BaseSettings):
     task_total_timeout_seconds: float = 900.0
     task_retention_days: int = 7
     recover_orphans_on_start: bool = True
+    # 取消监视器轮询间隔(秒):运行中的节点也能在该间隔内被中断
+    cancel_poll_seconds: float = 0.5
     # 多 Agent 返工上限（阶段 6）
     max_storyboard_revisions: int = 1
     max_asset_rechecks: int = 1
@@ -104,6 +106,11 @@ class Settings(BaseSettings):
     def db_file(self) -> Path:
         p = Path(self.db_path)
         return p if p.is_absolute() else PROJECT_ROOT / p
+
+    @property
+    def checkpoint_file(self) -> Path:
+        """HITL 暂停点（LangGraph checkpoint）的持久化库，与业务库分文件。"""
+        return self.db_file.with_name(f"{self.db_file.stem}_checkpoints.db")
 
     @property
     def generated_dir(self) -> Path:

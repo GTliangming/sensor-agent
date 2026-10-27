@@ -26,11 +26,14 @@ async def lifespan(app: FastAPI):
     logger.info("manjian-agent 启动 env=%s graph=%s text=%s video=%s db=%s",
                 settings.app_env, settings.graph_mode, settings.resolved_text_provider,
                 settings.resolved_video_provider, settings.db_file)
+    # 待审任务的 checkpoint 持久化在 SQLite；若暂停点已丢失则置失败，避免永远卡在待审
+    await service.reconcile_review_tasks()
     # 崩溃恢复：把残留的 running 任务重新入队并后台重跑
     if settings.recover_orphans_on_start:
         for task_id in service.recover_orphans():
             asyncio.create_task(service.run_task(task_id))
     yield
+    await service.aclose()
     logger.info("manjian-agent 关闭")
 
 
