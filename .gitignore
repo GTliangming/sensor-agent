@@ -1,24 +1,28 @@
 # 统一虚拟环境（整个项目共用根目录 .venv）
 .venv/
 
+# 环境变量与密钥（严防泄漏）
+.env
+*.env
+.env.*
+!.env.example
+*.sesskey
+
 # 后端
-backend/.env
 backend/data/
 langgraph-hitl-fastapi-demo/backend/langgraph_state.sqlite3*
 __pycache__/
 *.pyc
+.pytest_cache/
 
 # 前端
 */node_modules/
 */dist/
-*/.env
-*/.env.production
-
-# langchain-agent
-langchain-agent/.env
+node_modules/
+dist/
+*.tsbuildinfo
 
 # 其它
 .DS_Store
 .idea/
 
-**/.env.example

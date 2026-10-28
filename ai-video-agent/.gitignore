@@ -1,0 +1,23 @@
+# Python
+__pycache__/
+*.pyc
+.venv/
+*.egg-info/
+.pytest_cache/
+
+# 密钥与本地数据
+.env
+backend/data/
+storage/
+
+# Node
+node_modules/
+frontend/dist/
+frontend/.vite/
+.vite/
+*.tsbuildinfo
+
+# IDE
+.idea/
+.vscode/
+.DS_Store

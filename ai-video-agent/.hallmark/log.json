@@ -1,0 +1,29 @@
+[
+ {
+  "scope": "app",
+  "shape": "app screen",
+  "theme": "terrazzo",
+  "axes": "light/geometric-sans/warm",
+  "hero": "none (app screen)",
+  "nav": "top bar with switchers and workspace tabs",
+  "footer": "none",
+  "imagery": "none",
+  "photos": [],
+  "entry": "task queue table",
+  "fingerprint": "app/topbar/tabs/table",
+  "sections": [
+   "create form",
+   "task queue table",
+   "review panels",
+   "templates table",
+   "settings form"
+  ],
+  "signature": "task queue step bar with live elapsed time and queue position",
+  "waived": [
+   "28b"
+  ],
+  "prompt": "internal admin tool for creating and reviewing AI short videos for WeChat Channels",
+  "date": "2026-10-28",
+  "mode": "build"
+ }
+]

@@ -1,0 +1,36 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "ai-video-studio-backend"
+version = "0.1.0"
+description = "AI Video Studio 后端：任务管理 + AutoDL ComfyUI 视频生成调度"
+requires-python = ">=3.12"
+dependencies = [
+    "fastapi>=0.115,<1.0",
+    "uvicorn[standard]>=0.30,<1.0",
+    "pydantic>=2.7,<3.0",
+    "pydantic-settings>=2.3,<3.0",
+    "sqlalchemy>=2.0,<2.1",
+    "alembic>=1.13,<2.0",
+    "httpx>=0.27,<1.0",
+    # 上传图片（multipart/form-data）需要
+    "python-multipart>=0.0.9",
+    # 夜间窗口使用 zoneinfo，精简系统/容器里可能没有时区数据库
+    "tzdata>=2024.1",
+]
+
+[project.optional-dependencies]
+# 线上使用 PostgreSQL 时安装：pip install -e ".[postgres]"
+postgres = ["psycopg[binary]>=3.1,<4.0"]
+# 启用 Redis 队列时安装（预留，首期未使用）
+redis = ["redis>=5.0,<6.0"]
+dev = ["pytest>=8.0", "pytest-asyncio>=0.23"]
+
+[tool.setuptools.packages.find]
+include = ["app*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+asyncio_mode = "auto"
