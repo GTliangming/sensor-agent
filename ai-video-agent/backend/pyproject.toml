@@ -19,6 +19,8 @@ dependencies = [
     "python-multipart>=0.0.9",
     # 夜间窗口使用 zoneinfo，精简系统/容器里可能没有时区数据库
     "tzdata>=2024.1",
+    # 七牛云对象存储 SDK（参考图/结果视频存储，公网可访问供 AutoDL 下载）
+    "qiniu>=7.13,<8.0",
 ]
 
 [project.optional-dependencies]

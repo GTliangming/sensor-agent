@@ -67,8 +67,19 @@ class Settings(BaseSettings):
     pipeline_lease_seconds: int = 300
 
     # ---- 存储与限制 ----
+    # storage_backend：local（本地磁盘，默认）| qiniu（七牛云对象存储）。
+    # 真实调用 AutoDL 时参考图必须公网可访问，用 qiniu 最省事。
+    storage_backend: str = "local"
     local_storage_dir: str = "./storage"
     public_base_url: str = "http://127.0.0.1:8000"
+    # ---- 七牛云（storage_backend=qiniu 时生效）----
+    qiniu_access_key: str = ""
+    qiniu_secret_key: str = ""
+    qiniu_bucket: str = ""
+    # 空间绑定的公网下载域名（不带协议），如 cdn.example.com
+    qiniu_domain: str = ""
+    # 下载域名是否走 https
+    qiniu_use_https: bool = True
     max_upload_bytes: int = 10 * 1024 * 1024
     max_result_bytes: int = 500 * 1024 * 1024
     max_prompt_length: int = Field(default=20000, ge=1)  # AutoDL 文档：prompt 1-20000 个字符
