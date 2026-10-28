@@ -5,8 +5,8 @@ from app.api.deps import get_production_service
 from app.domain.production_status import ProductionStatus
 from app.schemas.common import ApiResponse, ok
 from app.schemas.production import (
-    ApproveDialogueRequest, ApproveSceneRequest, DiscardRequest, ProductionCreate, ProductionDetail,
-    ProductionList, RegenerateRequest, RegenerateVideoRequest,
+    ApproveDialogueRequest, ApproveSceneRequest, DiscardRequest, ManualDraft, ManualProductionCreate,
+    ProductionCreate, ProductionDetail, ProductionList, RegenerateRequest, RegenerateVideoRequest,
 )
 from app.services.production_service import ProductionService
 
@@ -18,6 +18,17 @@ Svc = Depends(get_production_service)
 def create_production(body: ProductionCreate, svc: ProductionService = Svc) -> dict:
     p = svc.create(body)
     return ok(svc.detail(p.id), "已创建，正在生成内容")
+
+
+@router.post("/manual", response_model=ApiResponse[ProductionDetail], status_code=202)
+def create_manual_production(body: ManualProductionCreate, svc: ProductionService = Svc) -> dict:
+    p = svc.create_manual(body)
+    return ok(svc.detail(p.id), "已加入视频生成队列")
+
+
+@router.get("/manual-draft", response_model=ApiResponse[ManualDraft])
+def manual_draft(account_id: str, resolution: str | None = None, svc: ProductionService = Svc) -> dict:
+    return ok(svc.manual_draft(account_id, resolution))
 
 
 @router.get("", response_model=ApiResponse[ProductionList])

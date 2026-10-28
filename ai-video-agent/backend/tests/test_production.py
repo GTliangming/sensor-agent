@@ -78,7 +78,8 @@ async def test_video_prompt_is_assembled_from_templates_and_reviewed_content(cli
     assert "Shot 1 (0-5s): edited scene 1 edited action 1 edited camera 1" in t.prompt
     assert "Shot 3 (10-15s): edited scene 3" in t.prompt
     # 接口只有一个 prompt 字段：台词、负向提示词都按各自的模板拼进同一个 prompt，一并发送
-    assert 'The character says in Mandarin Chinese: "人工改过的台词"' in t.prompt
+    assert 'warm, soft, gentle young female voice' in t.prompt
+    assert '"人工改过的台词"' in t.prompt
     assert "Negative prompt (avoid all of these): (worst quality, low quality:1.4)" in t.prompt
     assert t.prompt.rstrip().endswith("3d render.")  # 负向在最后，原文完整
     assert t.dialogue is None and t.negative_prompt is None  # 都已经在 prompt 里，不再单独传
@@ -337,3 +338,44 @@ async def test_discard_running_video_stops_tracking(client, account_id, make_wor
     assert d["status"] == "discarded" and d["video"]["status"] == "cancelled"
     await drain(vw)
     assert _detail(client, pid)["status"] == "discarded"
+
+
+def test_manual_draft_is_rendered_from_the_current_templates(client, account_id):
+    r = client.get(f"{P}/manual-draft", params={"account_id": account_id, "resolution": "768p横"})
+    assert r.status_code == 200, r.text
+    d = r.json()["data"]
+    assert d["prompt"].startswith("(masterpiece, best quality:1.2), strict 16:9 aspect ratio, 2D anime")
+    assert "A cute chibi girl with round glasses" in d["prompt"]
+    assert d["negative_prompt"].startswith("(worst quality")
+    assert "{{scene_desc}}" in d["shot_template"] and "{{tts_text}}" in d["dialogue_template"]  # 供前端按需插入
+
+
+async def test_manual_production_skips_llm_and_reviews_but_keeps_video_review(client, account_id, image_id, make_worker, make_pipeline):
+    vw, pw = make_worker(), make_pipeline()
+    body = {"account_id": account_id, "topic": "手动主题", "prompt": "my own prompt", "negative_prompt": "blurry",
+            "run_mode": "now", "duration_seconds": 8, "resolution": "768p横", "seed": 42,
+            "reference_file_ids": [image_id]}
+    r = client.post(f"{P}/manual", json=body)
+    assert r.status_code == 202, r.text
+    pid = r.json()["data"]["id"]
+    d = _detail(client, pid)
+    assert d["status"] == "queued" and d["topic"] == "手动主题" and d["seed"] == 42 and d["duration_seconds"] == 8
+
+    t = _task(pid)
+    assert t.prompt.startswith("my own prompt") and "blurry" in t.prompt  # 提示词是用户填的原文，负向按配置发送
+    assert t.seed == 42 and t.duration_seconds == 8 and t.resolution == "768p横"
+
+    await drain_both(vw, pw)
+    d = _detail(client, pid)
+    assert d["status"] == "video_review" and d["video"]["video_url"]  # 没有分镜/台词审核，直接到成片审核
+
+    # 重新生成可以改提示词，新任务用新的提示词
+    assert client.post(f"{P}/{pid}/video/regenerate", json={"prompt": "edited prompt"}).status_code == 202
+    assert _task(pid).prompt.startswith("edited prompt")
+
+
+def test_manual_production_rejects_bad_params(client, account_id):
+    body = {"account_id": account_id, "topic": "t", "prompt": "p", "run_mode": "now",
+            "duration_seconds": 8, "resolution": "不存在的方向"}
+    r = client.post(f"{P}/manual", json=body)
+    assert r.status_code == 422 and "视频方向" in r.json()["message"]

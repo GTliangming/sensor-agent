@@ -8,7 +8,8 @@ __pycache__/
 # 密钥与本地数据
 .env
 backend/data/
-storage/
+/storage/
+backend/storage/
 
 # Node
 node_modules/

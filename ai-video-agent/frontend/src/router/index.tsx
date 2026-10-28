@@ -1,6 +1,7 @@
 import { createBrowserRouter, Navigate } from 'react-router-dom'
 import { ENGINES } from '@/engines'
 import { CreateTab } from '@/features/productions/pages/CreateTab'
+import { ManualCreateTab } from '@/features/productions/pages/ManualCreateTab'
 import { ProductionDetailPage } from '@/features/productions/pages/ProductionDetailPage'
 import { TasksTab } from '@/features/productions/pages/TasksTab'
 import { SettingsTab } from '@/features/settings/SettingsTab'
@@ -27,6 +28,7 @@ export const router = createBrowserRouter([
         children: [
           { index: true, element: <Navigate to="tasks" replace /> },
           { path: 'create', element: <CreateTab /> },
+          { path: 'manual', element: <ManualCreateTab /> },
           { path: 'tasks', element: <TasksTab /> },
           { path: 'tasks/:productionId', element: <ProductionDetailPage /> },
           { path: 'templates', element: <TemplatesTab /> },

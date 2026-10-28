@@ -20,8 +20,8 @@ from app.repositories.account_repository import AccountRepository
 from app.repositories.production_repository import ProductionRepository
 from app.repositories.video_task_repository import VideoTaskRepository
 from app.schemas.production import (
-    ApproveDialogueRequest, ApproveSceneRequest, ArtifactOut, ProductionCreate, ProductionDetail,
-    ProductionList, ProductionListItem, ReferenceImage, RegenerateVideoRequest, ReviewOut, VideoInfo,
+    ApproveDialogueRequest, ApproveSceneRequest, ArtifactOut, ManualDraft, ManualProductionCreate, ProductionCreate,
+    ProductionDetail, ProductionList, ProductionListItem, ReferenceImage, RegenerateVideoRequest, ReviewOut, VideoInfo,
 )
 from app.services.account_service import load_config
 from app.services.template_service import TemplateService
@@ -98,6 +98,46 @@ class ProductionService:
         self.db.commit()
         return p
 
+    # ---------- 手动创建 ----------
+    def manual_draft(self, account_id: str, resolution: str | None) -> ManualDraft:
+        """手动创建页的预填内容：账号类型当前的「提示词前缀」+「角色设定」，以及「负向提示词」，用户在此基础上修改。"""
+        account = self.accounts.get(account_id)
+        if not account or not account.is_active:
+            raise ValidationFailed("账号类型不存在或已停用")
+        config = load_config(account)
+        option = config.resolution(resolution)
+        if not option:
+            raise ValidationFailed(f"不支持的视频方向: {resolution}")
+        base, _ = self.templates.resolve("video_base", account)
+        character, _ = self.templates.resolve("video_character", account)
+        negative, _ = self.templates.resolve("video_negative", account)
+        shot, _ = self.templates.resolve("video_shot", account)
+        dialogue, _ = self.templates.resolve("video_dialogue", account)
+        variables = {"aspect_ratio": option.aspect_ratio, "duration_seconds": str(config.default_duration)}
+        return ManualDraft(prompt=render(base, variables) + render(character, variables),
+                           negative_prompt=render(negative, variables), shot_template=shot, dialogue_template=dialogue)
+
+    def create_manual(self, req: ManualProductionCreate) -> Production:
+        """主题、提示词、时长、视频方向、seed 都由用户填写：跳过 LLM 和分镜/台词审核，直接排队生成，完成后进入成片审核。"""
+        account = self.accounts.get(req.account_id)
+        if not account or not account.is_active:
+            raise ValidationFailed("账号类型不存在或已停用")
+        config = load_config(account)
+        option, duration = self.video.validate_params(config, req.resolution, req.duration_seconds, req.reference_file_ids)
+        p = Production(
+            id=str(uuid.uuid4()), account_id=account.id, topic=req.topic.strip(), run_mode=req.run_mode,
+            status=S.QUEUED.value, duration_seconds=duration, resolution=option.label,
+            seed=req.seed if req.seed is not None else config.seed, reference_file_ids=req.reference_file_ids,
+        )
+        self.repo.add(p)
+        art = self.repo.add_artifact(p.id, "content", {
+            "theme": p.topic, "manual": True, "prompt": req.prompt.strip(), "negative_prompt": req.negative_prompt.strip(),
+        }, "human")
+        task = self._create_video_task(p, art.content)  # 提示词或负向途径不合法时抛错，整体不提交
+        p.video_task_id = task.id
+        self.db.commit()
+        return p
+
     # ---------- 审核 A：分镜 ----------
     def approve_scene(self, production_id: str, req: ApproveSceneRequest) -> Production:
         p = self.get(production_id)
@@ -154,6 +194,8 @@ class ProductionService:
         account = self._account(p)
         config = load_config(account)
         option, _ = self.video.validate_params(config, p.resolution, p.duration_seconds, p.reference_file_ids or [])
+        if content.get("manual"):
+            return self._create_manual_video_task(p, account, config, content)
         base, _ = self.templates.resolve("video_base", account)
         character, _ = self.templates.resolve("video_character", account)
         shot, _ = self.templates.resolve("video_shot", account)
@@ -172,6 +214,18 @@ class ProductionService:
             duration_seconds=p.duration_seconds, schedule_mode="window" if p.run_mode == "night" else "now",
         )
 
+    def _create_manual_video_task(self, p: Production, account: Account, config, content: dict) -> VideoTask:
+        """手动创建的任务：提示词就是用户填写的原文，不再用模板拼装；负向提示词仍按账号配置的途径发送。"""
+        prompt, negative_to_send = self.templates.with_negative(
+            account, config, content["prompt"].strip(), content.get("negative_prompt"))
+        if len(prompt) > self.s.max_prompt_length:
+            raise ValidationFailed(f"提示词（含负向提示词）不能超过 {self.s.max_prompt_length} 字")
+        return self.video.create_for_production(
+            production_id=p.id, account=account, prompt=prompt, negative_prompt=negative_to_send, dialogue=None,
+            image_ids=p.reference_file_ids or [], resolution=p.resolution, seed=p.seed,
+            duration_seconds=p.duration_seconds, schedule_mode="window" if p.run_mode == "night" else "now",
+        )
+
     # ---------- 审核 C：成片 ----------
     def approve_video(self, production_id: str) -> Production:
         p = self.get(production_id)
@@ -186,7 +240,11 @@ class ProductionService:
         p = self.get(production_id)
         self._require(p, S.VIDEO_REVIEW)
         scenes = [s.model_dump() for s in req.scenes] if req.scenes else None
-        art = self._save_edit(p, {"scenes": scenes, "tts_text": req.tts_text})
+        current = self.repo.current_artifact(p.id, "content")
+        changes = {"scenes": scenes, "tts_text": req.tts_text}
+        if current is not None and current.content.get("manual"):
+            changes = {"prompt": req.prompt}  # 手动创建的任务没有分镜和台词，只能改提示词
+        art = self._save_edit(p, changes)
         if req.run_mode:
             p.run_mode = req.run_mode
         # 内容不变时，同一个 seed 会得到几乎相同的视频；重新生成就换一个随机 seed

@@ -1,6 +1,7 @@
 import { request } from '@/api/client'
 import type {
-  CreateProductionPayload, ProductionDetail, ProductionList, ProductionStatus, RunMode, SceneItem, SubtitleItem,
+  CreateManualPayload, CreateProductionPayload, ManualDraft, ProductionDetail, ProductionList, ProductionStatus,
+  RunMode, SceneItem, SubtitleItem,
 } from './types'
 
 const post = (id: string, path: string, json?: unknown, query?: Record<string, boolean>) =>
@@ -9,6 +10,13 @@ const post = (id: string, path: string, json?: unknown, query?: Record<string, b
 export const productionsApi = {
   create: (payload: CreateProductionPayload) =>
     request<ProductionDetail>('/productions', { method: 'POST', json: payload }),
+
+  /** 手动创建：跳过 LLM 和分镜/台词审核，直接排队生成 */
+  createManual: (payload: CreateManualPayload) =>
+    request<ProductionDetail>('/productions/manual', { method: 'POST', json: payload }),
+
+  manualDraft: (accountId: string, resolution: string) =>
+    request<ManualDraft>('/productions/manual-draft', { query: { account_id: accountId, resolution } }),
 
   list: (params: { page: number; page_size: number; account_id?: string; needs_review?: boolean; status?: ProductionStatus }) =>
     request<ProductionList>('/productions', { query: params }),
@@ -26,7 +34,8 @@ export const productionsApi = {
 
   // 审核 C：成片
   approveVideo: (id: string) => post(id, 'video/approve'),
-  regenerateVideo: (id: string, body: { scenes?: SceneItem[]; run_mode?: RunMode }) => post(id, 'video/regenerate', body),
+  regenerateVideo: (id: string, body: { scenes?: SceneItem[]; prompt?: string; run_mode?: RunMode }) =>
+    post(id, 'video/regenerate', body),
 
   discard: (id: string, reason?: string) => post(id, 'discard', { reason }),
   markPublished: (id: string) => post(id, 'published'),

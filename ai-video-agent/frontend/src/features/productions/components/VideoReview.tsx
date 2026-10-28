@@ -12,7 +12,7 @@ export function PublishCopy({ production }: { production: ProductionDetail }) {
   return (
     <dl className="kv">
       <dt>主题</dt><dd>{c.theme || production.topic}</dd>
-      <dt>台词</dt><dd>{c.tts_text}</dd>
+      {c.tts_text && <><dt>台词</dt><dd>{c.tts_text}</dd></>}
     </dl>
   )
 }
@@ -26,14 +26,16 @@ export function aspectOf(resolution: string): string {
 /** 审核 C：成片。重新生成会再消耗一次 GPU 费用（沿用当前已审核的分镜与台词），所以需要确认。 */
 export function VideoReview({ production }: { production: ProductionDetail }) {
   const video = production.video
+  const manual = production.content?.content.manual === true
   const [runMode, setRunMode] = useState<RunMode>(production.run_mode)
+  const [prompt, setPrompt] = useState(production.content?.content.prompt ?? '')
   const approve = useProductionAction(production.id, (id: string, _: void) => productionsApi.approveVideo(id))
   const regen = useProductionAction(production.id, productionsApi.regenerateVideo)
   const error = approve.error ?? regen.error
 
   function regenerate() {
     if (!window.confirm('重新生成会再消耗一次 GPU 费用，确定吗？')) return
-    regen.mutate({ run_mode: runMode })
+    regen.mutate({ run_mode: runMode, ...(manual ? { prompt: prompt.trim() } : {}) })
   }
 
   return (
@@ -52,7 +54,13 @@ export function VideoReview({ production }: { production: ProductionDetail }) {
       </div>
       <details className="disclosure">
         <summary>不满意，重新生成</summary>
-        <p className="muted">沿用当前的分镜和台词，换一个随机 seed 再生成一次；想换内容请废弃后重新创建。</p>
+        <p className="muted">
+          {manual ? '可以先修改提示词，再换一个随机 seed 生成一次。' : '沿用当前的分镜和台词，换一个随机 seed 再生成一次；想换内容请废弃后重新创建。'}
+        </p>
+        {manual && (
+          <textarea className="input" rows={6} maxLength={20000} aria-label="提示词" value={prompt}
+            onChange={(e) => setPrompt(e.target.value)} />
+        )}
         <div className="choices">
           {(['now', 'night'] as RunMode[]).map((m) => (
             <label key={m} className={m === runMode ? 'choice checked' : 'choice'}>

@@ -41,7 +41,7 @@ STARTER_BODIES = {
 严格按照“起、承、转”生成 3 个镜头的短视频数据，直接输出纯 JSON（不要包含 ```json 标记）：
 {
   "theme": "主题名称（中文）",
-  "tts_text": "中文台词，语速自然，温暖真诚",
+  "tts_text": "中文台词，口语化短句，语速舒缓，语气温柔真诚，像朋友轻声安慰",
   "subtitles": [
     {"start": "00:00:00,000", "end": "00:00:05,000", "text": "第一句"},
     {"start": "00:00:05,000", "end": "00:00:10,000", "text": "第二句"},
@@ -71,7 +71,11 @@ STARTER_BODIES = {
     "video_base": "(masterpiece, best quality:1.2), strict {{aspect_ratio}} aspect ratio, cinematic lighting, no text, no watermark, ",
     "video_character": "",
     "video_shot": "Shot {{shot_index}} ({{start}}-{{end}}s): {{scene_desc}} {{action_desc}} {{camera_desc}}",
-    "video_dialogue": "The character says in Mandarin Chinese: \"{{tts_text}}\"",
+    "video_dialogue": (
+        "The character speaks in Mandarin Chinese with a warm, soft, gentle young female voice, calm and slow pace, "
+        "soothing and sincere tone like comforting a close friend, clear natural pronunciation, no shouting: "
+        "\"{{tts_text}}\""
+    ),
     "video_negative_line": "Negative prompt (avoid all of these): {{negative_prompt}}",
     "video_negative": "(worst quality, low quality:1.4), text, watermark, subtitles, distorted face, extra limbs, bad anatomy, deformed hands, shaky camera.",
 }

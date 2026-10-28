@@ -19,12 +19,15 @@ export interface SubtitleItem {
   text: string
 }
 
-/** LLM 一次生成的完整业务数据。 */
+/** LLM 一次生成的完整业务数据。手动创建的任务没有台词和分镜，只有 manual、prompt、negative_prompt。 */
 export interface ContentData {
   theme: string
   tts_text: string
   subtitles: SubtitleItem[]
   scenes: SceneItem[]
+  manual?: boolean
+  prompt?: string
+  negative_prompt?: string
 }
 
 export interface Artifact {
@@ -99,4 +102,25 @@ export interface CreateProductionPayload {
   resolution: string
   seed?: number
   reference_file_ids: string[]
+}
+
+export interface CreateManualPayload {
+  account_id: string
+  topic: string
+  prompt: string
+  negative_prompt: string
+  run_mode: RunMode
+  duration_seconds: number
+  resolution: string
+  seed?: number
+  reference_file_ids: string[]
+}
+
+/** 手动创建时预填的提示词，由账号类型当前的模板渲染而来。 */
+export interface ManualDraft {
+  prompt: string
+  negative_prompt: string
+  /** 「镜头写法」「台词写法」模板原文，含 {{变量}} */
+  shot_template: string
+  dialogue_template: string
 }

@@ -4,6 +4,7 @@ import { useBusinessLines, useWorkspace, workspacePath } from './hooks'
 
 const TABS = [
   { to: 'create', label: '创建' },
+  { to: 'manual', label: '手动创建' },
   { to: 'tasks', label: '任务列表' },
   { to: 'templates', label: '提示词模板' },
   { to: 'settings', label: '账号设置' },

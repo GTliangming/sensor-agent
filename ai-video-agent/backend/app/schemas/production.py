@@ -17,6 +17,30 @@ class ProductionCreate(BaseModel):
     reference_file_ids: list[str] = Field(default_factory=list, max_length=8)
 
 
+class ManualProductionCreate(BaseModel):
+    """手动创建：不经过大模型和分镜/台词审核，直接用填写的提示词生成视频，生成后仍走成片审核。"""
+
+    account_id: str
+    topic: str = Field(min_length=1, max_length=1000)
+    prompt: str = Field(min_length=1, max_length=20000)
+    negative_prompt: str = Field(default="", max_length=2000)
+    run_mode: Literal["night", "now"] = "now"
+    duration_seconds: int = Field(ge=1, le=15)
+    resolution: str
+    seed: int | None = None
+    reference_file_ids: list[str] = Field(default_factory=list, max_length=8)
+
+
+class ManualDraft(BaseModel):
+    """手动创建时预填的提示词：由账号类型当前的模板渲染而来，用户在此基础上修改。
+    shot_template / dialogue_template 是「镜头写法」「台词写法」的原文（含 {{变量}}），供前端按需插入。"""
+
+    prompt: str
+    negative_prompt: str
+    shot_template: str = ""
+    dialogue_template: str = ""
+
+
 class SubtitleItem(BaseModel):
     start: str = ""
     end: str = ""
@@ -52,6 +76,7 @@ class RegenerateVideoRequest(BaseModel):
 
     scenes: list[SceneItem] | None = Field(default=None, min_length=1, max_length=8)
     tts_text: str | None = Field(default=None, min_length=1, max_length=2000)
+    prompt: str | None = Field(default=None, min_length=1, max_length=20000, description="仅手动创建的任务可改")
     run_mode: Literal["night", "now"] | None = None
 
 

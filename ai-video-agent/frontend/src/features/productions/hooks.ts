@@ -35,6 +35,23 @@ export function useCreateProduction() {
   })
 }
 
+/** 手动创建：和创建共用列表缓存失效逻辑。 */
+export function useCreateManualProduction() {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: productionsApi.createManual,
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['productions', 'list'] }),
+  })
+}
+
+/** 手动创建页的预填提示词；方向变了才重新取（画幅比例会进入模板）。 */
+export function useManualDraft(accountId: string, resolution: string) {
+  return useQuery({
+    queryKey: ['productions', 'manual-draft', accountId, resolution] as const,
+    queryFn: () => productionsApi.manualDraft(accountId, resolution),
+  })
+}
+
 /**
  * 审核/操作类 mutation：后端返回最新详情，直接写入缓存，界面立即切换到新状态；
  * 同时让列表失效，任务列表保持准确。
