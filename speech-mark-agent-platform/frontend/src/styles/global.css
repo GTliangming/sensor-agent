@@ -1,0 +1,323 @@
+:root {
+    color-scheme: light;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+    height: 100%;
+    margin: 0;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB',
+        'Microsoft YaHei', sans-serif;
+    background: #f5f7fa;
+    color: #1f2329;
+    -webkit-font-smoothing: antialiased;
+}
+
+a {
+    color: inherit;
+}
+
+/* ---------- 通用页面容器 ---------- */
+.page-container {
+    padding: 24px;
+}
+
+.page-container__header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 20px;
+}
+
+.page-container__title {
+    margin: 0;
+    font-size: 20px;
+    font-weight: 600;
+    line-height: 28px;
+}
+
+.page-container__desc {
+    margin: 4px 0 0;
+    color: #646a73;
+    font-size: 13px;
+}
+
+.page-loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    min-height: 240px;
+}
+
+/* ---------- 应用布局 ---------- */
+.app-layout {
+    height: 100vh;
+}
+
+.app-sider__logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    height: 56px;
+    padding: 0 20px;
+    font-size: 15px;
+    font-weight: 600;
+    letter-spacing: 0.2px;
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+.app-sider__logo-mark {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 26px;
+    height: 26px;
+    border-radius: 7px;
+    background: #2f6bff;
+    color: #fff;
+    font-size: 13px;
+    flex: 0 0 auto;
+}
+
+.app-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 24px;
+    border-bottom: 1px solid #eef0f3;
+}
+
+.app-header__title {
+    font-size: 15px;
+    font-weight: 600;
+}
+
+.app-header__user {
+    cursor: pointer;
+}
+
+.app-content {
+    overflow: auto;
+    padding: 0;
+}
+
+/* ---------- 登录页 ---------- */
+.login-page {
+    display: grid;
+    grid-template-columns: 1.15fr 1fr;
+    min-height: 100%;
+}
+
+.login-brand {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 18px;
+    padding: 64px;
+    background: linear-gradient(145deg, #1b3a8f 0%, #2f6bff 58%, #5b8cff 100%);
+    color: #fff;
+}
+
+.login-brand__title {
+    margin: 0;
+    font-size: 32px;
+    line-height: 1.3;
+    font-weight: 650;
+}
+
+.login-brand__desc {
+    max-width: 520px;
+    margin: 0;
+    font-size: 14px;
+    line-height: 1.9;
+    color: rgba(255, 255, 255, 0.82);
+}
+
+.login-brand__points {
+    display: grid;
+    gap: 10px;
+    margin: 8px 0 0;
+    padding: 0;
+    list-style: none;
+    font-size: 13px;
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.login-panel {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 24px;
+    background: #fff;
+}
+
+.login-panel__inner {
+    width: 100%;
+    max-width: 360px;
+}
+
+.login-panel__title {
+    margin: 0 0 6px;
+    font-size: 24px;
+    font-weight: 600;
+}
+
+.login-panel__desc {
+    margin: 0 0 28px;
+    color: #646a73;
+    font-size: 13px;
+}
+
+.login-panel__hint {
+    margin-top: 14px;
+    color: #8a9099;
+    font-size: 12px;
+    line-height: 1.7;
+}
+
+@media (max-width: 960px) {
+    .login-page {
+        grid-template-columns: 1fr;
+    }
+
+    .login-brand {
+        display: none;
+    }
+}
+
+/* ---------- 对话工作台 ---------- */
+.chat-page {
+    display: grid;
+    grid-template-columns: 260px minmax(0, 1fr) 320px;
+    height: calc(100vh - 57px);
+}
+
+.chat-panel {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    background: #fff;
+    border-right: 1px solid #eef0f3;
+}
+
+.chat-panel--trace {
+    border-right: none;
+    border-left: 1px solid #eef0f3;
+}
+
+.chat-panel__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 14px 16px;
+    border-bottom: 1px solid #eef0f3;
+}
+
+.chat-panel__title {
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.chat-panel__body {
+    flex: 1;
+    min-height: 0;
+    overflow: auto;
+    padding: 16px;
+}
+
+.chat-main {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    background: #f7f9fc;
+}
+
+.chat-main__body {
+    flex: 1;
+    min-height: 0;
+    overflow: auto;
+    padding: 24px;
+}
+
+.chat-main__empty {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+}
+
+.chat-message {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+.chat-message--user {
+    flex-direction: row-reverse;
+}
+
+.chat-message__bubble {
+    max-width: 760px;
+    padding: 12px 16px;
+    border-radius: 10px;
+    background: #fff;
+    border: 1px solid #eef0f3;
+    line-height: 1.75;
+    white-space: pre-wrap;
+    word-break: break-word;
+}
+
+.chat-message--user .chat-message__bubble {
+    background: #2f6bff;
+    border-color: #2f6bff;
+    color: #fff;
+}
+
+.chat-composer {
+    padding: 16px 24px 20px;
+    background: #fff;
+    border-top: 1px solid #eef0f3;
+}
+
+.chat-trace-item {
+    padding: 10px 0;
+    border-bottom: 1px dashed #eef0f3;
+    font-size: 12px;
+    color: #4e5969;
+}
+
+.chat-trace-item:last-child {
+    border-bottom: none;
+}
+
+.chat-trace-item__name {
+    font-weight: 600;
+    color: #1f2329;
+}
+
+.chat-trace-item__meta {
+    margin-top: 4px;
+    color: #8a9099;
+}
+
+@media (max-width: 1280px) {
+    .chat-page {
+        grid-template-columns: 220px minmax(0, 1fr);
+    }
+
+    .chat-panel--trace {
+        display: none;
+    }
+}
