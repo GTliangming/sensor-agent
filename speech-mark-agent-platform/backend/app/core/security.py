@@ -11,8 +11,8 @@ import jwt
 from pwdlib import PasswordHash
 
 from app.core.config import get_settings
-from app.core.errors import AppError
 from app.core.error_catalog import ErrorCode
+from app.core.errors import AppError
 
 # 密码哈希器（进程内单例）：recommended() 选用当前推荐算法（Argon2），
 # 自带加盐，并把算法/参数编码进哈希串，后续升级算法仍能校验旧哈希。

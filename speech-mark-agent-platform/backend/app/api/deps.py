@@ -6,7 +6,7 @@
 
 from dataclasses import dataclass
 
-from fastapi import Depends
+from fastapi import Depends, Request
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -16,6 +16,7 @@ from app.core.errors import AppError
 from app.core.security import decode_access_token
 from app.db.models import User, UserPlatformBinding
 from app.db.session import get_db
+from app.integrations.llm.client import DeepSeekClient
 
 # 解析 Authorization: Bearer <token> 头。
 # auto_error=False：缺少/格式错时不由 FastAPI 直接抛 403，而是返回 None，
@@ -74,3 +75,17 @@ async def get_current_user(
     ).scalar_one_or_none()
 
     return CurrentUser(user=user, binding=binding)
+
+
+def get_llm_client(request: Request) -> DeepSeekClient:
+    """复用 lifespan 中创建的 LLM 客户端。
+
+    测试可通过 `app.dependency_overrides[get_llm_client]` 替换成 Fake 实现，
+    不需要真实网络请求。
+    """
+    client = getattr(request.app.state, "llm_client", None)
+    if client is None:
+        # 兜底：没有走 lifespan 的场景（如部分单测）也能拿到客户端
+        client = DeepSeekClient()
+        request.app.state.llm_client = client
+    return client

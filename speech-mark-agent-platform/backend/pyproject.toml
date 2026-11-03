@@ -41,6 +41,12 @@ target-version = "py312"
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "B", "UP", "ASYNC"]
+# FastAPI 官方写法就是在参数默认值里调用 Depends()，B008 对它是误报
+ignore = ["B008"]
+
+[tool.ruff.lint.per-file-ignores]
+# conftest 必须在导入 app 之前设置 DATABASE_URL，因此 import 不在文件顶部
+"tests/conftest.py" = ["E402"]
 
 [tool.mypy]
 python_version = "3.12"

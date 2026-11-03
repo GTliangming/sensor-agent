@@ -53,6 +53,13 @@ class Settings(BaseSettings):
     jwt_algorithm: str = "HS256"
     access_token_expire_minutes: int = 480  # 8 小时
 
+    # ---- LLM 调用 ----
+    llm_timeout_seconds: int = 60
+    llm_max_retries: int = 2
+    llm_temperature: float = 0.2
+    llm_max_tokens: int = 1024
+    llm_context_messages: int = 20
+
     @property
     def is_dev(self) -> bool:
         """是否开发环境；用于决定是否开启调试日志、放宽鉴权等。"""
