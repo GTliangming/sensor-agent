@@ -28,6 +28,10 @@ class Settings(BaseSettings):
     app_secret_key: str = ""  # 用于签发登录态等，生产环境必须覆盖
     log_level: str = "INFO"
 
+    # ---- 数据库 ----
+    # Agent 自有数据（用户、会话、运行记录等），与标注平台业务库完全隔离
+    database_url: str = "sqlite+aiosqlite:///./data/app.db"
+
     # ---- LLM ----
     llm_provider: str = "deepseek"  # 模型供应商，后续可扩展 openai 等
     deepseek_api_key: str = ""  # 密钥走环境变量注入，代码里不要写死
