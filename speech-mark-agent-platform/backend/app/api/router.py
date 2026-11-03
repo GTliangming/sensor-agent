@@ -22,7 +22,7 @@
 
 from fastapi import APIRouter
 
-from app.api import health
+from app.api import health,auth
 
 # 全局 API 前缀：main.py 挂载路由、拼接 docs/openapi 地址时都引用这里，
 # 将来升级成 /api/v1 只需改这一行。
@@ -33,3 +33,4 @@ api_router = APIRouter()
 
 # 系统类接口（健康检查等）直接挂在 /api 下，路径即 /api/health
 api_router.include_router(health.router)
+api_router.include_router(auth.router)

@@ -1,6 +1,6 @@
 import pytest
 from fastapi.testclient import TestClient
-
+from app.core.config import get_settings
 from app.main import app
 
 
@@ -16,7 +16,7 @@ def test_health_ok(client: TestClient) -> None:
     body = resp.json()
     assert body["ok"] is True
     assert body["data"]["status"] == "ok"
-    assert body["data"]["appEnv"] == "development"      # 验证 camelCase
+    assert body["data"]["appEnv"] == get_settings().app_env      # 验证 camelCase
     assert body["meta"]["requestId"].startswith("req_")
     assert resp.headers["X-Request-Id"] == body["meta"]["requestId"]
 

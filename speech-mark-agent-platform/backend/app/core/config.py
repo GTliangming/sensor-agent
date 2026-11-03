@@ -49,6 +49,10 @@ class Settings(BaseSettings):
     # 例如 CORS_ORIGINS=["http://localhost:5173"]
     cors_origins: list[str] = ["http://localhost:5173", "http://127.0.0.1:5173"]
 
+    # ---- JWT ----
+    jwt_algorithm: str = "HS256"
+    access_token_expire_minutes: int = 480  # 8 小时
+
     @property
     def is_dev(self) -> bool:
         """是否开发环境；用于决定是否开启调试日志、放宽鉴权等。"""
