@@ -14,6 +14,7 @@ from fastapi import FastAPI
 
 from app.core.config import get_settings
 from app.core.logging import setup_logging
+from app.db.init_db import init_db
 
 logger = logging.getLogger(__name__)
 
@@ -27,6 +28,12 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
     """
     settings = get_settings()
     setup_logging(settings.log_level)
+
+    # 初始化数据库
+    await init_db()
+    logger.info("database initialized", extra={"module_name": "lifespan"})
+
+
     logger.info(
         "app started",
         extra={"module_name": "lifespan", "app_env": settings.app_env},
@@ -36,3 +43,4 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
     finally:
         # 用 finally 保证即使启动后运行期抛异常，关停日志也不会丢
         logger.info("app stopped", extra={"module_name": "lifespan"})
+
