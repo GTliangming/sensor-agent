@@ -1,10 +1,10 @@
 import { PlusOutlined, SendOutlined } from '@ant-design/icons';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { App, Avatar, Button, Empty, Input, List, Space, Spin, Tag } from 'antd';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 
-import { createRun, createThread, listThreads } from '@/services/agent';
+import { createRun, createThread, listMessages, listThreads } from '@/services/agent';
 import type { AgentTrace, ChatMessage } from '@/types';
 import { formatDateTime, formatDuration } from '@/utils/format';
 
@@ -17,6 +17,7 @@ export default function ChatPage() {
     const [messages, setMessages] = useState<ChatMessage[]>([]);
     const [input, setInput] = useState('');
     const [sending, setSending] = useState(false);
+    const [loadingMessages, setLoadingMessages] = useState(false);
 
     const { data: threads = [], isLoading: threadsLoading, refetch } = useQuery({
         queryKey: ['threads'],
@@ -93,6 +94,37 @@ export default function ChatPage() {
         }
     };
 
+    useEffect(() => {
+        if (!activeThreadId) {
+            return;
+        }
+
+        let cancelled = false;
+        setLoadingMessages(true);
+
+        listMessages(activeThreadId)
+            .then(rows => {
+                if (!cancelled) {
+                    setMessages(rows);
+                }
+            })
+            .catch(error => {
+                if (!cancelled) {
+                    message.error(error instanceof Error ? error.message : '加载消息失败');
+                }
+            })
+            .finally(() => {
+                if (!cancelled) {
+                    setLoadingMessages(false);
+                }
+            });
+
+        return () => {
+            cancelled = true;
+        };
+        }, [activeThreadId, message]
+    );
+
     return (
         <div className="chat-page">
             <aside className="chat-panel">
@@ -126,7 +158,6 @@ export default function ChatPage() {
                                             item.id === activeThreadId ? '#eef3ff' : 'transparent',
                                     }}
                                     onClick={() => {
-                                        setMessages([]);
                                         navigate(`/chat/${item.id}`);
                                     }}
                                 >
@@ -147,7 +178,13 @@ export default function ChatPage() {
 
             <main className="chat-main">
                 <div className="chat-main__body">
-                    {messages.length === 0 ? (
+                    {
+                        loadingMessages ? (
+                        <div className="page-loading">
+                            <Spin />
+                        </div>
+                    ) :
+                        messages.length === 0 ? (
                         <div className="chat-main__empty">
                             <Empty
                                 description={

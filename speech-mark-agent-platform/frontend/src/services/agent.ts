@@ -1,4 +1,4 @@
-import type { AgentRun, AgentThread, AgentTrace } from '@/types';
+import type { AgentRun, AgentThread, AgentTrace,ChatMessage } from '@/types';
 
 import { api } from './http';
 import { mockCreateRun, mockCreateThread, mockListThreads } from './mock';
@@ -35,4 +35,10 @@ export function getRun(runId: string): Promise<AgentRun> {
 
 export function getTrace(runId: string): Promise<AgentTrace> {
     return api.get<AgentTrace>(`/agent/runs/${runId}/trace`);
+}
+export function listMessages(threadId: string): Promise<ChatMessage[]> {
+    if (useMock) {
+        return Promise.resolve([]);
+    }
+    return api.get<ChatMessage[]>(`/agent/threads/${threadId}/messages`);
 }
