@@ -90,3 +90,14 @@ def disabled_user(client) -> str:
             go_user_id=None,
         )
     )
+@pytest.fixture(scope="session")
+def second_user(client) -> str:
+    return asyncio.run(
+        _seed_user(
+            username="other",
+            password="Password123!",
+            role="annotator",
+            status="active",
+            go_user_id=None,
+        )
+    )

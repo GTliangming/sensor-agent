@@ -63,3 +63,12 @@ class AgentRun(TimestampMixin, Base):
     finished_at: Mapped[datetime | None] = mapped_column(
         DateTime(timezone=True), nullable=True
     )
+
+    @property
+    def thread_id(self) -> str:
+        """对外 DTO（RunDTO）用 thread_id 这个名字；底层列其实是 conversation_id。
+
+        RunDTO.model_validate(run) 会按字段名读 thread_id，这里做一层名称适配，
+        避免把「thread（对外术语）↔ conversation（存储术语）」的映射散落到各处。
+        """
+        return self.conversation_id
