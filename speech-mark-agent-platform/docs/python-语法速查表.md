@@ -173,7 +173,117 @@ logger.warning("llm retry reason=%s attempt=%s", reason, attempt)   # client.py
 
 ---
 
+## 十、进阶类型与接口
+
+**`Sequence[X]`（from collections.abc）** — 「只读序列」，比 `list[X]` 宽松
+```python
+async def chat(self, messages: Sequence[LLMMessage], ...):   # client.py
+```
+接受 list/tuple 等任何序列，且语义上「只读不改」（不保证能 append）。参数用它更通用。
+
+**`Protocol`（from typing）** — 结构化类型（静态鸭子类型）：按「长什么样」定义接口
+```python
+class ChatClient(Protocol):                      # chat_service.py
+    async def chat(self, messages, *, ...) -> LLMResult: ...
+```
+任何对象只要有签名匹配的 `chat` 方法，就自动算 `ChatClient`，无需显式继承。好处：解耦 + 好测试（可塞假客户端）。`...` 表示「只声明不实现」。
+
+**泛型类 `Envelope[T]`（PEP 695，Python 3.12 新语法）** — 带类型参数的类
+```python
+class Envelope[T](APIModel):     # common.py，定义
+    data: T | None = None
+# 用：Envelope[UserDTO]、Envelope[LoginResponse] —— data 被约束成具体类型
+```
+让「同一个壳，不同的 data 类型」既复用又类型精确，OpenAPI 文档也能生成准确结构。
+
+**`StrEnum`（from enum）** — 值就是字符串的枚举
+```python
+class ErrorCode(StrEnum):        # error_catalog.py
+    NOT_FOUND = "NOT_FOUND"
+# ErrorCode.NOT_FOUND == "NOT_FOUND" 为 True，可直接当字符串用
+```
+用枚举而非裸字符串：集中登记、防拼写漂移、IDE 能补全。
+
+## 十一、Pydantic 常用写法
+
+**`model_validate(obj)`** — 从 dict 或 ORM 对象校验并构造模型
+```python
+return ThreadDTO.model_validate(conversation)   # chat_service.py，ORM → DTO
+```
+配合 base.py 的 `from_attributes=True`，能直接吃 ORM 实例，省去手写字段映射。
+
+**`model_dump(by_alias=True)`** — 把模型序列化成 dict（按别名输出 camelCase）
+```python
+meta.model_dump(by_alias=True)                  # common.py
+```
+不加 `by_alias` 默认输出 snake_case 字段名；要 camelCase 必须显式传。
+
+**`Field(...)`** — 给字段加约束/默认值
+```python
+title: str = Field(default="新会话", max_length=200)      # agent.py
+messages: str = Field(min_length=1, max_length=8000)
+```
+
+**`model_config = ConfigDict(...)`** — 模型级配置（别名、ORM 读取等）
+```python
+model_config = ConfigDict(alias_generator=to_camel, from_attributes=True)  # base.py
+```
+
+**可变默认值：Python 的坑 vs Pydantic 的安全**
+```python
+warnings: list[str] = []        # common.py，Pydantic 下安全
+```
+⚠️ 普通函数里 `def f(x=[])` 是经典陷阱（默认列表被所有调用共享）；但 **Pydantic 模型字段**的可变默认值会被**每个实例深拷贝**，所以这里写 `= []` 是安全的。两者规则不同，别混。
+
+## 十二、ORM 与异步进阶
+
+**`Mapped[...]` + `mapped_column(...)`** — SQLAlchemy 2.0 带类型的列声明
+```python
+created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), ...)  # base.py
+```
+`名称: Mapped[类型] = mapped_column(...)` 是固定三件套，注解里的类型 SQLAlchemy 会据此推断列。写成 `=` 而非 `:` 会报错（之前踩过）。
+
+**`lambda` 作默认工厂** — 每次新建对象时现算一个值
+```python
+id: Mapped[str] = mapped_column(String(32), default=lambda: uuid4().hex)  # models
+```
+用 `lambda:` 包起来表示「插入时才调用生成新 id」，而不是建表时算一次。
+
+**`@asynccontextmanager` + `AsyncIterator` + `yield`** — 另一种造异步上下文管理器
+```python
+@asynccontextmanager                               # lifespan.py
+async def lifespan(app) -> AsyncIterator[None]:
+    setup_logging(...)      # yield 之前：启动
+    yield
+    logger.info("stopped")  # yield 之后：关停
+```
+`yield` 把函数一分为二：之前是「进入」，之后是「退出」。比手写 `__aenter__/__aexit__` 更短。
+
+**生成器依赖（yield）** — FastAPI 用 `yield` 分「请求用前 / 用后」
+```python
+async def get_db() -> AsyncIterator[AsyncSession]:   # session.py
+    async with SessionLocal() as session:
+        yield session        # 把 session 交给路由用
+        # 请求结束后回到这里收尾（出错则 rollback）
+```
+
+**`ContextVar`（from contextvars）** — 异步安全的「请求级全局变量」
+```python
+_request_id: ContextVar[str] = ContextVar("request_id", default="-")  # context.py
+```
+每个请求（asyncio Task）有自己的副本，高并发下互不串扰，替代会被覆盖的普通全局变量。
+
+**`@event.listens_for(...)`** — 装饰器注册事件钩子
+```python
+@event.listens_for(engine.sync_engine, "connect")   # session.py
+def _enable_sqlite_foreign_keys(dbapi_conn, _rec): ...
+```
+「每建立一条数据库连接就自动执行此函数」。装饰器把普通函数「挂」到某个事件上。
+
 ## 用法建议
+
+
+
 
 1. 读项目代码卡住时，先回这里按符号查。
 2. 这些占了本项目「看不懂」的 ~90%，看熟后基本无障碍读自己的代码。
