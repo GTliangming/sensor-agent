@@ -1,54 +1,52 @@
-# Sensor-Agent · 工业传感器 / 示波器领域 AI Agent
+# Sensor-Agent · AI Agent 学习与实战仓库
 
-一个面向工业传感器、示波器垂直领域的 AI Agent 项目:喂入该领域的 datasheet、手册、规格书等文档，
-实现「基于文档检索作答 + 带出处 + 可调工具 + 带记忆」的智能问答与任务助手。
+本仓库是多个 AI Agent 相关子项目的集合：从 LangChain / LangGraph 的基础学习 Demo，
+到语音标注领域的完整智能运营平台，以及其它练手项目。
 
-> 当前已实现 React 前端、Flask 后端以及 SQLite + FAISS 的 RAG 链路。部署使用 GitHub Pages 前端和 Railway Docker 后端，见[部署指南](docs/06-Railway部署指南.md)。
+## 子项目一览
 
-## 这个项目要解决的真实问题
+### 1. `speech-mark-agent-platform/` — 语音标注智能运营分析平台（主项目）
 
-对照目标岗位（企业级 AI Agent 开发）的硬要求，本项目用来补齐三块短板：
+面向语音标注运营场景的 AI Agent 平台：FastAPI 后端 + React 前端，
+接入 DeepSeek 大模型，实现智能对话分析与标注运营助手。
 
-- **真实上线、可访问的 AI Agent 项目**（非 Demo、非纯调 API）
-- **RAG 全链路**：文档解析 → 分块 → Embedding → 向量检索 → 重排
-- **Agent 编排**：任务规划 → 工具调用 → 记忆管理
+- 后端：Python 3.12 + FastAPI + SQLAlchemy（异步）+ SQLite，依赖用 [uv](https://docs.astral.sh/uv/) 管理
+- 前端：React 19 + Vite + TypeScript + Ant Design + TanStack Query
+- 详见 [backend/README.md](speech-mark-agent-platform/backend/README.md) 与 [frontend/README.md](speech-mark-agent-platform/frontend/README.md)
 
-## 技术栈一览
+```bash
+# 后端（需要 uv）
+cd speech-mark-agent-platform/backend
+uv sync
+uv run uvicorn app.main:app --reload   # http://127.0.0.1:8000
 
-- 前端：React（Vite + TypeScript），两个页面——①文档管理页（上传多格式文档 / 列表 / **按原始排版预览**）②提问页（SSE 流式问答 + 引用展示）
-- 文档格式：PDF / Word(docx) / Excel(xlsx) / TXT / Markdown；预览用 pdf.js、docx-preview、SheetJS 等前端渲染库还原排版
-- 后端：Python + **Flask**
-- AI 编排：**LangChain + LangGraph**
-- 向量库：**Milvus**（Docker）
-- 记忆 / 缓存：**Redis**（Docker）
-- 对话模型：**DeepSeek**（OpenAI 兼容接口）
-- 向量模型：**bge-m3 via 硅基流动 SiliconFlow**（因为 DeepSeek 没有 embedding 接口，见下）
+# 前端
+cd speech-mark-agent-platform/frontend
+npm install
+npm run dev                            # http://localhost:5173
+```
 
-## 开工前需要准备的 Key
+### 2. `langchain-agent/` — LangChain 基础学习 Demo
 
-1. **DeepSeek API Key** —— 负责对话 / 推理（你已有）
-2. **SiliconFlow API Key** —— 负责 embedding（`bge-m3`），有免费额度
-   - ⚠️ 关键坑：**DeepSeek 官方没有 embedding（向量化）接口**，RAG 的向量化必须另找服务，详见设计文档。
+`demo.py ~ demo6.py`：从模型调用、消息、Prompt、工具定义到 `create_agent` 的渐进式示例。
+依赖见 `langchain-agent/requirements.txt`。
 
-## 开工前的环境要求
+### 3. `langgraph/` — LangGraph 基础学习 Demo
 
-- **Python** ≥ 3.10（LangChain 生态建议 3.10+）
-- **Node.js** ≥ 18（Vite 5 要求）
-- **Docker** + **Docker Compose**（用来跑 Milvus / Redis；装 Docker Desktop 即可）
-- 建议用 Python 虚拟环境（venv / conda）隔离依赖
+`demo.py / demo2.py`：StateGraph 图编排、消息状态、记忆（InMemorySaver）等最小示例。
+依赖见 `langgraph/requirements.txt`。
 
-## 文档地图
+### 4. `shop-manager/` — 模拟超市游戏项目（非 AI）
 
-- [`docs/01-方案设计与实现计划.md`](docs/01-方案设计与实现计划.md)
-  —— 完整分析过程、第一版功能目的、项目架构、实现步骤、数据准备、效果评测、注意事项、配置示例（**先读这篇**）
-- [`docs/02-分层深入与升级路线.md`](docs/02-分层深入与升级路线.md)
-  —— 第一版跑通后，如何一层层深入原理、从哪里入手、怎么升级到生产级
-- [`docs/03-术语表.md`](docs/03-术语表.md)
-  —— 前端视角的 AI 术语速查（embedding / rerank / Agent / LangGraph 等），遇到生词回来查
-- [`docs/06-Railway部署指南.md`](docs/06-Railway部署指南.md)
-  —— Railway Docker 服务、环境变量、GitHub Pages 接口地址及部署验证
+Unity 模拟经营游戏的设计文档与素材：`开发计划.md`、`开发文档.docx`、`game/` 等。
 
-## 阅读顺序建议
+## 根目录环境
 
-先通读 `01`，建立"要做什么、怎么搭"的整体认知；动手把第一版跑通后，再按 `02`
-挑你最想吃透的那一层深入。不要一开始就陷进某一层的原理里，**先让链路跑通**。
+- Python 虚拟环境统一放在根目录 `.venv/`（Python 3.12），各子项目共享
+- 根 `.env` 统一存放各项目使用的 Key（`DEEPSEEK_API_KEY`、`SILICONFLOW_API_KEY` 等），已被 gitignore，不会提交
+- 依赖说明见根目录 `requirements.txt`
+
+## 历史
+
+早期版本是一个独立的「工业传感器领域 RAG 问答 Agent」（Flask + FAISS + React），
+已被上面的子项目取代，相关代码与设计文档已从仓库移除（可在 git 历史中找到）。
