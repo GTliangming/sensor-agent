@@ -417,12 +417,63 @@ Claude Code 是整个工作流的总调度者。
 4. 不要直接推翻整个项目。
 5. 只有在确实需要用户决策时才询问。
 
+## 8. 依赖安装规范（强制）
+
+生成视频过程中经常会发现缺少系统工具或第三方包（如 ffmpeg、edge-tts、Node 依赖等）。
+**严禁在没有确认安装位置的情况下直接 `pip install` / `npm install -g` / `brew install` 全局安装。**
+必须按以下规则处理：
+
+### 8.1 安装位置规则
+
+| 缺失内容 | 类型 | 安装方式 |
+|---|---|---|
+| ffmpeg、blender、node 等 | 系统级可执行程序 | 先检查是否已存在；确实缺失时**先询问用户**，经确认后用包管理器（brew 等）安装，不得静默全局安装 |
+| Python 包（edge-tts、pydub、whisper 等） | 后端/脚本依赖 | 在**当前视频项目文件夹**内创建虚拟环境（`.venv`）并安装，用 `python -m pip` / `uv pip` 指向该 venv |
+| JS 依赖（remotion、three、vite 等） | 前端依赖 | 在对应的**项目子目录**（如 `remotion/`、`threejs/`）内 `npm install`，**禁止 `-g` 全局安装** |
+
+### 8.2 项目内虚拟环境标准流程
+
+按第 9 节创建项目文件夹后，如需 Python 包：
+
+```bash
+cd <项目根目录>
+python3 -m venv .venv
+.venv/bin/python -m pip install <缺失的包>   # 例如 edge-tts
+.venv/bin/python <脚本>.py                   # 后续脚本统一用 venv 解释器执行
+```
+
+要点：
+
+1. 虚拟环境必须建在当前视频项目文件夹内，与项目一起管理，不污染全局。
+2. 每次执行需要这些包的脚本时，都使用 `.venv/bin/python`，不要依赖系统 Python。
+3. 依赖确定后写入项目内的 `requirements.txt`，便于复现。
+4. 前端依赖同理：`package.json` 必须落在对应子目录内，`node_modules` 留在该目录下。
+
+### 8.3 安装前检查顺序
+
+发现依赖缺失时，按顺序执行：
+
+1. **先探测**：`which ffmpeg`、`python3 -c "import edge_tts"`、`node -e "require('three')"` 等，确认是否真的缺失（很多工具已装但不在 PATH 或在项目 venv 里）。
+2. **再定位**：确认缺失的是系统工具、Python 包还是 JS 包，按 8.1 的表格选择安装位置。
+3. **后安装**：按 8.2 的流程安装到项目内；只有系统级工具才考虑包管理器，且需先征得用户同意。
+4. **做记录**：把实际安装的包与版本记录到项目 README 或 requirements 文件中。
+
+禁止事项：
+
+- ❌ `pip install --user`、`pip install` 到系统/全局 Python。
+- ❌ `npm install -g`。
+- ❌ 不问原因直接 `brew install` 系统工具。
+- ❌ 在项目文件夹外散落创建虚拟环境。
+- ✅ 允许：项目内 `.venv`、项目内 `node_modules`、经用户确认后的系统包管理器安装。
+
 ## 9. 项目工程规范
 
 建议项目目录：
 
 ```text
 science-video/
+├── .venv/                    # 项目内 Python 虚拟环境（见第 8 节，勿用全局环境）
+├── requirements.txt          # Python 依赖记录（edge-tts 等）
 ├── docs/
 │   ├── research.md
 │   ├── script.md
@@ -598,7 +649,8 @@ science-video/
 10. 优先构建可重复使用的模型、场景、材质、动画和镜头组件。
 11. 每个镜头不超过 15 秒。
 12. 尽量实现自动化制作，同时保留人工质量控制。
-13. 最终目标是输出真正具有电影感的 3D 科普作品，而不是仅仅成功运行一段程序。
+13. 依赖安装必须遵守第 8 节：Python 包装进项目内虚拟环境，前端包装在对应项目子目录，禁止全局安装。
+14. 最终目标是输出真正具有电影感的 3D 科普作品，而不是仅仅成功运行一段程序。
 
 ---
 
