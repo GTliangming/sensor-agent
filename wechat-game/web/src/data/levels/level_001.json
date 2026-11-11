@@ -1,0 +1,437 @@
+{
+  "id": "level_001",
+  "chapterId": "chapter_01",
+  "levelNumber": 1,
+  "name": "床头柜",
+  "sceneId": "ch01_bedside",
+  "difficulty": 1,
+  "teaching": "点击正确物件",
+  "designResolution": {
+    "width": 1080,
+    "height": 1920
+  },
+  "objectives": [
+    {
+      "itemId": "earphone",
+      "requiredCount": 3,
+      "displayVariant": "white"
+    },
+    {
+      "itemId": "medicine_bottle",
+      "requiredCount": 3,
+      "displayVariant": "white"
+    }
+  ],
+  "itemInstances": [
+    {
+      "id": "water_cup_001",
+      "itemId": "water_cup",
+      "variantId": "default",
+      "position": {
+        "x": 173,
+        "y": 566
+      },
+      "rotation": 5,
+      "scale": 2.037,
+      "layer": 1,
+      "zone": "pile",
+      "blocking": []
+    },
+    {
+      "id": "book_001",
+      "itemId": "book",
+      "variantId": "default",
+      "position": {
+        "x": 177,
+        "y": 798
+      },
+      "rotation": -2,
+      "scale": 1.719,
+      "layer": 1,
+      "zone": "pile",
+      "blocking": []
+    },
+    {
+      "id": "sticky_note_001",
+      "itemId": "sticky_note",
+      "variantId": "default",
+      "position": {
+        "x": 147,
+        "y": 1079
+      },
+      "rotation": 6,
+      "scale": 2.2,
+      "layer": 1,
+      "zone": "pile",
+      "blocking": []
+    },
+    {
+      "id": "medicine_bottle_001",
+      "itemId": "medicine_bottle",
+      "variantId": "white",
+      "position": {
+        "x": 168,
+        "y": 1385
+      },
+      "rotation": -8,
+      "scale": 2.037,
+      "layer": 1,
+      "zone": "pile",
+      "blocking": []
+    },
+    {
+      "id": "tissue_001",
+      "itemId": "tissue",
+      "variantId": "default",
+      "position": {
+        "x": 431,
+        "y": 548
+      },
+      "rotation": 1,
+      "scale": 2.037,
+      "layer": 1,
+      "zone": "pile",
+      "blocking": []
+    },
+    {
+      "id": "pen_001",
+      "itemId": "pen",
+      "variantId": "default",
+      "position": {
+        "x": 389,
+        "y": 809
+      },
+      "rotation": -4,
+      "scale": 2.2,
+      "layer": 1,
+      "zone": "pile",
+      "blocking": []
+    },
+    {
+      "id": "medicine_bottle_002",
+      "itemId": "medicine_bottle",
+      "variantId": "amber",
+      "position": {
+        "x": 416,
+        "y": 1118
+      },
+      "rotation": -6,
+      "scale": 2.037,
+      "layer": 1,
+      "zone": "pile",
+      "blocking": []
+    },
+    {
+      "id": "earphone_001",
+      "itemId": "earphone",
+      "variantId": "black",
+      "position": {
+        "x": 405,
+        "y": 1394
+      },
+      "rotation": -5,
+      "scale": 1.719,
+      "layer": 1,
+      "zone": "pile",
+      "blocking": []
+    },
+    {
+      "id": "glasses_001",
+      "itemId": "glasses",
+      "variantId": "default",
+      "position": {
+        "x": 651,
+        "y": 529
+      },
+      "rotation": -7,
+      "scale": 2.037,
+      "layer": 1,
+      "zone": "pile",
+      "blocking": []
+    },
+    {
+      "id": "earphone_002",
+      "itemId": "earphone",
+      "variantId": "white",
+      "position": {
+        "x": 683,
+        "y": 844
+      },
+      "rotation": 5,
+      "scale": 1.719,
+      "layer": 1,
+      "zone": "pile",
+      "blocking": []
+    },
+    {
+      "id": "power_bank_001",
+      "itemId": "power_bank",
+      "variantId": "default",
+      "position": {
+        "x": 666,
+        "y": 1126
+      },
+      "rotation": -2,
+      "scale": 2.037,
+      "layer": 1,
+      "zone": "pile",
+      "blocking": []
+    },
+    {
+      "id": "key_001",
+      "itemId": "key",
+      "variantId": "default",
+      "position": {
+        "x": 690,
+        "y": 1390
+      },
+      "rotation": -9,
+      "scale": 2.2,
+      "layer": 1,
+      "zone": "pile",
+      "blocking": []
+    },
+    {
+      "id": "medicine_bottle_003",
+      "itemId": "medicine_bottle",
+      "variantId": "amber",
+      "position": {
+        "x": 915,
+        "y": 548
+      },
+      "rotation": -3,
+      "scale": 2.037,
+      "layer": 1,
+      "zone": "pile",
+      "blocking": []
+    },
+    {
+      "id": "water_cup_002",
+      "itemId": "water_cup",
+      "variantId": "default",
+      "position": {
+        "x": 908,
+        "y": 798
+      },
+      "rotation": -11,
+      "scale": 2.037,
+      "layer": 1,
+      "zone": "pile",
+      "blocking": []
+    },
+    {
+      "id": "earphone_003",
+      "itemId": "earphone",
+      "variantId": "black",
+      "position": {
+        "x": 932,
+        "y": 1112
+      },
+      "rotation": 7,
+      "scale": 1.719,
+      "layer": 1,
+      "zone": "pile",
+      "blocking": []
+    },
+    {
+      "id": "book_002",
+      "itemId": "book",
+      "variantId": "default",
+      "position": {
+        "x": 933,
+        "y": 1354
+      },
+      "rotation": 8,
+      "scale": 1.719,
+      "layer": 1,
+      "zone": "pile",
+      "blocking": []
+    },
+    {
+      "id": "sticky_note_002",
+      "itemId": "sticky_note",
+      "variantId": "default",
+      "position": {
+        "x": 305,
+        "y": 666
+      },
+      "rotation": -11,
+      "scale": 2.2,
+      "layer": 0,
+      "zone": "pile",
+      "blocking": [
+        "book_001",
+        "pen_001",
+        "tissue_001",
+        "water_cup_001"
+      ]
+    },
+    {
+      "id": "tissue_002",
+      "itemId": "tissue",
+      "variantId": "default",
+      "position": {
+        "x": 288,
+        "y": 982
+      },
+      "rotation": 1,
+      "scale": 2.037,
+      "layer": 0,
+      "zone": "pile",
+      "blocking": [
+        "book_001",
+        "medicine_bottle_002",
+        "sticky_note_001"
+      ]
+    },
+    {
+      "id": "pen_002",
+      "itemId": "pen",
+      "variantId": "default",
+      "position": {
+        "x": 273,
+        "y": 1240
+      },
+      "rotation": -8,
+      "scale": 2.2,
+      "layer": 0,
+      "zone": "pile",
+      "blocking": [
+        "earphone_001",
+        "sticky_note_001"
+      ]
+    },
+    {
+      "id": "glasses_002",
+      "itemId": "glasses",
+      "variantId": "default",
+      "position": {
+        "x": 554,
+        "y": 695
+      },
+      "rotation": 3,
+      "scale": 2.037,
+      "layer": 0,
+      "zone": "pile",
+      "blocking": [
+        "earphone_002",
+        "tissue_001"
+      ]
+    },
+    {
+      "id": "power_bank_002",
+      "itemId": "power_bank",
+      "variantId": "default",
+      "position": {
+        "x": 525,
+        "y": 980
+      },
+      "rotation": 0,
+      "scale": 2.037,
+      "layer": 0,
+      "zone": "pile",
+      "blocking": [
+        "earphone_002",
+        "medicine_bottle_002",
+        "pen_001",
+        "power_bank_001"
+      ]
+    },
+    {
+      "id": "key_002",
+      "itemId": "key",
+      "variantId": "default",
+      "position": {
+        "x": 517,
+        "y": 1233
+      },
+      "rotation": 3,
+      "scale": 2.2,
+      "layer": 0,
+      "zone": "pile",
+      "blocking": [
+        "key_001",
+        "medicine_bottle_002",
+        "power_bank_001"
+      ]
+    },
+    {
+      "id": "water_cup_003",
+      "itemId": "water_cup",
+      "variantId": "default",
+      "position": {
+        "x": 811,
+        "y": 696
+      },
+      "rotation": -2,
+      "scale": 2.037,
+      "layer": 0,
+      "zone": "pile",
+      "blocking": [
+        "earphone_002",
+        "medicine_bottle_003",
+        "water_cup_002"
+      ]
+    },
+    {
+      "id": "book_003",
+      "itemId": "book",
+      "variantId": "default",
+      "position": {
+        "x": 791,
+        "y": 957
+      },
+      "rotation": 9,
+      "scale": 1.719,
+      "layer": 0,
+      "zone": "pile",
+      "blocking": [
+        "earphone_002",
+        "earphone_003",
+        "power_bank_001",
+        "water_cup_002"
+      ]
+    },
+    {
+      "id": "sticky_note_003",
+      "itemId": "sticky_note",
+      "variantId": "default",
+      "position": {
+        "x": 776,
+        "y": 1213
+      },
+      "rotation": -6,
+      "scale": 2.2,
+      "layer": 0,
+      "zone": "pile",
+      "blocking": [
+        "book_002",
+        "earphone_003",
+        "power_bank_001"
+      ]
+    }
+  ],
+  "gridConfig": {
+    "targetSlots": {
+      "baseCount": 2,
+      "maxCount": 2
+    },
+    "collectionSlots": {
+      "capacity": 4
+    },
+    "adConfig": {
+      "enabled": true,
+      "simulated": true
+    }
+  },
+  "hintConfig": {
+    "enabled": true,
+    "autoHintSeconds": 12,
+    "maxFreeUses": 3,
+    "highlightDuration": 2.5
+  },
+  "completionConfig": {
+    "requireAllObjectivesCompleted": true,
+    "nextLevelId": "level_002"
+  }
+}

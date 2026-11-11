@@ -1,0 +1,18 @@
+{
+  "id": "chapter_01",
+  "chapterNumber": 1,
+  "name": "出租屋的凌晨",
+  "description": "凌晨的出租屋里，东西总是找不到。",
+  "levelIds": [
+    "level_001",
+    "level_002",
+    "level_003",
+    "level_004",
+    "level_005",
+    "level_006",
+    "level_007",
+    "level_008",
+    "level_009",
+    "level_010"
+  ]
+}

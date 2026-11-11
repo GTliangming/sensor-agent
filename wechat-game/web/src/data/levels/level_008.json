@@ -1,0 +1,844 @@
+{
+  "id": "level_008",
+  "chapterId": "chapter_01",
+  "levelNumber": 8,
+  "name": "手机壳博物馆",
+  "sceneId": "ch01_phone_case",
+  "difficulty": 8,
+  "teaching": "归位格满了可以救场",
+  "designResolution": {
+    "width": 1080,
+    "height": 1920
+  },
+  "objectives": [
+    {
+      "itemId": "mobile_case",
+      "requiredCount": 5,
+      "displayVariant": "clear"
+    },
+    {
+      "itemId": "mobile_screen_protector",
+      "requiredCount": 3,
+      "displayVariant": "default"
+    }
+  ],
+  "itemInstances": [
+    {
+      "id": "plastic_bag_001",
+      "itemId": "plastic_bag",
+      "variantId": "default",
+      "position": {
+        "x": 127,
+        "y": 519
+      },
+      "rotation": -2,
+      "scale": 1.313,
+      "layer": 2,
+      "zone": "pile",
+      "blocking": []
+    },
+    {
+      "id": "earphone_001",
+      "itemId": "earphone",
+      "variantId": "white",
+      "position": {
+        "x": 147,
+        "y": 704
+      },
+      "rotation": 12,
+      "scale": 1.313,
+      "layer": 2,
+      "zone": "pile",
+      "blocking": []
+    },
+    {
+      "id": "sticker_001",
+      "itemId": "sticker",
+      "variantId": "default",
+      "position": {
+        "x": 136,
+        "y": 861
+      },
+      "rotation": 7,
+      "scale": 1.68,
+      "layer": 2,
+      "zone": "pile",
+      "blocking": []
+    },
+    {
+      "id": "power_bank_001",
+      "itemId": "power_bank",
+      "variantId": "default",
+      "position": {
+        "x": 138,
+        "y": 1050
+      },
+      "rotation": -6,
+      "scale": 1.556,
+      "layer": 2,
+      "zone": "pile",
+      "blocking": []
+    },
+    {
+      "id": "usb_drive_001",
+      "itemId": "usb_drive",
+      "variantId": "default",
+      "position": {
+        "x": 125,
+        "y": 1229
+      },
+      "rotation": -10,
+      "scale": 1.68,
+      "layer": 2,
+      "zone": "pile",
+      "blocking": []
+    },
+    {
+      "id": "charging_head_001",
+      "itemId": "charging_head",
+      "variantId": "default",
+      "position": {
+        "x": 129,
+        "y": 1419
+      },
+      "rotation": -1,
+      "scale": 1.556,
+      "layer": 2,
+      "zone": "pile",
+      "blocking": []
+    },
+    {
+      "id": "mobile_case_001",
+      "itemId": "mobile_case",
+      "variantId": "clear",
+      "position": {
+        "x": 319,
+        "y": 510
+      },
+      "rotation": -9,
+      "scale": 1.556,
+      "layer": 2,
+      "zone": "pile",
+      "blocking": []
+    },
+    {
+      "id": "mobile_case_002",
+      "itemId": "mobile_case",
+      "variantId": "blue",
+      "position": {
+        "x": 344,
+        "y": 680
+      },
+      "rotation": 4,
+      "scale": 1.556,
+      "layer": 2,
+      "zone": "pile",
+      "blocking": []
+    },
+    {
+      "id": "battery_001",
+      "itemId": "battery",
+      "variantId": "default",
+      "position": {
+        "x": 316,
+        "y": 881
+      },
+      "rotation": 5,
+      "scale": 1.68,
+      "layer": 2,
+      "zone": "pile",
+      "blocking": []
+    },
+    {
+      "id": "charging_cable_001",
+      "itemId": "charging_cable",
+      "variantId": "blue",
+      "position": {
+        "x": 318,
+        "y": 1054
+      },
+      "rotation": -5,
+      "scale": 1.556,
+      "layer": 2,
+      "zone": "pile",
+      "blocking": []
+    },
+    {
+      "id": "plastic_bag_002",
+      "itemId": "plastic_bag",
+      "variantId": "default",
+      "position": {
+        "x": 324,
+        "y": 1241
+      },
+      "rotation": -12,
+      "scale": 1.313,
+      "layer": 2,
+      "zone": "pile",
+      "blocking": []
+    },
+    {
+      "id": "earphone_002",
+      "itemId": "earphone",
+      "variantId": "white",
+      "position": {
+        "x": 356,
+        "y": 1433
+      },
+      "rotation": 11,
+      "scale": 1.313,
+      "layer": 2,
+      "zone": "pile",
+      "blocking": []
+    },
+    {
+      "id": "sticker_002",
+      "itemId": "sticker",
+      "variantId": "default",
+      "position": {
+        "x": 553,
+        "y": 495
+      },
+      "rotation": 9,
+      "scale": 1.68,
+      "layer": 2,
+      "zone": "pile",
+      "blocking": []
+    },
+    {
+      "id": "power_bank_002",
+      "itemId": "power_bank",
+      "variantId": "default",
+      "position": {
+        "x": 543,
+        "y": 687
+      },
+      "rotation": 2,
+      "scale": 1.556,
+      "layer": 2,
+      "zone": "pile",
+      "blocking": []
+    },
+    {
+      "id": "mobile_screen_protector_001",
+      "itemId": "mobile_screen_protector",
+      "variantId": "default",
+      "position": {
+        "x": 538,
+        "y": 859
+      },
+      "rotation": -4,
+      "scale": 1.556,
+      "layer": 2,
+      "zone": "pile",
+      "blocking": []
+    },
+    {
+      "id": "mobile_case_003",
+      "itemId": "mobile_case",
+      "variantId": "frosted",
+      "position": {
+        "x": 531,
+        "y": 1038
+      },
+      "rotation": 4,
+      "scale": 1.556,
+      "layer": 2,
+      "zone": "pile",
+      "blocking": []
+    },
+    {
+      "id": "usb_drive_002",
+      "itemId": "usb_drive",
+      "variantId": "default",
+      "position": {
+        "x": 529,
+        "y": 1232
+      },
+      "rotation": -7,
+      "scale": 1.68,
+      "layer": 2,
+      "zone": "pile",
+      "blocking": []
+    },
+    {
+      "id": "charging_head_002",
+      "itemId": "charging_head",
+      "variantId": "default",
+      "position": {
+        "x": 529,
+        "y": 1418
+      },
+      "rotation": 11,
+      "scale": 1.556,
+      "layer": 2,
+      "zone": "pile",
+      "blocking": []
+    },
+    {
+      "id": "battery_002",
+      "itemId": "battery",
+      "variantId": "default",
+      "position": {
+        "x": 756,
+        "y": 492
+      },
+      "rotation": -10,
+      "scale": 1.68,
+      "layer": 2,
+      "zone": "pile",
+      "blocking": []
+    },
+    {
+      "id": "charging_cable_002",
+      "itemId": "charging_cable",
+      "variantId": "red",
+      "position": {
+        "x": 755,
+        "y": 705
+      },
+      "rotation": 2,
+      "scale": 1.556,
+      "layer": 2,
+      "zone": "pile",
+      "blocking": []
+    },
+    {
+      "id": "plastic_bag_003",
+      "itemId": "plastic_bag",
+      "variantId": "default",
+      "position": {
+        "x": 736,
+        "y": 864
+      },
+      "rotation": -1,
+      "scale": 1.313,
+      "layer": 2,
+      "zone": "pile",
+      "blocking": []
+    },
+    {
+      "id": "earphone_003",
+      "itemId": "earphone",
+      "variantId": "pink",
+      "position": {
+        "x": 757,
+        "y": 1036
+      },
+      "rotation": -2,
+      "scale": 1.313,
+      "layer": 2,
+      "zone": "pile",
+      "blocking": []
+    },
+    {
+      "id": "sticker_003",
+      "itemId": "sticker",
+      "variantId": "default",
+      "position": {
+        "x": 730,
+        "y": 1236
+      },
+      "rotation": 5,
+      "scale": 1.68,
+      "layer": 2,
+      "zone": "pile",
+      "blocking": []
+    },
+    {
+      "id": "power_bank_003",
+      "itemId": "power_bank",
+      "variantId": "default",
+      "position": {
+        "x": 733,
+        "y": 1425
+      },
+      "rotation": 12,
+      "scale": 1.556,
+      "layer": 2,
+      "zone": "pile",
+      "blocking": []
+    },
+    {
+      "id": "usb_drive_003",
+      "itemId": "usb_drive",
+      "variantId": "default",
+      "position": {
+        "x": 937,
+        "y": 500
+      },
+      "rotation": 1,
+      "scale": 1.68,
+      "layer": 2,
+      "zone": "pile",
+      "blocking": []
+    },
+    {
+      "id": "charging_head_003",
+      "itemId": "charging_head",
+      "variantId": "default",
+      "position": {
+        "x": 938,
+        "y": 693
+      },
+      "rotation": 3,
+      "scale": 1.556,
+      "layer": 2,
+      "zone": "pile",
+      "blocking": []
+    },
+    {
+      "id": "battery_003",
+      "itemId": "battery",
+      "variantId": "default",
+      "position": {
+        "x": 961,
+        "y": 856
+      },
+      "rotation": 0,
+      "scale": 1.68,
+      "layer": 2,
+      "zone": "pile",
+      "blocking": []
+    },
+    {
+      "id": "charging_cable_003",
+      "itemId": "charging_cable",
+      "variantId": "white",
+      "position": {
+        "x": 954,
+        "y": 1056
+      },
+      "rotation": 4,
+      "scale": 1.556,
+      "layer": 2,
+      "zone": "pile",
+      "blocking": []
+    },
+    {
+      "id": "plastic_bag_004",
+      "itemId": "plastic_bag",
+      "variantId": "default",
+      "position": {
+        "x": 936,
+        "y": 1220
+      },
+      "rotation": -7,
+      "scale": 1.313,
+      "layer": 2,
+      "zone": "pile",
+      "blocking": []
+    },
+    {
+      "id": "earphone_004",
+      "itemId": "earphone",
+      "variantId": "white",
+      "position": {
+        "x": 947,
+        "y": 1430
+      },
+      "rotation": -4,
+      "scale": 1.313,
+      "layer": 2,
+      "zone": "pile",
+      "blocking": []
+    },
+    {
+      "id": "sticker_004",
+      "itemId": "sticker",
+      "variantId": "default",
+      "position": {
+        "x": 220,
+        "y": 597
+      },
+      "rotation": -2,
+      "scale": 1.68,
+      "layer": 1,
+      "zone": "pile",
+      "blocking": [
+        "earphone_001",
+        "mobile_case_001",
+        "mobile_case_002",
+        "plastic_bag_001"
+      ]
+    },
+    {
+      "id": "power_bank_004",
+      "itemId": "power_bank",
+      "variantId": "default",
+      "position": {
+        "x": 242,
+        "y": 765
+      },
+      "rotation": -1,
+      "scale": 1.556,
+      "layer": 1,
+      "zone": "pile",
+      "blocking": [
+        "battery_001",
+        "earphone_001",
+        "mobile_case_002",
+        "sticker_001"
+      ]
+    },
+    {
+      "id": "usb_drive_004",
+      "itemId": "usb_drive",
+      "variantId": "default",
+      "position": {
+        "x": 220,
+        "y": 1157
+      },
+      "rotation": 0,
+      "scale": 1.68,
+      "layer": 1,
+      "zone": "pile",
+      "blocking": [
+        "charging_cable_001",
+        "plastic_bag_002",
+        "power_bank_001",
+        "usb_drive_001"
+      ]
+    },
+    {
+      "id": "charging_head_004",
+      "itemId": "charging_head",
+      "variantId": "default",
+      "position": {
+        "x": 251,
+        "y": 1343
+      },
+      "rotation": -5,
+      "scale": 1.556,
+      "layer": 1,
+      "zone": "pile",
+      "blocking": [
+        "charging_head_001",
+        "earphone_002",
+        "plastic_bag_002"
+      ]
+    },
+    {
+      "id": "mobile_screen_protector_002",
+      "itemId": "mobile_screen_protector",
+      "variantId": "default",
+      "position": {
+        "x": 425,
+        "y": 601
+      },
+      "rotation": -7,
+      "scale": 1.556,
+      "layer": 1,
+      "zone": "pile",
+      "blocking": [
+        "mobile_case_001",
+        "mobile_case_002",
+        "power_bank_002",
+        "sticker_002"
+      ]
+    },
+    {
+      "id": "mobile_screen_protector_003",
+      "itemId": "mobile_screen_protector",
+      "variantId": "default",
+      "position": {
+        "x": 458,
+        "y": 773
+      },
+      "rotation": -8,
+      "scale": 1.556,
+      "layer": 1,
+      "zone": "pile",
+      "blocking": [
+        "mobile_case_002",
+        "mobile_screen_protector_001",
+        "power_bank_002"
+      ]
+    },
+    {
+      "id": "mobile_case_004",
+      "itemId": "mobile_case",
+      "variantId": "black",
+      "position": {
+        "x": 453,
+        "y": 952
+      },
+      "rotation": -11,
+      "scale": 1.556,
+      "layer": 1,
+      "zone": "pile",
+      "blocking": [
+        "mobile_case_003",
+        "mobile_screen_protector_001"
+      ]
+    },
+    {
+      "id": "battery_004",
+      "itemId": "battery",
+      "variantId": "default",
+      "position": {
+        "x": 433,
+        "y": 1135
+      },
+      "rotation": 2,
+      "scale": 1.68,
+      "layer": 1,
+      "zone": "pile",
+      "blocking": [
+        "charging_cable_001",
+        "mobile_case_003",
+        "plastic_bag_002",
+        "usb_drive_002"
+      ]
+    },
+    {
+      "id": "charging_cable_004",
+      "itemId": "charging_cable",
+      "variantId": "black",
+      "position": {
+        "x": 431,
+        "y": 1320
+      },
+      "rotation": 11,
+      "scale": 1.556,
+      "layer": 1,
+      "zone": "pile",
+      "blocking": [
+        "charging_head_002",
+        "earphone_002",
+        "plastic_bag_002",
+        "usb_drive_002"
+      ]
+    },
+    {
+      "id": "mobile_case_005",
+      "itemId": "mobile_case",
+      "variantId": "frosted",
+      "position": {
+        "x": 623,
+        "y": 601
+      },
+      "rotation": -7,
+      "scale": 1.556,
+      "layer": 1,
+      "zone": "pile",
+      "blocking": [
+        "charging_cable_002",
+        "power_bank_002",
+        "sticker_002"
+      ]
+    },
+    {
+      "id": "plastic_bag_005",
+      "itemId": "plastic_bag",
+      "variantId": "default",
+      "position": {
+        "x": 640,
+        "y": 771
+      },
+      "rotation": -1,
+      "scale": 1.313,
+      "layer": 1,
+      "zone": "pile",
+      "blocking": [
+        "charging_cable_002",
+        "mobile_screen_protector_001",
+        "plastic_bag_003",
+        "power_bank_002"
+      ]
+    },
+    {
+      "id": "earphone_005",
+      "itemId": "earphone",
+      "variantId": "pink",
+      "position": {
+        "x": 628,
+        "y": 945
+      },
+      "rotation": -9,
+      "scale": 1.313,
+      "layer": 1,
+      "zone": "pile",
+      "blocking": [
+        "earphone_003",
+        "mobile_case_003",
+        "mobile_screen_protector_001",
+        "plastic_bag_003"
+      ]
+    },
+    {
+      "id": "sticker_005",
+      "itemId": "sticker",
+      "variantId": "default",
+      "position": {
+        "x": 625,
+        "y": 1136
+      },
+      "rotation": 9,
+      "scale": 1.68,
+      "layer": 1,
+      "zone": "pile",
+      "blocking": [
+        "earphone_003",
+        "mobile_case_003",
+        "sticker_003",
+        "usb_drive_002"
+      ]
+    },
+    {
+      "id": "power_bank_005",
+      "itemId": "power_bank",
+      "variantId": "default",
+      "position": {
+        "x": 633,
+        "y": 1338
+      },
+      "rotation": -3,
+      "scale": 1.556,
+      "layer": 1,
+      "zone": "pile",
+      "blocking": [
+        "charging_head_002",
+        "power_bank_003",
+        "sticker_003",
+        "usb_drive_002"
+      ]
+    },
+    {
+      "id": "usb_drive_005",
+      "itemId": "usb_drive",
+      "variantId": "default",
+      "position": {
+        "x": 833,
+        "y": 591
+      },
+      "rotation": -4,
+      "scale": 1.68,
+      "layer": 1,
+      "zone": "pile",
+      "blocking": [
+        "battery_002",
+        "charging_cable_002",
+        "charging_head_003",
+        "usb_drive_003"
+      ]
+    },
+    {
+      "id": "charging_head_005",
+      "itemId": "charging_head",
+      "variantId": "default",
+      "position": {
+        "x": 860,
+        "y": 784
+      },
+      "rotation": 5,
+      "scale": 1.556,
+      "layer": 1,
+      "zone": "pile",
+      "blocking": [
+        "battery_003",
+        "charging_cable_002",
+        "charging_head_003",
+        "plastic_bag_003"
+      ]
+    },
+    {
+      "id": "battery_005",
+      "itemId": "battery",
+      "variantId": "default",
+      "position": {
+        "x": 862,
+        "y": 969
+      },
+      "rotation": -3,
+      "scale": 1.68,
+      "layer": 1,
+      "zone": "pile",
+      "blocking": [
+        "battery_003",
+        "charging_cable_003",
+        "earphone_003",
+        "plastic_bag_003"
+      ]
+    },
+    {
+      "id": "charging_cable_005",
+      "itemId": "charging_cable",
+      "variantId": "white",
+      "position": {
+        "x": 835,
+        "y": 1130
+      },
+      "rotation": -9,
+      "scale": 1.556,
+      "layer": 1,
+      "zone": "pile",
+      "blocking": [
+        "charging_cable_003",
+        "earphone_003",
+        "plastic_bag_004",
+        "sticker_003"
+      ]
+    },
+    {
+      "id": "plastic_bag_006",
+      "itemId": "plastic_bag",
+      "variantId": "default",
+      "position": {
+        "x": 858,
+        "y": 1343
+      },
+      "rotation": 10,
+      "scale": 1.313,
+      "layer": 1,
+      "zone": "pile",
+      "blocking": [
+        "earphone_004",
+        "plastic_bag_004",
+        "power_bank_003",
+        "sticker_003"
+      ]
+    },
+    {
+      "id": "earphone_006",
+      "itemId": "earphone",
+      "variantId": "pink",
+      "position": {
+        "x": 446,
+        "y": 497
+      },
+      "rotation": 12,
+      "scale": 1.313,
+      "layer": 0,
+      "zone": "pile",
+      "blocking": [
+        "mobile_case_001",
+        "mobile_screen_protector_002",
+        "sticker_002"
+      ]
+    }
+  ],
+  "gridConfig": {
+    "targetSlots": {
+      "baseCount": 2,
+      "maxCount": 2
+    },
+    "collectionSlots": {
+      "capacity": 4
+    },
+    "adConfig": {
+      "enabled": true,
+      "simulated": true
+    }
+  },
+  "hintConfig": {
+    "enabled": true,
+    "autoHintSeconds": 12,
+    "maxFreeUses": 3,
+    "highlightDuration": 2.5
+  },
+  "completionConfig": {
+    "requireAllObjectivesCompleted": true,
+    "nextLevelId": "level_009"
+  }
+}

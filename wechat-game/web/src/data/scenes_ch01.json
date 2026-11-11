@@ -1,0 +1,225 @@
+{
+  "chapterId": "chapter_01",
+  "scenes": [
+    {
+      "id": "ch01_bedside",
+      "name": "床头柜",
+      "background": "#efe8dc",
+      "surfaceColor": "#c9a47e",
+      "designResolution": {
+        "width": 1080,
+        "height": 1920
+      },
+      "zones": [
+        {
+          "id": "pile",
+          "name": "物品区",
+          "bounds": {
+            "x": 30,
+            "y": 410,
+            "width": 1020,
+            "height": 1105
+          }
+        }
+      ]
+    },
+    {
+      "id": "ch01_parcels",
+      "name": "快递堆成山",
+      "background": "#efe8dc",
+      "surfaceColor": "#cdb08a",
+      "designResolution": {
+        "width": 1080,
+        "height": 1920
+      },
+      "zones": [
+        {
+          "id": "pile",
+          "name": "物品区",
+          "bounds": {
+            "x": 30,
+            "y": 410,
+            "width": 1020,
+            "height": 1105
+          }
+        }
+      ]
+    },
+    {
+      "id": "ch01_milk_tea",
+      "name": "奶茶杯的归宿",
+      "background": "#efe8dc",
+      "surfaceColor": "#c4a07a",
+      "designResolution": {
+        "width": 1080,
+        "height": 1920
+      },
+      "zones": [
+        {
+          "id": "pile",
+          "name": "物品区",
+          "bounds": {
+            "x": 30,
+            "y": 410,
+            "width": 1020,
+            "height": 1105
+          }
+        }
+      ]
+    },
+    {
+      "id": "ch01_drawer",
+      "name": "抽屉里的耳机",
+      "background": "#efe8dc",
+      "surfaceColor": "#b38a63",
+      "designResolution": {
+        "width": 1080,
+        "height": 1920
+      },
+      "zones": [
+        {
+          "id": "pile",
+          "name": "物品区",
+          "bounds": {
+            "x": 30,
+            "y": 410,
+            "width": 1020,
+            "height": 1105
+          }
+        }
+      ]
+    },
+    {
+      "id": "ch01_desk",
+      "name": "桌面大扫除",
+      "background": "#efe8dc",
+      "surfaceColor": "#c9a47e",
+      "designResolution": {
+        "width": 1080,
+        "height": 1920
+      },
+      "zones": [
+        {
+          "id": "pile",
+          "name": "物品区",
+          "bounds": {
+            "x": 30,
+            "y": 410,
+            "width": 1020,
+            "height": 1105
+          }
+        }
+      ]
+    },
+    {
+      "id": "ch01_takeaway",
+      "name": "外卖盒之灾",
+      "background": "#efe8dc",
+      "surfaceColor": "#b9a28a",
+      "designResolution": {
+        "width": 1080,
+        "height": 1920
+      },
+      "zones": [
+        {
+          "id": "pile",
+          "name": "物品区",
+          "bounds": {
+            "x": 30,
+            "y": 410,
+            "width": 1020,
+            "height": 1105
+          }
+        }
+      ]
+    },
+    {
+      "id": "ch01_wardrobe",
+      "name": "衣柜里的旧T恤",
+      "background": "#efe8dc",
+      "surfaceColor": "#a9b7c6",
+      "designResolution": {
+        "width": 1080,
+        "height": 1920
+      },
+      "zones": [
+        {
+          "id": "pile",
+          "name": "物品区",
+          "bounds": {
+            "x": 30,
+            "y": 410,
+            "width": 1020,
+            "height": 1105
+          }
+        }
+      ]
+    },
+    {
+      "id": "ch01_phone_case",
+      "name": "手机壳博物馆",
+      "background": "#efe8dc",
+      "surfaceColor": "#c4a07a",
+      "designResolution": {
+        "width": 1080,
+        "height": 1920
+      },
+      "zones": [
+        {
+          "id": "pile",
+          "name": "物品区",
+          "bounds": {
+            "x": 30,
+            "y": 410,
+            "width": 1020,
+            "height": 1105
+          }
+        }
+      ]
+    },
+    {
+      "id": "ch01_cables",
+      "name": "数据线打结了",
+      "background": "#efe8dc",
+      "surfaceColor": "#a9b2a6",
+      "designResolution": {
+        "width": 1080,
+        "height": 1920
+      },
+      "zones": [
+        {
+          "id": "pile",
+          "name": "物品区",
+          "bounds": {
+            "x": 30,
+            "y": 410,
+            "width": 1020,
+            "height": 1105
+          }
+        }
+      ]
+    },
+    {
+      "id": "ch01_sofa",
+      "name": "沙发缝里的硬币",
+      "background": "#efe8dc",
+      "surfaceColor": "#9fb3a6",
+      "designResolution": {
+        "width": 1080,
+        "height": 1920
+      },
+      "zones": [
+        {
+          "id": "pile",
+          "name": "物品区",
+          "bounds": {
+            "x": 30,
+            "y": 410,
+            "width": 1020,
+            "height": 1105
+          }
+        }
+      ]
+    }
+  ]
+}

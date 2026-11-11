@@ -1,0 +1,809 @@
+{
+  "id": "level_006",
+  "chapterId": "chapter_01",
+  "levelNumber": 6,
+  "name": "外卖盒之灾",
+  "sceneId": "ch01_takeaway",
+  "difficulty": 6,
+  "teaching": "找不到时会自动提示",
+  "designResolution": {
+    "width": 1080,
+    "height": 1920
+  },
+  "objectives": [
+    {
+      "itemId": "takeaway_box",
+      "requiredCount": 4,
+      "displayVariant": "white"
+    },
+    {
+      "itemId": "chopsticks",
+      "requiredCount": 4,
+      "displayVariant": "default"
+    }
+  ],
+  "itemInstances": [
+    {
+      "id": "plastic_bag_001",
+      "itemId": "plastic_bag",
+      "variantId": "default",
+      "position": {
+        "x": 136,
+        "y": 508
+      },
+      "rotation": -9,
+      "scale": 1.313,
+      "layer": 1,
+      "zone": "pile",
+      "blocking": []
+    },
+    {
+      "id": "tissue_001",
+      "itemId": "tissue",
+      "variantId": "default",
+      "position": {
+        "x": 150,
+        "y": 675
+      },
+      "rotation": -11,
+      "scale": 1.556,
+      "layer": 1,
+      "zone": "pile",
+      "blocking": []
+    },
+    {
+      "id": "water_cup_001",
+      "itemId": "water_cup",
+      "variantId": "default",
+      "position": {
+        "x": 121,
+        "y": 869
+      },
+      "rotation": 11,
+      "scale": 1.556,
+      "layer": 1,
+      "zone": "pile",
+      "blocking": []
+    },
+    {
+      "id": "carton_001",
+      "itemId": "carton",
+      "variantId": "default",
+      "position": {
+        "x": 139,
+        "y": 1060
+      },
+      "rotation": -7,
+      "scale": 1.105,
+      "layer": 1,
+      "zone": "pile",
+      "blocking": []
+    },
+    {
+      "id": "milk_tea_cup_001",
+      "itemId": "milk_tea_cup",
+      "variantId": "pink",
+      "position": {
+        "x": 128,
+        "y": 1247
+      },
+      "rotation": 2,
+      "scale": 1.313,
+      "layer": 1,
+      "zone": "pile",
+      "blocking": []
+    },
+    {
+      "id": "straw_001",
+      "itemId": "straw",
+      "variantId": "default",
+      "position": {
+        "x": 131,
+        "y": 1424
+      },
+      "rotation": -11,
+      "scale": 1.556,
+      "layer": 1,
+      "zone": "pile",
+      "blocking": []
+    },
+    {
+      "id": "newspaper_001",
+      "itemId": "newspaper",
+      "variantId": "default",
+      "position": {
+        "x": 341,
+        "y": 493
+      },
+      "rotation": 9,
+      "scale": 1.313,
+      "layer": 1,
+      "zone": "pile",
+      "blocking": []
+    },
+    {
+      "id": "sauce_packet_001",
+      "itemId": "sauce_packet",
+      "variantId": "default",
+      "position": {
+        "x": 356,
+        "y": 674
+      },
+      "rotation": -7,
+      "scale": 1.68,
+      "layer": 1,
+      "zone": "pile",
+      "blocking": []
+    },
+    {
+      "id": "plastic_bag_002",
+      "itemId": "plastic_bag",
+      "variantId": "default",
+      "position": {
+        "x": 356,
+        "y": 869
+      },
+      "rotation": -9,
+      "scale": 1.313,
+      "layer": 1,
+      "zone": "pile",
+      "blocking": []
+    },
+    {
+      "id": "tissue_002",
+      "itemId": "tissue",
+      "variantId": "default",
+      "position": {
+        "x": 350,
+        "y": 1043
+      },
+      "rotation": 5,
+      "scale": 1.556,
+      "layer": 1,
+      "zone": "pile",
+      "blocking": []
+    },
+    {
+      "id": "water_cup_002",
+      "itemId": "water_cup",
+      "variantId": "default",
+      "position": {
+        "x": 329,
+        "y": 1228
+      },
+      "rotation": 1,
+      "scale": 1.556,
+      "layer": 1,
+      "zone": "pile",
+      "blocking": []
+    },
+    {
+      "id": "carton_002",
+      "itemId": "carton",
+      "variantId": "default",
+      "position": {
+        "x": 329,
+        "y": 1420
+      },
+      "rotation": -5,
+      "scale": 1.105,
+      "layer": 1,
+      "zone": "pile",
+      "blocking": []
+    },
+    {
+      "id": "milk_tea_cup_002",
+      "itemId": "milk_tea_cup",
+      "variantId": "brown",
+      "position": {
+        "x": 521,
+        "y": 498
+      },
+      "rotation": 4,
+      "scale": 1.313,
+      "layer": 1,
+      "zone": "pile",
+      "blocking": []
+    },
+    {
+      "id": "straw_002",
+      "itemId": "straw",
+      "variantId": "default",
+      "position": {
+        "x": 527,
+        "y": 668
+      },
+      "rotation": -5,
+      "scale": 1.556,
+      "layer": 1,
+      "zone": "pile",
+      "blocking": []
+    },
+    {
+      "id": "newspaper_002",
+      "itemId": "newspaper",
+      "variantId": "default",
+      "position": {
+        "x": 548,
+        "y": 873
+      },
+      "rotation": 9,
+      "scale": 1.313,
+      "layer": 1,
+      "zone": "pile",
+      "blocking": []
+    },
+    {
+      "id": "sauce_packet_002",
+      "itemId": "sauce_packet",
+      "variantId": "default",
+      "position": {
+        "x": 524,
+        "y": 1069
+      },
+      "rotation": 8,
+      "scale": 1.68,
+      "layer": 1,
+      "zone": "pile",
+      "blocking": []
+    },
+    {
+      "id": "plastic_bag_003",
+      "itemId": "plastic_bag",
+      "variantId": "default",
+      "position": {
+        "x": 535,
+        "y": 1221
+      },
+      "rotation": 2,
+      "scale": 1.313,
+      "layer": 1,
+      "zone": "pile",
+      "blocking": []
+    },
+    {
+      "id": "tissue_003",
+      "itemId": "tissue",
+      "variantId": "default",
+      "position": {
+        "x": 529,
+        "y": 1420
+      },
+      "rotation": 11,
+      "scale": 1.556,
+      "layer": 1,
+      "zone": "pile",
+      "blocking": []
+    },
+    {
+      "id": "water_cup_003",
+      "itemId": "water_cup",
+      "variantId": "default",
+      "position": {
+        "x": 743,
+        "y": 492
+      },
+      "rotation": -10,
+      "scale": 1.556,
+      "layer": 1,
+      "zone": "pile",
+      "blocking": []
+    },
+    {
+      "id": "chopsticks_001",
+      "itemId": "chopsticks",
+      "variantId": "default",
+      "position": {
+        "x": 749,
+        "y": 703
+      },
+      "rotation": 3,
+      "scale": 1.556,
+      "layer": 1,
+      "zone": "pile",
+      "blocking": []
+    },
+    {
+      "id": "takeaway_box_001",
+      "itemId": "takeaway_box",
+      "variantId": "kraft",
+      "position": {
+        "x": 729,
+        "y": 869
+      },
+      "rotation": -2,
+      "scale": 1.313,
+      "layer": 1,
+      "zone": "pile",
+      "blocking": []
+    },
+    {
+      "id": "takeaway_box_002",
+      "itemId": "takeaway_box",
+      "variantId": "kraft",
+      "position": {
+        "x": 740,
+        "y": 1072
+      },
+      "rotation": 0,
+      "scale": 1.313,
+      "layer": 1,
+      "zone": "pile",
+      "blocking": []
+    },
+    {
+      "id": "chopsticks_002",
+      "itemId": "chopsticks",
+      "variantId": "default",
+      "position": {
+        "x": 759,
+        "y": 1246
+      },
+      "rotation": -5,
+      "scale": 1.556,
+      "layer": 1,
+      "zone": "pile",
+      "blocking": []
+    },
+    {
+      "id": "carton_003",
+      "itemId": "carton",
+      "variantId": "default",
+      "position": {
+        "x": 749,
+        "y": 1421
+      },
+      "rotation": -7,
+      "scale": 1.105,
+      "layer": 1,
+      "zone": "pile",
+      "blocking": []
+    },
+    {
+      "id": "milk_tea_cup_003",
+      "itemId": "milk_tea_cup",
+      "variantId": "transparent",
+      "position": {
+        "x": 939,
+        "y": 496
+      },
+      "rotation": 8,
+      "scale": 1.313,
+      "layer": 1,
+      "zone": "pile",
+      "blocking": []
+    },
+    {
+      "id": "straw_003",
+      "itemId": "straw",
+      "variantId": "default",
+      "position": {
+        "x": 963,
+        "y": 685
+      },
+      "rotation": 5,
+      "scale": 1.556,
+      "layer": 1,
+      "zone": "pile",
+      "blocking": []
+    },
+    {
+      "id": "newspaper_003",
+      "itemId": "newspaper",
+      "variantId": "default",
+      "position": {
+        "x": 942,
+        "y": 885
+      },
+      "rotation": -11,
+      "scale": 1.313,
+      "layer": 1,
+      "zone": "pile",
+      "blocking": []
+    },
+    {
+      "id": "sauce_packet_003",
+      "itemId": "sauce_packet",
+      "variantId": "default",
+      "position": {
+        "x": 955,
+        "y": 1043
+      },
+      "rotation": 11,
+      "scale": 1.68,
+      "layer": 1,
+      "zone": "pile",
+      "blocking": []
+    },
+    {
+      "id": "takeaway_box_003",
+      "itemId": "takeaway_box",
+      "variantId": "kraft",
+      "position": {
+        "x": 948,
+        "y": 1237
+      },
+      "rotation": 5,
+      "scale": 1.313,
+      "layer": 1,
+      "zone": "pile",
+      "blocking": []
+    },
+    {
+      "id": "plastic_bag_004",
+      "itemId": "plastic_bag",
+      "variantId": "default",
+      "position": {
+        "x": 939,
+        "y": 1430
+      },
+      "rotation": 2,
+      "scale": 1.313,
+      "layer": 1,
+      "zone": "pile",
+      "blocking": []
+    },
+    {
+      "id": "tissue_004",
+      "itemId": "tissue",
+      "variantId": "default",
+      "position": {
+        "x": 251,
+        "y": 595
+      },
+      "rotation": 8,
+      "scale": 1.556,
+      "layer": 0,
+      "zone": "pile",
+      "blocking": [
+        "newspaper_001",
+        "plastic_bag_001",
+        "sauce_packet_001",
+        "tissue_001"
+      ]
+    },
+    {
+      "id": "water_cup_004",
+      "itemId": "water_cup",
+      "variantId": "default",
+      "position": {
+        "x": 240,
+        "y": 770
+      },
+      "rotation": -6,
+      "scale": 1.556,
+      "layer": 0,
+      "zone": "pile",
+      "blocking": [
+        "plastic_bag_002",
+        "tissue_001"
+      ]
+    },
+    {
+      "id": "carton_004",
+      "itemId": "carton",
+      "variantId": "default",
+      "position": {
+        "x": 246,
+        "y": 958
+      },
+      "rotation": 7,
+      "scale": 1.105,
+      "layer": 0,
+      "zone": "pile",
+      "blocking": [
+        "carton_001",
+        "plastic_bag_002",
+        "tissue_002"
+      ]
+    },
+    {
+      "id": "milk_tea_cup_004",
+      "itemId": "milk_tea_cup",
+      "variantId": "pink",
+      "position": {
+        "x": 254,
+        "y": 1134
+      },
+      "rotation": 12,
+      "scale": 1.313,
+      "layer": 0,
+      "zone": "pile",
+      "blocking": [
+        "carton_001",
+        "tissue_002"
+      ]
+    },
+    {
+      "id": "straw_004",
+      "itemId": "straw",
+      "variantId": "default",
+      "position": {
+        "x": 229,
+        "y": 1324
+      },
+      "rotation": 8,
+      "scale": 1.556,
+      "layer": 0,
+      "zone": "pile",
+      "blocking": [
+        "carton_002"
+      ]
+    },
+    {
+      "id": "newspaper_004",
+      "itemId": "newspaper",
+      "variantId": "default",
+      "position": {
+        "x": 429,
+        "y": 767
+      },
+      "rotation": -10,
+      "scale": 1.313,
+      "layer": 0,
+      "zone": "pile",
+      "blocking": [
+        "newspaper_002",
+        "plastic_bag_002",
+        "sauce_packet_001",
+        "straw_002"
+      ]
+    },
+    {
+      "id": "sauce_packet_004",
+      "itemId": "sauce_packet",
+      "variantId": "default",
+      "position": {
+        "x": 456,
+        "y": 980
+      },
+      "rotation": -5,
+      "scale": 1.68,
+      "layer": 0,
+      "zone": "pile",
+      "blocking": [
+        "newspaper_002",
+        "plastic_bag_002",
+        "sauce_packet_002",
+        "tissue_002"
+      ]
+    },
+    {
+      "id": "plastic_bag_005",
+      "itemId": "plastic_bag",
+      "variantId": "default",
+      "position": {
+        "x": 442,
+        "y": 1157
+      },
+      "rotation": -4,
+      "scale": 1.313,
+      "layer": 0,
+      "zone": "pile",
+      "blocking": [
+        "plastic_bag_003",
+        "sauce_packet_002",
+        "tissue_002",
+        "water_cup_002"
+      ]
+    },
+    {
+      "id": "tissue_005",
+      "itemId": "tissue",
+      "variantId": "default",
+      "position": {
+        "x": 431,
+        "y": 1315
+      },
+      "rotation": 2,
+      "scale": 1.556,
+      "layer": 0,
+      "zone": "pile",
+      "blocking": [
+        "carton_002",
+        "plastic_bag_003",
+        "tissue_003",
+        "water_cup_002"
+      ]
+    },
+    {
+      "id": "water_cup_005",
+      "itemId": "water_cup",
+      "variantId": "default",
+      "position": {
+        "x": 653,
+        "y": 590
+      },
+      "rotation": -11,
+      "scale": 1.556,
+      "layer": 0,
+      "zone": "pile",
+      "blocking": [
+        "chopsticks_001",
+        "water_cup_003"
+      ]
+    },
+    {
+      "id": "takeaway_box_004",
+      "itemId": "takeaway_box",
+      "variantId": "black",
+      "position": {
+        "x": 635,
+        "y": 793
+      },
+      "rotation": -2,
+      "scale": 1.313,
+      "layer": 0,
+      "zone": "pile",
+      "blocking": [
+        "newspaper_002",
+        "takeaway_box_001"
+      ]
+    },
+    {
+      "id": "chopsticks_003",
+      "itemId": "chopsticks",
+      "variantId": "default",
+      "position": {
+        "x": 634,
+        "y": 944
+      },
+      "rotation": 1,
+      "scale": 1.556,
+      "layer": 0,
+      "zone": "pile",
+      "blocking": [
+        "newspaper_002",
+        "takeaway_box_001",
+        "takeaway_box_002"
+      ]
+    },
+    {
+      "id": "carton_005",
+      "itemId": "carton",
+      "variantId": "default",
+      "position": {
+        "x": 635,
+        "y": 1152
+      },
+      "rotation": -2,
+      "scale": 1.105,
+      "layer": 0,
+      "zone": "pile",
+      "blocking": [
+        "chopsticks_002",
+        "plastic_bag_003",
+        "takeaway_box_002"
+      ]
+    },
+    {
+      "id": "milk_tea_cup_005",
+      "itemId": "milk_tea_cup",
+      "variantId": "transparent",
+      "position": {
+        "x": 647,
+        "y": 1332
+      },
+      "rotation": 1,
+      "scale": 1.313,
+      "layer": 0,
+      "zone": "pile",
+      "blocking": [
+        "carton_003",
+        "tissue_003"
+      ]
+    },
+    {
+      "id": "straw_005",
+      "itemId": "straw",
+      "variantId": "default",
+      "position": {
+        "x": 837,
+        "y": 603
+      },
+      "rotation": 4,
+      "scale": 1.556,
+      "layer": 0,
+      "zone": "pile",
+      "blocking": [
+        "water_cup_003"
+      ]
+    },
+    {
+      "id": "newspaper_005",
+      "itemId": "newspaper",
+      "variantId": "default",
+      "position": {
+        "x": 851,
+        "y": 768
+      },
+      "rotation": 0,
+      "scale": 1.313,
+      "layer": 0,
+      "zone": "pile",
+      "blocking": [
+        "chopsticks_001",
+        "newspaper_003",
+        "straw_003",
+        "takeaway_box_001"
+      ]
+    },
+    {
+      "id": "sauce_packet_005",
+      "itemId": "sauce_packet",
+      "variantId": "default",
+      "position": {
+        "x": 834,
+        "y": 963
+      },
+      "rotation": 9,
+      "scale": 1.68,
+      "layer": 0,
+      "zone": "pile",
+      "blocking": [
+        "newspaper_003",
+        "takeaway_box_001",
+        "takeaway_box_002"
+      ]
+    },
+    {
+      "id": "chopsticks_004",
+      "itemId": "chopsticks",
+      "variantId": "default",
+      "position": {
+        "x": 827,
+        "y": 1157
+      },
+      "rotation": 10,
+      "scale": 1.556,
+      "layer": 0,
+      "zone": "pile",
+      "blocking": [
+        "takeaway_box_002",
+        "takeaway_box_003"
+      ]
+    },
+    {
+      "id": "plastic_bag_006",
+      "itemId": "plastic_bag",
+      "variantId": "default",
+      "position": {
+        "x": 855,
+        "y": 1324
+      },
+      "rotation": -8,
+      "scale": 1.313,
+      "layer": 0,
+      "zone": "pile",
+      "blocking": [
+        "carton_003",
+        "chopsticks_002",
+        "plastic_bag_004",
+        "takeaway_box_003"
+      ]
+    }
+  ],
+  "gridConfig": {
+    "targetSlots": {
+      "baseCount": 2,
+      "maxCount": 2
+    },
+    "collectionSlots": {
+      "capacity": 4
+    },
+    "adConfig": {
+      "enabled": true,
+      "simulated": true
+    }
+  },
+  "hintConfig": {
+    "enabled": true,
+    "autoHintSeconds": 8,
+    "maxFreeUses": 3,
+    "highlightDuration": 2.5
+  },
+  "completionConfig": {
+    "requireAllObjectivesCompleted": true,
+    "nextLevelId": "level_007"
+  }
+}

@@ -1,0 +1,552 @@
+{
+  "id": "level_002",
+  "chapterId": "chapter_01",
+  "levelNumber": 2,
+  "name": "快递堆成山",
+  "sceneId": "ch01_parcels",
+  "difficulty": 2,
+  "teaching": "连续拾取",
+  "designResolution": {
+    "width": 1080,
+    "height": 1920
+  },
+  "objectives": [
+    {
+      "itemId": "delivery_note",
+      "requiredCount": 4,
+      "displayVariant": "white"
+    },
+    {
+      "itemId": "tape",
+      "requiredCount": 4,
+      "displayVariant": "default"
+    }
+  ],
+  "itemInstances": [
+    {
+      "id": "tape_001",
+      "itemId": "tape",
+      "variantId": "default",
+      "position": {
+        "x": 182,
+        "y": 510
+      },
+      "rotation": 2,
+      "scale": 1.896,
+      "layer": 1,
+      "zone": "pile",
+      "blocking": []
+    },
+    {
+      "id": "plastic_bag_001",
+      "itemId": "plastic_bag",
+      "variantId": "default",
+      "position": {
+        "x": 136,
+        "y": 730
+      },
+      "rotation": -1,
+      "scale": 1.6,
+      "layer": 1,
+      "zone": "pile",
+      "blocking": []
+    },
+    {
+      "id": "bubble_wrap_001",
+      "itemId": "bubble_wrap",
+      "variantId": "default",
+      "position": {
+        "x": 167,
+        "y": 960
+      },
+      "rotation": -1,
+      "scale": 1.6,
+      "layer": 1,
+      "zone": "pile",
+      "blocking": []
+    },
+    {
+      "id": "file_bag_001",
+      "itemId": "file_bag",
+      "variantId": "default",
+      "position": {
+        "x": 141,
+        "y": 1165
+      },
+      "rotation": -1,
+      "scale": 1.6,
+      "layer": 1,
+      "zone": "pile",
+      "blocking": []
+    },
+    {
+      "id": "key_001",
+      "itemId": "key",
+      "variantId": "default",
+      "position": {
+        "x": 165,
+        "y": 1410
+      },
+      "rotation": -1,
+      "scale": 2.048,
+      "layer": 1,
+      "zone": "pile",
+      "blocking": []
+    },
+    {
+      "id": "delivery_note_001",
+      "itemId": "delivery_note",
+      "variantId": "yellow",
+      "position": {
+        "x": 407,
+        "y": 510
+      },
+      "rotation": -6,
+      "scale": 1.896,
+      "layer": 1,
+      "zone": "pile",
+      "blocking": []
+    },
+    {
+      "id": "delivery_note_002",
+      "itemId": "delivery_note",
+      "variantId": "white",
+      "position": {
+        "x": 390,
+        "y": 747
+      },
+      "rotation": 11,
+      "scale": 1.896,
+      "layer": 1,
+      "zone": "pile",
+      "blocking": []
+    },
+    {
+      "id": "sticker_001",
+      "itemId": "sticker",
+      "variantId": "default",
+      "position": {
+        "x": 433,
+        "y": 968
+      },
+      "rotation": 9,
+      "scale": 2.048,
+      "layer": 1,
+      "zone": "pile",
+      "blocking": []
+    },
+    {
+      "id": "tape_002",
+      "itemId": "tape",
+      "variantId": "default",
+      "position": {
+        "x": 434,
+        "y": 1202
+      },
+      "rotation": 8,
+      "scale": 1.896,
+      "layer": 1,
+      "zone": "pile",
+      "blocking": []
+    },
+    {
+      "id": "delivery_note_003",
+      "itemId": "delivery_note",
+      "variantId": "white",
+      "position": {
+        "x": 431,
+        "y": 1415
+      },
+      "rotation": -11,
+      "scale": 1.896,
+      "layer": 1,
+      "zone": "pile",
+      "blocking": []
+    },
+    {
+      "id": "tape_003",
+      "itemId": "tape",
+      "variantId": "default",
+      "position": {
+        "x": 652,
+        "y": 536
+      },
+      "rotation": 11,
+      "scale": 1.896,
+      "layer": 1,
+      "zone": "pile",
+      "blocking": []
+    },
+    {
+      "id": "tape_004",
+      "itemId": "tape",
+      "variantId": "default",
+      "position": {
+        "x": 693,
+        "y": 749
+      },
+      "rotation": -6,
+      "scale": 1.896,
+      "layer": 1,
+      "zone": "pile",
+      "blocking": []
+    },
+    {
+      "id": "carton_001",
+      "itemId": "carton",
+      "variantId": "default",
+      "position": {
+        "x": 680,
+        "y": 976
+      },
+      "rotation": 7,
+      "scale": 1.347,
+      "layer": 1,
+      "zone": "pile",
+      "blocking": []
+    },
+    {
+      "id": "newspaper_001",
+      "itemId": "newspaper",
+      "variantId": "default",
+      "position": {
+        "x": 675,
+        "y": 1194
+      },
+      "rotation": 11,
+      "scale": 1.6,
+      "layer": 1,
+      "zone": "pile",
+      "blocking": []
+    },
+    {
+      "id": "tissue_001",
+      "itemId": "tissue",
+      "variantId": "default",
+      "position": {
+        "x": 665,
+        "y": 1415
+      },
+      "rotation": -9,
+      "scale": 1.896,
+      "layer": 1,
+      "zone": "pile",
+      "blocking": []
+    },
+    {
+      "id": "delivery_note_004",
+      "itemId": "delivery_note",
+      "variantId": "yellow",
+      "position": {
+        "x": 903,
+        "y": 534
+      },
+      "rotation": 3,
+      "scale": 1.896,
+      "layer": 1,
+      "zone": "pile",
+      "blocking": []
+    },
+    {
+      "id": "plastic_bag_002",
+      "itemId": "plastic_bag",
+      "variantId": "default",
+      "position": {
+        "x": 942,
+        "y": 736
+      },
+      "rotation": 7,
+      "scale": 1.6,
+      "layer": 1,
+      "zone": "pile",
+      "blocking": []
+    },
+    {
+      "id": "bubble_wrap_002",
+      "itemId": "bubble_wrap",
+      "variantId": "default",
+      "position": {
+        "x": 931,
+        "y": 964
+      },
+      "rotation": -6,
+      "scale": 1.6,
+      "layer": 1,
+      "zone": "pile",
+      "blocking": []
+    },
+    {
+      "id": "file_bag_002",
+      "itemId": "file_bag",
+      "variantId": "default",
+      "position": {
+        "x": 916,
+        "y": 1174
+      },
+      "rotation": 8,
+      "scale": 1.6,
+      "layer": 1,
+      "zone": "pile",
+      "blocking": []
+    },
+    {
+      "id": "key_002",
+      "itemId": "key",
+      "variantId": "default",
+      "position": {
+        "x": 937,
+        "y": 1403
+      },
+      "rotation": 2,
+      "scale": 2.048,
+      "layer": 1,
+      "zone": "pile",
+      "blocking": []
+    },
+    {
+      "id": "sticker_002",
+      "itemId": "sticker",
+      "variantId": "default",
+      "position": {
+        "x": 293,
+        "y": 616
+      },
+      "rotation": -6,
+      "scale": 2.048,
+      "layer": 0,
+      "zone": "pile",
+      "blocking": [
+        "delivery_note_001",
+        "delivery_note_002",
+        "plastic_bag_001",
+        "tape_001"
+      ]
+    },
+    {
+      "id": "carton_002",
+      "itemId": "carton",
+      "variantId": "default",
+      "position": {
+        "x": 305,
+        "y": 858
+      },
+      "rotation": 1,
+      "scale": 1.347,
+      "layer": 0,
+      "zone": "pile",
+      "blocking": [
+        "bubble_wrap_001",
+        "delivery_note_002",
+        "sticker_001"
+      ]
+    },
+    {
+      "id": "newspaper_002",
+      "itemId": "newspaper",
+      "variantId": "default",
+      "position": {
+        "x": 309,
+        "y": 1073
+      },
+      "rotation": -5,
+      "scale": 1.6,
+      "layer": 0,
+      "zone": "pile",
+      "blocking": [
+        "bubble_wrap_001",
+        "file_bag_001",
+        "sticker_001",
+        "tape_002"
+      ]
+    },
+    {
+      "id": "tissue_002",
+      "itemId": "tissue",
+      "variantId": "default",
+      "position": {
+        "x": 266,
+        "y": 1293
+      },
+      "rotation": 0,
+      "scale": 1.896,
+      "layer": 0,
+      "zone": "pile",
+      "blocking": [
+        "delivery_note_003",
+        "file_bag_001",
+        "key_001",
+        "tape_002"
+      ]
+    },
+    {
+      "id": "plastic_bag_003",
+      "itemId": "plastic_bag",
+      "variantId": "default",
+      "position": {
+        "x": 538,
+        "y": 625
+      },
+      "rotation": 10,
+      "scale": 1.6,
+      "layer": 0,
+      "zone": "pile",
+      "blocking": [
+        "delivery_note_001",
+        "delivery_note_002",
+        "tape_003"
+      ]
+    },
+    {
+      "id": "bubble_wrap_003",
+      "itemId": "bubble_wrap",
+      "variantId": "default",
+      "position": {
+        "x": 561,
+        "y": 830
+      },
+      "rotation": -4,
+      "scale": 1.6,
+      "layer": 0,
+      "zone": "pile",
+      "blocking": [
+        "carton_001",
+        "sticker_001",
+        "tape_004"
+      ]
+    },
+    {
+      "id": "file_bag_003",
+      "itemId": "file_bag",
+      "variantId": "default",
+      "position": {
+        "x": 543,
+        "y": 1073
+      },
+      "rotation": 10,
+      "scale": 1.6,
+      "layer": 0,
+      "zone": "pile",
+      "blocking": [
+        "carton_001",
+        "newspaper_001",
+        "sticker_001",
+        "tape_002"
+      ]
+    },
+    {
+      "id": "key_003",
+      "itemId": "key",
+      "variantId": "default",
+      "position": {
+        "x": 554,
+        "y": 1291
+      },
+      "rotation": -3,
+      "scale": 2.048,
+      "layer": 0,
+      "zone": "pile",
+      "blocking": [
+        "newspaper_001",
+        "tape_002",
+        "tissue_001"
+      ]
+    },
+    {
+      "id": "sticker_003",
+      "itemId": "sticker",
+      "variantId": "default",
+      "position": {
+        "x": 816,
+        "y": 631
+      },
+      "rotation": 3,
+      "scale": 2.048,
+      "layer": 0,
+      "zone": "pile",
+      "blocking": [
+        "delivery_note_004",
+        "plastic_bag_002",
+        "tape_004"
+      ]
+    },
+    {
+      "id": "carton_003",
+      "itemId": "carton",
+      "variantId": "default",
+      "position": {
+        "x": 798,
+        "y": 836
+      },
+      "rotation": -4,
+      "scale": 1.347,
+      "layer": 0,
+      "zone": "pile",
+      "blocking": [
+        "carton_001",
+        "plastic_bag_002",
+        "tape_004"
+      ]
+    },
+    {
+      "id": "newspaper_003",
+      "itemId": "newspaper",
+      "variantId": "default",
+      "position": {
+        "x": 801,
+        "y": 1072
+      },
+      "rotation": 11,
+      "scale": 1.6,
+      "layer": 0,
+      "zone": "pile",
+      "blocking": [
+        "bubble_wrap_002",
+        "carton_001",
+        "file_bag_002",
+        "newspaper_001"
+      ]
+    },
+    {
+      "id": "tissue_003",
+      "itemId": "tissue",
+      "variantId": "default",
+      "position": {
+        "x": 776,
+        "y": 1312
+      },
+      "rotation": 1,
+      "scale": 1.896,
+      "layer": 0,
+      "zone": "pile",
+      "blocking": [
+        "file_bag_002",
+        "key_002",
+        "newspaper_001",
+        "tissue_001"
+      ]
+    }
+  ],
+  "gridConfig": {
+    "targetSlots": {
+      "baseCount": 2,
+      "maxCount": 2
+    },
+    "collectionSlots": {
+      "capacity": 4
+    },
+    "adConfig": {
+      "enabled": true,
+      "simulated": true
+    }
+  },
+  "hintConfig": {
+    "enabled": true,
+    "autoHintSeconds": 12,
+    "maxFreeUses": 3,
+    "highlightDuration": 2.5
+  },
+  "completionConfig": {
+    "requireAllObjectivesCompleted": true,
+    "nextLevelId": "level_003"
+  }
+}

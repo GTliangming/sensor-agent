@@ -1,0 +1,837 @@
+{
+  "id": "level_007",
+  "chapterId": "chapter_01",
+  "levelNumber": 7,
+  "name": "衣柜里的旧T恤",
+  "sceneId": "ch01_wardrobe",
+  "difficulty": 7,
+  "teaching": "三个目标一起找",
+  "designResolution": {
+    "width": 1080,
+    "height": 1920
+  },
+  "objectives": [
+    {
+      "itemId": "tshirt",
+      "requiredCount": 4,
+      "displayVariant": "white"
+    },
+    {
+      "itemId": "long_pants",
+      "requiredCount": 3,
+      "displayVariant": "default"
+    },
+    {
+      "itemId": "short_pants",
+      "requiredCount": 3,
+      "displayVariant": "default"
+    }
+  ],
+  "itemInstances": [
+    {
+      "id": "plastic_bag_001",
+      "itemId": "plastic_bag",
+      "variantId": "default",
+      "position": {
+        "x": 146,
+        "y": 492
+      },
+      "rotation": 8,
+      "scale": 1.313,
+      "layer": 2,
+      "zone": "pile",
+      "blocking": []
+    },
+    {
+      "id": "sock_001",
+      "itemId": "sock",
+      "variantId": "default",
+      "position": {
+        "x": 150,
+        "y": 675
+      },
+      "rotation": -10,
+      "scale": 1.556,
+      "layer": 2,
+      "zone": "pile",
+      "blocking": []
+    },
+    {
+      "id": "cushion_001",
+      "itemId": "cushion",
+      "variantId": "default",
+      "position": {
+        "x": 138,
+        "y": 872
+      },
+      "rotation": 7,
+      "scale": 1.105,
+      "layer": 2,
+      "zone": "pile",
+      "blocking": []
+    },
+    {
+      "id": "glasses_001",
+      "itemId": "glasses",
+      "variantId": "default",
+      "position": {
+        "x": 134,
+        "y": 1065
+      },
+      "rotation": 1,
+      "scale": 1.556,
+      "layer": 2,
+      "zone": "pile",
+      "blocking": []
+    },
+    {
+      "id": "pajamas_001",
+      "itemId": "pajamas",
+      "variantId": "default",
+      "position": {
+        "x": 129,
+        "y": 1226
+      },
+      "rotation": -3,
+      "scale": 1.105,
+      "layer": 2,
+      "zone": "pile",
+      "blocking": []
+    },
+    {
+      "id": "hair_tie_001",
+      "itemId": "hair_tie",
+      "variantId": "red",
+      "position": {
+        "x": 121,
+        "y": 1416
+      },
+      "rotation": 8,
+      "scale": 1.556,
+      "layer": 2,
+      "zone": "pile",
+      "blocking": []
+    },
+    {
+      "id": "hanger_001",
+      "itemId": "hanger",
+      "variantId": "default",
+      "position": {
+        "x": 330,
+        "y": 503
+      },
+      "rotation": -4,
+      "scale": 1.313,
+      "layer": 2,
+      "zone": "pile",
+      "blocking": []
+    },
+    {
+      "id": "plastic_bag_002",
+      "itemId": "plastic_bag",
+      "variantId": "default",
+      "position": {
+        "x": 345,
+        "y": 685
+      },
+      "rotation": -11,
+      "scale": 1.313,
+      "layer": 2,
+      "zone": "pile",
+      "blocking": []
+    },
+    {
+      "id": "sock_002",
+      "itemId": "sock",
+      "variantId": "default",
+      "position": {
+        "x": 325,
+        "y": 861
+      },
+      "rotation": 8,
+      "scale": 1.556,
+      "layer": 2,
+      "zone": "pile",
+      "blocking": []
+    },
+    {
+      "id": "long_pants_001",
+      "itemId": "long_pants",
+      "variantId": "default",
+      "position": {
+        "x": 318,
+        "y": 1049
+      },
+      "rotation": -12,
+      "scale": 1.105,
+      "layer": 2,
+      "zone": "pile",
+      "blocking": []
+    },
+    {
+      "id": "tshirt_001",
+      "itemId": "tshirt",
+      "variantId": "gray",
+      "position": {
+        "x": 320,
+        "y": 1233
+      },
+      "rotation": 10,
+      "scale": 1.313,
+      "layer": 2,
+      "zone": "pile",
+      "blocking": []
+    },
+    {
+      "id": "short_pants_001",
+      "itemId": "short_pants",
+      "variantId": "default",
+      "position": {
+        "x": 337,
+        "y": 1422
+      },
+      "rotation": -10,
+      "scale": 1.313,
+      "layer": 2,
+      "zone": "pile",
+      "blocking": []
+    },
+    {
+      "id": "cushion_002",
+      "itemId": "cushion",
+      "variantId": "default",
+      "position": {
+        "x": 559,
+        "y": 513
+      },
+      "rotation": 5,
+      "scale": 1.105,
+      "layer": 2,
+      "zone": "pile",
+      "blocking": []
+    },
+    {
+      "id": "glasses_002",
+      "itemId": "glasses",
+      "variantId": "default",
+      "position": {
+        "x": 549,
+        "y": 675
+      },
+      "rotation": 3,
+      "scale": 1.556,
+      "layer": 2,
+      "zone": "pile",
+      "blocking": []
+    },
+    {
+      "id": "pajamas_002",
+      "itemId": "pajamas",
+      "variantId": "default",
+      "position": {
+        "x": 533,
+        "y": 880
+      },
+      "rotation": 1,
+      "scale": 1.105,
+      "layer": 2,
+      "zone": "pile",
+      "blocking": []
+    },
+    {
+      "id": "hair_tie_002",
+      "itemId": "hair_tie",
+      "variantId": "beige",
+      "position": {
+        "x": 560,
+        "y": 1038
+      },
+      "rotation": -1,
+      "scale": 1.556,
+      "layer": 2,
+      "zone": "pile",
+      "blocking": []
+    },
+    {
+      "id": "short_pants_002",
+      "itemId": "short_pants",
+      "variantId": "default",
+      "position": {
+        "x": 546,
+        "y": 1240
+      },
+      "rotation": -1,
+      "scale": 1.313,
+      "layer": 2,
+      "zone": "pile",
+      "blocking": []
+    },
+    {
+      "id": "long_pants_002",
+      "itemId": "long_pants",
+      "variantId": "default",
+      "position": {
+        "x": 557,
+        "y": 1421
+      },
+      "rotation": 4,
+      "scale": 1.105,
+      "layer": 2,
+      "zone": "pile",
+      "blocking": []
+    },
+    {
+      "id": "hanger_002",
+      "itemId": "hanger",
+      "variantId": "default",
+      "position": {
+        "x": 728,
+        "y": 502
+      },
+      "rotation": 9,
+      "scale": 1.313,
+      "layer": 2,
+      "zone": "pile",
+      "blocking": []
+    },
+    {
+      "id": "plastic_bag_003",
+      "itemId": "plastic_bag",
+      "variantId": "default",
+      "position": {
+        "x": 759,
+        "y": 682
+      },
+      "rotation": 8,
+      "scale": 1.313,
+      "layer": 2,
+      "zone": "pile",
+      "blocking": []
+    },
+    {
+      "id": "sock_003",
+      "itemId": "sock",
+      "variantId": "default",
+      "position": {
+        "x": 724,
+        "y": 874
+      },
+      "rotation": 4,
+      "scale": 1.556,
+      "layer": 2,
+      "zone": "pile",
+      "blocking": []
+    },
+    {
+      "id": "cushion_003",
+      "itemId": "cushion",
+      "variantId": "default",
+      "position": {
+        "x": 753,
+        "y": 1036
+      },
+      "rotation": 8,
+      "scale": 1.105,
+      "layer": 2,
+      "zone": "pile",
+      "blocking": []
+    },
+    {
+      "id": "long_pants_003",
+      "itemId": "long_pants",
+      "variantId": "default",
+      "position": {
+        "x": 760,
+        "y": 1247
+      },
+      "rotation": 5,
+      "scale": 1.105,
+      "layer": 2,
+      "zone": "pile",
+      "blocking": []
+    },
+    {
+      "id": "glasses_003",
+      "itemId": "glasses",
+      "variantId": "default",
+      "position": {
+        "x": 752,
+        "y": 1424
+      },
+      "rotation": -1,
+      "scale": 1.556,
+      "layer": 2,
+      "zone": "pile",
+      "blocking": []
+    },
+    {
+      "id": "pajamas_003",
+      "itemId": "pajamas",
+      "variantId": "default",
+      "position": {
+        "x": 939,
+        "y": 519
+      },
+      "rotation": 8,
+      "scale": 1.105,
+      "layer": 2,
+      "zone": "pile",
+      "blocking": []
+    },
+    {
+      "id": "hair_tie_003",
+      "itemId": "hair_tie",
+      "variantId": "red",
+      "position": {
+        "x": 932,
+        "y": 670
+      },
+      "rotation": -7,
+      "scale": 1.556,
+      "layer": 2,
+      "zone": "pile",
+      "blocking": []
+    },
+    {
+      "id": "hanger_003",
+      "itemId": "hanger",
+      "variantId": "default",
+      "position": {
+        "x": 932,
+        "y": 883
+      },
+      "rotation": 10,
+      "scale": 1.313,
+      "layer": 2,
+      "zone": "pile",
+      "blocking": []
+    },
+    {
+      "id": "plastic_bag_004",
+      "itemId": "plastic_bag",
+      "variantId": "default",
+      "position": {
+        "x": 943,
+        "y": 1037
+      },
+      "rotation": 2,
+      "scale": 1.313,
+      "layer": 2,
+      "zone": "pile",
+      "blocking": []
+    },
+    {
+      "id": "sock_004",
+      "itemId": "sock",
+      "variantId": "default",
+      "position": {
+        "x": 959,
+        "y": 1255
+      },
+      "rotation": 12,
+      "scale": 1.556,
+      "layer": 2,
+      "zone": "pile",
+      "blocking": []
+    },
+    {
+      "id": "cushion_004",
+      "itemId": "cushion",
+      "variantId": "default",
+      "position": {
+        "x": 941,
+        "y": 1417
+      },
+      "rotation": -4,
+      "scale": 1.105,
+      "layer": 2,
+      "zone": "pile",
+      "blocking": []
+    },
+    {
+      "id": "glasses_004",
+      "itemId": "glasses",
+      "variantId": "default",
+      "position": {
+        "x": 225,
+        "y": 591
+      },
+      "rotation": -9,
+      "scale": 1.556,
+      "layer": 1,
+      "zone": "pile",
+      "blocking": [
+        "plastic_bag_001",
+        "plastic_bag_002",
+        "sock_001"
+      ]
+    },
+    {
+      "id": "pajamas_004",
+      "itemId": "pajamas",
+      "variantId": "default",
+      "position": {
+        "x": 242,
+        "y": 770
+      },
+      "rotation": 0,
+      "scale": 1.105,
+      "layer": 1,
+      "zone": "pile",
+      "blocking": [
+        "cushion_001",
+        "plastic_bag_002",
+        "sock_001",
+        "sock_002"
+      ]
+    },
+    {
+      "id": "hair_tie_004",
+      "itemId": "hair_tie",
+      "variantId": "beige",
+      "position": {
+        "x": 236,
+        "y": 1150
+      },
+      "rotation": 11,
+      "scale": 1.556,
+      "layer": 1,
+      "zone": "pile",
+      "blocking": [
+        "pajamas_001",
+        "tshirt_001"
+      ]
+    },
+    {
+      "id": "hanger_004",
+      "itemId": "hanger",
+      "variantId": "default",
+      "position": {
+        "x": 253,
+        "y": 1318
+      },
+      "rotation": 5,
+      "scale": 1.313,
+      "layer": 1,
+      "zone": "pile",
+      "blocking": [
+        "pajamas_001",
+        "short_pants_001",
+        "tshirt_001"
+      ]
+    },
+    {
+      "id": "plastic_bag_005",
+      "itemId": "plastic_bag",
+      "variantId": "default",
+      "position": {
+        "x": 434,
+        "y": 602
+      },
+      "rotation": 1,
+      "scale": 1.313,
+      "layer": 1,
+      "zone": "pile",
+      "blocking": [
+        "cushion_002",
+        "glasses_002",
+        "hanger_001",
+        "plastic_bag_002"
+      ]
+    },
+    {
+      "id": "sock_005",
+      "itemId": "sock",
+      "variantId": "default",
+      "position": {
+        "x": 452,
+        "y": 767
+      },
+      "rotation": -12,
+      "scale": 1.556,
+      "layer": 1,
+      "zone": "pile",
+      "blocking": [
+        "glasses_002",
+        "pajamas_002",
+        "plastic_bag_002"
+      ]
+    },
+    {
+      "id": "cushion_005",
+      "itemId": "cushion",
+      "variantId": "default",
+      "position": {
+        "x": 454,
+        "y": 969
+      },
+      "rotation": 0,
+      "scale": 1.105,
+      "layer": 1,
+      "zone": "pile",
+      "blocking": [
+        "pajamas_002",
+        "sock_002"
+      ]
+    },
+    {
+      "id": "tshirt_002",
+      "itemId": "tshirt",
+      "variantId": "stripe",
+      "position": {
+        "x": 425,
+        "y": 1162
+      },
+      "rotation": 2,
+      "scale": 1.313,
+      "layer": 1,
+      "zone": "pile",
+      "blocking": [
+        "long_pants_001",
+        "short_pants_002",
+        "tshirt_001"
+      ]
+    },
+    {
+      "id": "tshirt_003",
+      "itemId": "tshirt",
+      "variantId": "white",
+      "position": {
+        "x": 447,
+        "y": 1349
+      },
+      "rotation": 9,
+      "scale": 1.313,
+      "layer": 1,
+      "zone": "pile",
+      "blocking": [
+        "long_pants_002",
+        "short_pants_001",
+        "short_pants_002"
+      ]
+    },
+    {
+      "id": "glasses_005",
+      "itemId": "glasses",
+      "variantId": "default",
+      "position": {
+        "x": 646,
+        "y": 603
+      },
+      "rotation": -11,
+      "scale": 1.556,
+      "layer": 1,
+      "zone": "pile",
+      "blocking": [
+        "cushion_002",
+        "glasses_002",
+        "hanger_002",
+        "plastic_bag_003"
+      ]
+    },
+    {
+      "id": "pajamas_005",
+      "itemId": "pajamas",
+      "variantId": "default",
+      "position": {
+        "x": 625,
+        "y": 780
+      },
+      "rotation": -5,
+      "scale": 1.105,
+      "layer": 1,
+      "zone": "pile",
+      "blocking": [
+        "glasses_002",
+        "pajamas_002",
+        "plastic_bag_003",
+        "sock_003"
+      ]
+    },
+    {
+      "id": "tshirt_004",
+      "itemId": "tshirt",
+      "variantId": "gray",
+      "position": {
+        "x": 628,
+        "y": 1148
+      },
+      "rotation": 8,
+      "scale": 1.313,
+      "layer": 1,
+      "zone": "pile",
+      "blocking": [
+        "hair_tie_002",
+        "short_pants_002"
+      ]
+    },
+    {
+      "id": "short_pants_003",
+      "itemId": "short_pants",
+      "variantId": "default",
+      "position": {
+        "x": 623,
+        "y": 1320
+      },
+      "rotation": 3,
+      "scale": 1.313,
+      "layer": 1,
+      "zone": "pile",
+      "blocking": [
+        "long_pants_002",
+        "long_pants_003",
+        "short_pants_002"
+      ]
+    },
+    {
+      "id": "hair_tie_005",
+      "itemId": "hair_tie",
+      "variantId": "pink",
+      "position": {
+        "x": 852,
+        "y": 591
+      },
+      "rotation": 4,
+      "scale": 1.556,
+      "layer": 1,
+      "zone": "pile",
+      "blocking": [
+        "hair_tie_003",
+        "pajamas_003",
+        "plastic_bag_003"
+      ]
+    },
+    {
+      "id": "hanger_005",
+      "itemId": "hanger",
+      "variantId": "default",
+      "position": {
+        "x": 841,
+        "y": 793
+      },
+      "rotation": 3,
+      "scale": 1.313,
+      "layer": 1,
+      "zone": "pile",
+      "blocking": [
+        "hair_tie_003",
+        "plastic_bag_003"
+      ]
+    },
+    {
+      "id": "plastic_bag_006",
+      "itemId": "plastic_bag",
+      "variantId": "default",
+      "position": {
+        "x": 832,
+        "y": 969
+      },
+      "rotation": 8,
+      "scale": 1.313,
+      "layer": 1,
+      "zone": "pile",
+      "blocking": [
+        "cushion_003",
+        "hanger_003",
+        "plastic_bag_004",
+        "sock_003"
+      ]
+    },
+    {
+      "id": "sock_006",
+      "itemId": "sock",
+      "variantId": "default",
+      "position": {
+        "x": 836,
+        "y": 1144
+      },
+      "rotation": -4,
+      "scale": 1.556,
+      "layer": 1,
+      "zone": "pile",
+      "blocking": [
+        "cushion_003",
+        "plastic_bag_004",
+        "sock_004"
+      ]
+    },
+    {
+      "id": "cushion_006",
+      "itemId": "cushion",
+      "variantId": "default",
+      "position": {
+        "x": 849,
+        "y": 1321
+      },
+      "rotation": 4,
+      "scale": 1.105,
+      "layer": 1,
+      "zone": "pile",
+      "blocking": [
+        "cushion_004",
+        "glasses_003",
+        "long_pants_003",
+        "sock_004"
+      ]
+    },
+    {
+      "id": "glasses_006",
+      "itemId": "glasses",
+      "variantId": "default",
+      "position": {
+        "x": 240,
+        "y": 1433
+      },
+      "rotation": -11,
+      "scale": 1.556,
+      "layer": 0,
+      "zone": "pile",
+      "blocking": [
+        "hair_tie_001",
+        "hanger_004",
+        "short_pants_001"
+      ]
+    },
+    {
+      "id": "pajamas_006",
+      "itemId": "pajamas",
+      "variantId": "default",
+      "position": {
+        "x": 432,
+        "y": 511
+      },
+      "rotation": 0,
+      "scale": 1.105,
+      "layer": 0,
+      "zone": "pile",
+      "blocking": [
+        "cushion_002",
+        "hanger_001",
+        "plastic_bag_005"
+      ]
+    }
+  ],
+  "gridConfig": {
+    "targetSlots": {
+      "baseCount": 3,
+      "maxCount": 3
+    },
+    "collectionSlots": {
+      "capacity": 4
+    },
+    "adConfig": {
+      "enabled": true,
+      "simulated": true
+    }
+  },
+  "hintConfig": {
+    "enabled": true,
+    "autoHintSeconds": 12,
+    "maxFreeUses": 3,
+    "highlightDuration": 2.5
+  },
+  "completionConfig": {
+    "requireAllObjectivesCompleted": true,
+    "nextLevelId": "level_008"
+  }
+}

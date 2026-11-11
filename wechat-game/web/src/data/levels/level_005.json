@@ -1,0 +1,814 @@
+{
+  "id": "level_005",
+  "chapterId": "chapter_01",
+  "levelNumber": 5,
+  "name": "桌面大扫除",
+  "sceneId": "ch01_desk",
+  "difficulty": 5,
+  "teaching": "注意归位格容量",
+  "designResolution": {
+    "width": 1080,
+    "height": 1920
+  },
+  "objectives": [
+    {
+      "itemId": "book",
+      "requiredCount": 4,
+      "displayVariant": "default"
+    },
+    {
+      "itemId": "notebook",
+      "requiredCount": 4,
+      "displayVariant": "kraft"
+    }
+  ],
+  "itemInstances": [
+    {
+      "id": "mouse_001",
+      "itemId": "mouse",
+      "variantId": "default",
+      "position": {
+        "x": 113,
+        "y": 501
+      },
+      "rotation": 10,
+      "scale": 1.556,
+      "layer": 1,
+      "zone": "pile",
+      "blocking": []
+    },
+    {
+      "id": "notebook_001",
+      "itemId": "notebook",
+      "variantId": "kraft",
+      "position": {
+        "x": 123,
+        "y": 669
+      },
+      "rotation": -3,
+      "scale": 1.313,
+      "layer": 1,
+      "zone": "pile",
+      "blocking": []
+    },
+    {
+      "id": "newspaper_001",
+      "itemId": "newspaper",
+      "variantId": "default",
+      "position": {
+        "x": 141,
+        "y": 878
+      },
+      "rotation": -3,
+      "scale": 1.313,
+      "layer": 1,
+      "zone": "pile",
+      "blocking": []
+    },
+    {
+      "id": "file_bag_001",
+      "itemId": "file_bag",
+      "variantId": "default",
+      "position": {
+        "x": 121,
+        "y": 1057
+      },
+      "rotation": -10,
+      "scale": 1.313,
+      "layer": 1,
+      "zone": "pile",
+      "blocking": []
+    },
+    {
+      "id": "pen_001",
+      "itemId": "pen",
+      "variantId": "default",
+      "position": {
+        "x": 130,
+        "y": 1220
+      },
+      "rotation": -10,
+      "scale": 1.68,
+      "layer": 1,
+      "zone": "pile",
+      "blocking": []
+    },
+    {
+      "id": "sticky_note_001",
+      "itemId": "sticky_note",
+      "variantId": "default",
+      "position": {
+        "x": 136,
+        "y": 1420
+      },
+      "rotation": -5,
+      "scale": 1.68,
+      "layer": 1,
+      "zone": "pile",
+      "blocking": []
+    },
+    {
+      "id": "glasses_001",
+      "itemId": "glasses",
+      "variantId": "default",
+      "position": {
+        "x": 335,
+        "y": 502
+      },
+      "rotation": -4,
+      "scale": 1.556,
+      "layer": 1,
+      "zone": "pile",
+      "blocking": []
+    },
+    {
+      "id": "notebook_002",
+      "itemId": "notebook",
+      "variantId": "black",
+      "position": {
+        "x": 340,
+        "y": 697
+      },
+      "rotation": 4,
+      "scale": 1.313,
+      "layer": 1,
+      "zone": "pile",
+      "blocking": []
+    },
+    {
+      "id": "usb_drive_001",
+      "itemId": "usb_drive",
+      "variantId": "default",
+      "position": {
+        "x": 332,
+        "y": 865
+      },
+      "rotation": 9,
+      "scale": 1.68,
+      "layer": 1,
+      "zone": "pile",
+      "blocking": []
+    },
+    {
+      "id": "water_cup_001",
+      "itemId": "water_cup",
+      "variantId": "default",
+      "position": {
+        "x": 325,
+        "y": 1061
+      },
+      "rotation": 6,
+      "scale": 1.556,
+      "layer": 1,
+      "zone": "pile",
+      "blocking": []
+    },
+    {
+      "id": "mouse_002",
+      "itemId": "mouse",
+      "variantId": "default",
+      "position": {
+        "x": 336,
+        "y": 1246
+      },
+      "rotation": 5,
+      "scale": 1.556,
+      "layer": 1,
+      "zone": "pile",
+      "blocking": []
+    },
+    {
+      "id": "newspaper_002",
+      "itemId": "newspaper",
+      "variantId": "default",
+      "position": {
+        "x": 351,
+        "y": 1411
+      },
+      "rotation": -4,
+      "scale": 1.313,
+      "layer": 1,
+      "zone": "pile",
+      "blocking": []
+    },
+    {
+      "id": "file_bag_002",
+      "itemId": "file_bag",
+      "variantId": "default",
+      "position": {
+        "x": 539,
+        "y": 516
+      },
+      "rotation": 5,
+      "scale": 1.313,
+      "layer": 1,
+      "zone": "pile",
+      "blocking": []
+    },
+    {
+      "id": "book_001",
+      "itemId": "book",
+      "variantId": "default",
+      "position": {
+        "x": 547,
+        "y": 704
+      },
+      "rotation": -10,
+      "scale": 1.313,
+      "layer": 1,
+      "zone": "pile",
+      "blocking": []
+    },
+    {
+      "id": "pen_002",
+      "itemId": "pen",
+      "variantId": "default",
+      "position": {
+        "x": 554,
+        "y": 855
+      },
+      "rotation": 1,
+      "scale": 1.68,
+      "layer": 1,
+      "zone": "pile",
+      "blocking": []
+    },
+    {
+      "id": "sticky_note_002",
+      "itemId": "sticky_note",
+      "variantId": "default",
+      "position": {
+        "x": 550,
+        "y": 1060
+      },
+      "rotation": -5,
+      "scale": 1.68,
+      "layer": 1,
+      "zone": "pile",
+      "blocking": []
+    },
+    {
+      "id": "glasses_002",
+      "itemId": "glasses",
+      "variantId": "default",
+      "position": {
+        "x": 556,
+        "y": 1226
+      },
+      "rotation": 5,
+      "scale": 1.556,
+      "layer": 1,
+      "zone": "pile",
+      "blocking": []
+    },
+    {
+      "id": "usb_drive_002",
+      "itemId": "usb_drive",
+      "variantId": "default",
+      "position": {
+        "x": 535,
+        "y": 1419
+      },
+      "rotation": 8,
+      "scale": 1.68,
+      "layer": 1,
+      "zone": "pile",
+      "blocking": []
+    },
+    {
+      "id": "notebook_003",
+      "itemId": "notebook",
+      "variantId": "kraft",
+      "position": {
+        "x": 756,
+        "y": 509
+      },
+      "rotation": 8,
+      "scale": 1.313,
+      "layer": 1,
+      "zone": "pile",
+      "blocking": []
+    },
+    {
+      "id": "water_cup_002",
+      "itemId": "water_cup",
+      "variantId": "default",
+      "position": {
+        "x": 761,
+        "y": 702
+      },
+      "rotation": 7,
+      "scale": 1.556,
+      "layer": 1,
+      "zone": "pile",
+      "blocking": []
+    },
+    {
+      "id": "mouse_003",
+      "itemId": "mouse",
+      "variantId": "default",
+      "position": {
+        "x": 761,
+        "y": 888
+      },
+      "rotation": -2,
+      "scale": 1.556,
+      "layer": 1,
+      "zone": "pile",
+      "blocking": []
+    },
+    {
+      "id": "newspaper_003",
+      "itemId": "newspaper",
+      "variantId": "default",
+      "position": {
+        "x": 725,
+        "y": 1064
+      },
+      "rotation": -9,
+      "scale": 1.313,
+      "layer": 1,
+      "zone": "pile",
+      "blocking": []
+    },
+    {
+      "id": "file_bag_003",
+      "itemId": "file_bag",
+      "variantId": "default",
+      "position": {
+        "x": 753,
+        "y": 1253
+      },
+      "rotation": 7,
+      "scale": 1.313,
+      "layer": 1,
+      "zone": "pile",
+      "blocking": []
+    },
+    {
+      "id": "pen_003",
+      "itemId": "pen",
+      "variantId": "default",
+      "position": {
+        "x": 738,
+        "y": 1414
+      },
+      "rotation": -4,
+      "scale": 1.68,
+      "layer": 1,
+      "zone": "pile",
+      "blocking": []
+    },
+    {
+      "id": "sticky_note_003",
+      "itemId": "sticky_note",
+      "variantId": "default",
+      "position": {
+        "x": 959,
+        "y": 492
+      },
+      "rotation": -10,
+      "scale": 1.68,
+      "layer": 1,
+      "zone": "pile",
+      "blocking": []
+    },
+    {
+      "id": "glasses_003",
+      "itemId": "glasses",
+      "variantId": "default",
+      "position": {
+        "x": 931,
+        "y": 675
+      },
+      "rotation": 7,
+      "scale": 1.556,
+      "layer": 1,
+      "zone": "pile",
+      "blocking": []
+    },
+    {
+      "id": "usb_drive_003",
+      "itemId": "usb_drive",
+      "variantId": "default",
+      "position": {
+        "x": 957,
+        "y": 883
+      },
+      "rotation": -6,
+      "scale": 1.68,
+      "layer": 1,
+      "zone": "pile",
+      "blocking": []
+    },
+    {
+      "id": "water_cup_003",
+      "itemId": "water_cup",
+      "variantId": "default",
+      "position": {
+        "x": 930,
+        "y": 1055
+      },
+      "rotation": 1,
+      "scale": 1.556,
+      "layer": 1,
+      "zone": "pile",
+      "blocking": []
+    },
+    {
+      "id": "mouse_004",
+      "itemId": "mouse",
+      "variantId": "default",
+      "position": {
+        "x": 942,
+        "y": 1252
+      },
+      "rotation": 5,
+      "scale": 1.556,
+      "layer": 1,
+      "zone": "pile",
+      "blocking": []
+    },
+    {
+      "id": "book_002",
+      "itemId": "book",
+      "variantId": "default",
+      "position": {
+        "x": 953,
+        "y": 1433
+      },
+      "rotation": 3,
+      "scale": 1.313,
+      "layer": 1,
+      "zone": "pile",
+      "blocking": []
+    },
+    {
+      "id": "notebook_004",
+      "itemId": "notebook",
+      "variantId": "kraft",
+      "position": {
+        "x": 249,
+        "y": 610
+      },
+      "rotation": 11,
+      "scale": 1.313,
+      "layer": 0,
+      "zone": "pile",
+      "blocking": [
+        "glasses_001",
+        "notebook_001",
+        "notebook_002"
+      ]
+    },
+    {
+      "id": "newspaper_004",
+      "itemId": "newspaper",
+      "variantId": "default",
+      "position": {
+        "x": 254,
+        "y": 791
+      },
+      "rotation": -6,
+      "scale": 1.313,
+      "layer": 0,
+      "zone": "pile",
+      "blocking": [
+        "newspaper_001",
+        "notebook_001",
+        "notebook_002",
+        "usb_drive_001"
+      ]
+    },
+    {
+      "id": "file_bag_004",
+      "itemId": "file_bag",
+      "variantId": "default",
+      "position": {
+        "x": 251,
+        "y": 953
+      },
+      "rotation": 6,
+      "scale": 1.313,
+      "layer": 0,
+      "zone": "pile",
+      "blocking": [
+        "file_bag_001",
+        "newspaper_001",
+        "usb_drive_001",
+        "water_cup_001"
+      ]
+    },
+    {
+      "id": "pen_004",
+      "itemId": "pen",
+      "variantId": "default",
+      "position": {
+        "x": 240,
+        "y": 1157
+      },
+      "rotation": -11,
+      "scale": 1.68,
+      "layer": 0,
+      "zone": "pile",
+      "blocking": [
+        "file_bag_001",
+        "mouse_002"
+      ]
+    },
+    {
+      "id": "sticky_note_004",
+      "itemId": "sticky_note",
+      "variantId": "default",
+      "position": {
+        "x": 222,
+        "y": 1322
+      },
+      "rotation": 6,
+      "scale": 1.68,
+      "layer": 0,
+      "zone": "pile",
+      "blocking": [
+        "mouse_002",
+        "newspaper_002",
+        "pen_001",
+        "sticky_note_001"
+      ]
+    },
+    {
+      "id": "book_003",
+      "itemId": "book",
+      "variantId": "default",
+      "position": {
+        "x": 438,
+        "y": 578
+      },
+      "rotation": -2,
+      "scale": 1.313,
+      "layer": 0,
+      "zone": "pile",
+      "blocking": [
+        "file_bag_002",
+        "glasses_001",
+        "notebook_002"
+      ]
+    },
+    {
+      "id": "glasses_004",
+      "itemId": "glasses",
+      "variantId": "default",
+      "position": {
+        "x": 429,
+        "y": 795
+      },
+      "rotation": 0,
+      "scale": 1.556,
+      "layer": 0,
+      "zone": "pile",
+      "blocking": [
+        "book_001",
+        "notebook_002",
+        "pen_002",
+        "usb_drive_001"
+      ]
+    },
+    {
+      "id": "usb_drive_004",
+      "itemId": "usb_drive",
+      "variantId": "default",
+      "position": {
+        "x": 452,
+        "y": 970
+      },
+      "rotation": 11,
+      "scale": 1.68,
+      "layer": 0,
+      "zone": "pile",
+      "blocking": [
+        "sticky_note_002",
+        "usb_drive_001",
+        "water_cup_001"
+      ]
+    },
+    {
+      "id": "water_cup_004",
+      "itemId": "water_cup",
+      "variantId": "default",
+      "position": {
+        "x": 445,
+        "y": 1135
+      },
+      "rotation": -7,
+      "scale": 1.556,
+      "layer": 0,
+      "zone": "pile",
+      "blocking": [
+        "glasses_002",
+        "sticky_note_002"
+      ]
+    },
+    {
+      "id": "mouse_005",
+      "itemId": "mouse",
+      "variantId": "default",
+      "position": {
+        "x": 451,
+        "y": 1339
+      },
+      "rotation": 0,
+      "scale": 1.556,
+      "layer": 0,
+      "zone": "pile",
+      "blocking": [
+        "newspaper_002",
+        "usb_drive_002"
+      ]
+    },
+    {
+      "id": "book_004",
+      "itemId": "book",
+      "variantId": "default",
+      "position": {
+        "x": 626,
+        "y": 590
+      },
+      "rotation": -9,
+      "scale": 1.313,
+      "layer": 0,
+      "zone": "pile",
+      "blocking": [
+        "book_001",
+        "file_bag_002",
+        "notebook_003"
+      ]
+    },
+    {
+      "id": "newspaper_005",
+      "itemId": "newspaper",
+      "variantId": "default",
+      "position": {
+        "x": 658,
+        "y": 795
+      },
+      "rotation": 5,
+      "scale": 1.313,
+      "layer": 0,
+      "zone": "pile",
+      "blocking": [
+        "book_001",
+        "mouse_003",
+        "pen_002",
+        "water_cup_002"
+      ]
+    },
+    {
+      "id": "file_bag_005",
+      "itemId": "file_bag",
+      "variantId": "default",
+      "position": {
+        "x": 632,
+        "y": 946
+      },
+      "rotation": 3,
+      "scale": 1.313,
+      "layer": 0,
+      "zone": "pile",
+      "blocking": [
+        "newspaper_003",
+        "pen_002",
+        "sticky_note_002"
+      ]
+    },
+    {
+      "id": "pen_005",
+      "itemId": "pen",
+      "variantId": "default",
+      "position": {
+        "x": 633,
+        "y": 1321
+      },
+      "rotation": -11,
+      "scale": 1.68,
+      "layer": 0,
+      "zone": "pile",
+      "blocking": [
+        "glasses_002",
+        "pen_003"
+      ]
+    },
+    {
+      "id": "sticky_note_005",
+      "itemId": "sticky_note",
+      "variantId": "default",
+      "position": {
+        "x": 855,
+        "y": 589
+      },
+      "rotation": -12,
+      "scale": 1.68,
+      "layer": 0,
+      "zone": "pile",
+      "blocking": [
+        "glasses_003",
+        "notebook_003",
+        "sticky_note_003",
+        "water_cup_002"
+      ]
+    },
+    {
+      "id": "glasses_005",
+      "itemId": "glasses",
+      "variantId": "default",
+      "position": {
+        "x": 864,
+        "y": 773
+      },
+      "rotation": 5,
+      "scale": 1.556,
+      "layer": 0,
+      "zone": "pile",
+      "blocking": [
+        "usb_drive_003",
+        "water_cup_002"
+      ]
+    },
+    {
+      "id": "usb_drive_005",
+      "itemId": "usb_drive",
+      "variantId": "default",
+      "position": {
+        "x": 839,
+        "y": 963
+      },
+      "rotation": 8,
+      "scale": 1.68,
+      "layer": 0,
+      "zone": "pile",
+      "blocking": [
+        "mouse_003",
+        "newspaper_003",
+        "usb_drive_003",
+        "water_cup_003"
+      ]
+    },
+    {
+      "id": "water_cup_005",
+      "itemId": "water_cup",
+      "variantId": "default",
+      "position": {
+        "x": 862,
+        "y": 1143
+      },
+      "rotation": 4,
+      "scale": 1.556,
+      "layer": 0,
+      "zone": "pile",
+      "blocking": [
+        "file_bag_003",
+        "mouse_004",
+        "newspaper_003",
+        "water_cup_003"
+      ]
+    },
+    {
+      "id": "mouse_006",
+      "itemId": "mouse",
+      "variantId": "default",
+      "position": {
+        "x": 830,
+        "y": 1340
+      },
+      "rotation": 12,
+      "scale": 1.556,
+      "layer": 0,
+      "zone": "pile",
+      "blocking": [
+        "file_bag_003",
+        "pen_003"
+      ]
+    }
+  ],
+  "gridConfig": {
+    "targetSlots": {
+      "baseCount": 2,
+      "maxCount": 2
+    },
+    "collectionSlots": {
+      "capacity": 4
+    },
+    "adConfig": {
+      "enabled": true,
+      "simulated": true
+    }
+  },
+  "hintConfig": {
+    "enabled": true,
+    "autoHintSeconds": 12,
+    "maxFreeUses": 3,
+    "highlightDuration": 2.5
+  },
+  "completionConfig": {
+    "requireAllObjectivesCompleted": true,
+    "nextLevelId": "level_006"
+  }
+}
