@@ -26,10 +26,32 @@ button:disabled { cursor: default; opacity: 0.45; }
 
 .hud-header {
   position: absolute; left: 0; right: 0;
-  display: flex; align-items: center; gap: 2.5cqw; padding: 0 3.5cqw;
+  display: flex; flex-direction: column; justify-content: center; gap: 1.2cqw; padding: 0 3.5cqw;
 }
+.hud-header__row { display: flex; align-items: center; gap: 2.5cqw; width: 100%; }
 .hud-header__title { flex: 1; font-size: 5cqw; font-weight: 700; }
 .hud-header__chapter { font-size: 3.4cqw; font-weight: 500; opacity: 0.6; margin-right: 2cqw; }
+/* 计分行：分数 + 连击 + 限时倒计时（第二行，小字） */
+.hud-header__score { display: block; font-size: 3.4cqw; font-weight: 600; opacity: 0.85; margin-top: 0.4cqw; }
+.hud-header__combo { color: #d96a1e; }
+.hud-header__timer { margin-left: 2cqw; font-weight: 700; }
+.hud-header__timer--low { color: #c0392b; }
+/* 顶部进度条：已找/总数与整洁度 */
+.hud-progress { display: flex; align-items: center; gap: 2cqw; width: 100%; }
+.hud-progress__bar { flex: 1; height: 1.8cqw; border-radius: 99px; background: rgba(74, 64, 56, 0.14); overflow: hidden; }
+.hud-progress__bar span { display: block; height: 100%; border-radius: 99px; background: #7ba05b; transition: width 0.3s ease-out; }
+.hud-progress__label { font-size: 3.2cqw; opacity: 0.75; white-space: nowrap; }
+/* 飘分：找对时从物件位置向上飘出的“+分数” */
+.float-score {
+  position: absolute; transform: translate(-50%, -50%); pointer-events: none; z-index: 3;
+  font-size: 5cqw; font-weight: 800; color: #d96a1e; text-shadow: 0 0.4cqw 0 rgba(255, 255, 255, 0.85);
+  animation: float-up 0.9s ease-out forwards; white-space: nowrap;
+}
+.float-score__combo { font-size: 3.6cqw; }
+@keyframes float-up {
+  from { opacity: 1; transform: translate(-50%, -50%); }
+  to { opacity: 0; transform: translate(-50%, -50%) translateY(-11cqw); }
+}
 .icon-btn {
   min-width: 11cqw; height: 11cqw; border-radius: 3.4cqw; padding: 0 2cqw;
   background: #fffaf2; box-shadow: 0 0.6cqw 0 #d8cdbd; font-size: 5.4cqw; font-weight: 700;
@@ -59,7 +81,12 @@ button:disabled { cursor: default; opacity: 0.45; }
 .storage-label {
   position: absolute; left: 0; right: 0; transform: translateY(-50%); text-align: center; font-size: 3.4cqw; opacity: 0.6;
 }
-.storage-label--danger { opacity: 1; color: #c0392b; font-weight: 700; }
+.storage-label--danger { opacity: 1; color: #c0392b; font-weight: 700; animation: danger-shake 0.5s ease-in-out infinite; }
+@keyframes danger-shake {
+  0%, 100% { transform: translateY(-50%) translateX(0); }
+  25% { transform: translateY(-50%) translateX(-1.2cqw); }
+  75% { transform: translateY(-50%) translateX(1.2cqw); }
+}
 @keyframes slot-bump {
   0% { transform: translate(-50%, -50%) scale(1); }
   40% { transform: translate(-50%, -50%) scale(1.12); }
@@ -68,7 +95,7 @@ button:disabled { cursor: default; opacity: 0.45; }
 @keyframes locate-pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.18); } }
 @keyframes danger-pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.55; } }
 
-.item-icon { width: 92%; height: 92%; object-fit: contain; pointer-events: none; }
+.item-icon { width: 92%; height: 92%; object-fit: contain; pointer-events: none; filter: drop-shadow(0 0.35cqw 0.45cqw rgba(74, 58, 40, 0.45)); }
 
 .guide-tip {
   position: absolute; left: 50%; transform: translate(-50%, 0); pointer-events: none; z-index: 2;
@@ -102,6 +129,13 @@ button:disabled { cursor: default; opacity: 0.45; }
 }
 .panel__title { font-size: 6.4cqw; }
 .panel__text { font-size: 3.8cqw; opacity: 0.75; line-height: 1.5; }
+.panel__error { font-size: 3.6cqw; color: #c0392b; font-weight: 700; line-height: 1.5; }
+/* 通关整洁度条：从 0 涨到 100% */
+.tidy-bar { display: flex; flex-direction: column; gap: 1.4cqw; }
+.tidy-bar__label { font-size: 3.8cqw; font-weight: 700; color: #6b8f5e; }
+.tidy-bar__track { height: 2.4cqw; border-radius: 99px; background: #e6dccd; overflow: hidden; }
+.tidy-bar__track span { display: block; height: 100%; width: 0; border-radius: 99px; background: #7ba05b; animation: tidy-fill 0.8s ease-out forwards; }
+@keyframes tidy-fill { to { width: 100%; } }
 .btn {
   padding: 3.2cqw 0; border-radius: 3.4cqw; background: #efe6d8; font-size: 4.4cqw; font-weight: 700;
   box-shadow: 0 0.8cqw 0 #d8cdbd;
@@ -131,6 +165,20 @@ button:disabled { cursor: default; opacity: 0.45; }
 .level-card--locked { background: #ebe4d9; }
 .level-card__num { font-size: 7cqw; font-weight: 800; }
 .level-card__name { font-size: 3.6cqw; }
+.level-card__best { font-size: 3.2cqw; opacity: 0.65; }
+.level-card__progress {
+  display: block; width: 80%; height: 1.6cqw; border-radius: 99px;
+  background: #e6dccd; overflow: hidden;
+}
+.level-card__progress span { display: block; height: 100%; background: #e7a35d; transition: width 0.2s ease-out; }
+
+/* 关卡加载失败横条：弱网下分包下载失败时出现，点重试重新加载同一关 */
+.load-error {
+  display: flex; flex-direction: column; gap: 2cqw; align-items: stretch;
+  padding: 3.4cqw 4cqw; border-radius: 4cqw; background: #f8e7e2; border: 0.5cqw solid #c9907f;
+  font-size: 3.6cqw; line-height: 1.5;
+}
+.load-error__retry { font-size: 4cqw; }
 .menu__footer { margin-top: 6cqw; display: flex; flex-direction: column; gap: 1cqw; }
 .menu__footer .btn { font-size: 3.6cqw; }
 .panel__note { font-size: 3.2cqw; color: #6b8f5e; line-height: 1.5; }

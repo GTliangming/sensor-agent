@@ -1,5 +1,6 @@
 import type { Rect } from "../src/core/types";
 import type { Rng } from "../src/core/rng";
+import { OCCLUSION_TUNING } from "../src/core/tuning";
 import { SCENE_RECT } from "../src/layout";
 
 // 物件堆的几何布局：整块物品区按网格铺满，逐层错位叠放。
@@ -23,7 +24,8 @@ export interface PileShape {
   tile: number;
 }
 
-const BLOCK_THRESHOLD = 0.08; // 被上层覆盖面积占比超过该值即视为被遮挡
+/** 粗排阈值与最小可见比例等几何参数。BLOCK_THRESHOLD 集中配置见 tuning.ts，默认 0.08。 */
+/** 粗排阈值（被上层覆盖面积占比超过该值即视为被遮挡）集中配置见 tuning.ts；buildPile 可覆盖它（遮挡实验用）。 */
 const MIN_VISIBLE = 0.2; // 下层物件至少露出的面积比例，太少的直接不放
 const JITTER = 0.1; // 位置抖动（相对格宽）
 // 物件只画图标、没有底板。粗排时把图标近似成边长 76% 的方块（略大于多数图标的实际轮廓，
@@ -62,7 +64,11 @@ function gridFor(k: number, cols: number, rows: number) {
   return { cols: cols - 1, rows, ox: 0.5, oy: 0 }; // 左右两格之间
 }
 
-export function buildPile(shape: PileShape, rng: Rng): PileCell[] {
+export function buildPile(
+  shape: PileShape,
+  rng: Rng,
+  blockThreshold: number = OCCLUSION_TUNING.blockThreshold,
+): PileCell[] {
   const { layers, cols, rows, tile } = shape;
   const cellW = SCENE_RECT.width / cols;
   const cellH = SCENE_RECT.height / rows;
@@ -83,7 +89,7 @@ export function buildPile(shape: PileShape, rng: Rng): PileCell[] {
         const r = rectAt(x, y, tile);
         if (k > 0 && visibleFraction(r, above) < MIN_VISIBLE) continue;
         const blockers = cells
-          .filter((c) => c.layer > layer && overlapArea(r, rectAt(c.x, c.y, tile)) / (r.width * r.height) > BLOCK_THRESHOLD)
+          .filter((c) => c.layer > layer && overlapArea(r, rectAt(c.x, c.y, tile)) / (r.width * r.height) > blockThreshold)
           .map((c) => c.index);
         if (k > 0 && blockers.length === 0) continue;
         cells.push({ index: cells.length, layer, x, y, rotation: Math.round(rng.range(-12, 12)), blockers });

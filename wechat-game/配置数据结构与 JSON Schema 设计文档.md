@@ -1877,72 +1877,31 @@ B 被 A 遮挡
 
 ## 13.1 目标计数的含义
 
-当前已经确认目标计数按品类计数，但 `Objective` 目前使用 `itemId`。
-
-这两者需要明确。
-
-例如：
-
-假设物件库中有：
-
-```
-[
-  {
-    "id": "headphones",
-    "category": "electronics"
-  },
-  {
-    "id": "phone",
-    "category": "electronics"
-  }
-]
-```
-
-如果目标是耳机，那么应该只匹配耳机。
-
-如果目标是电子产品，那么耳机和手机都可能匹配。
-
-两种规则完全不同。
-
-**当前暂时保留 itemId 方案，不允许 Claude Code 擅自改成 category 匹配。**
-
-正式冻结前需要确认：
-
-- 是按照具体物件 ID 计数？
-- 还是按照物件库的 category 字段计数？
-- 还是按照目标图标所代表的具体物件类型计数？
+**已关闭（2026-11-12，结论：按 `itemId` 计数）。** 代码现状：`GameSession.openObjectiveIndex` 按 `itemId` 精确匹配，
+`Objective.itemId` 即目标物件 ID；`category` 只做物件库分类，不参与目标匹配。例：目标是耳机（`earphone`），
+只有耳机实例计入，同一分类的手机、充电线都不算。后续如需“按品类找”玩法，须另加目标类型字段，不得擅自改成 category 匹配。
 
 ## 13.2 找寻格数量和显示规则
 
-需要明确：
-
-- 一个目标类型是否占用一个找寻格？
-- 目标数量是否以数字显示？
-- baseCount 表示初始可见目标格数量，还是目标类型数量？
-- maxCount 表示找寻格最多可扩展到多少格？
-
-目前 Schema 中的 `baseCount` 和 `maxCount` 暂时保留，不能直接视为最终 UI 规则。
+**已关闭（2026-11-12，结论：找寻格数量 = 目标种类数）。** 代码现状：`targetSlots.baseCount = maxCount = 目标种类数`
+（`level-generator.ts` 的 `toLevel`），每种目标占一格，格内显示“剩余/总数”（找齐显示 ✓）；
+找寻格看广告扩容已在 Web 原型里移除，不再扩展。`baseCount` 即目标种类数，`maxCount` 与之相等，校验器要求
+目标种类数 ≤ `baseCount`。
 
 ## 13.3 归位格救场规则
 
-已经确认归位格满后：
-
-游戏暂停，玩家可以选择救场或重开。
-
-但救场的具体行为、资源成本、是否观看广告，尚未最终确定。
-
-因此第一版只要求实现暂停和选择入口，不允许擅自确定救场成本。
+**已关闭（2026-11-12，结论：模拟广告 1200ms，每关限 1 次，恒成功；真实广告接入时补失败分支）。**
+代码现状：归位格满后游戏进 `rescue` 状态，面板提供“看广告清空归位格（模拟）”或重新开始/放弃；
+`MockAdService` 延迟 1200ms 后恒成功，每关只能救场一次（`GameSession.rescueUsed`）。
+真实激励视频广告接入时，救场面板必须补“广告加载失败，请重试”的处理（模拟广告不会失败，真实广告会失败/超时）。
 
 ## 13.4 设计分辨率
 
-当前 Level 和 Scene 都有 designResolution。
-
-需要决定：
-
-- 保留两份配置，并要求两者一致。
-- 或者只在 Scene 配置一次，Level 自动继承。
-
-第一版可以先保留，并通过校验器检查一致性，后续再决定是否简化。
+**已关闭（2026-11-12，结论：以 Level 的 `designResolution` 为准，Scene 的一份保留但须与之同步生成）。**
+代码现状：关卡 JSON 的 `designResolution` 全部是 1080×2340（`layout.ts` 的 `REFERENCE_HEIGHT`），
+`generate-levels.ts` 生成时 Level 直接取 Scene 的 `designResolution`，两者天然一致；
+校验器要求实例坐标落在 Scene 的 `designResolution` 范围内。后续如需简化为只配一份，应只留 Scene 一份、Level 生成时继承，
+不得两边各改各的。
 
 # 十四、Claude Code 实施要求
 

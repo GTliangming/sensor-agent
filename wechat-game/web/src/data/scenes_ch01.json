@@ -21,7 +21,12 @@
             "height": 1435
           }
         }
-      ]
+      ],
+      "room": {
+        "wall": "#e6ddd0",
+        "floor": "#cbb493",
+        "furniture": "bed"
+      }
     },
     {
       "id": "ch01_parcels",
@@ -43,7 +48,12 @@
             "height": 1435
           }
         }
-      ]
+      ],
+      "room": {
+        "wall": "#e9e2d4",
+        "floor": "#d3bda0",
+        "furniture": "boxes"
+      }
     },
     {
       "id": "ch01_milk_tea",
@@ -65,7 +75,12 @@
             "height": 1435
           }
         }
-      ]
+      ],
+      "room": {
+        "wall": "#ece1d3",
+        "floor": "#cbb090",
+        "furniture": "counter"
+      }
     },
     {
       "id": "ch01_drawer",
@@ -87,7 +102,12 @@
             "height": 1435
           }
         }
-      ]
+      ],
+      "room": {
+        "wall": "#e3d8c6",
+        "floor": "#c09a76",
+        "furniture": "drawer"
+      }
     },
     {
       "id": "ch01_desk",
@@ -109,7 +129,12 @@
             "height": 1435
           }
         }
-      ]
+      ],
+      "room": {
+        "wall": "#e8dfd1",
+        "floor": "#cbb493",
+        "furniture": "desk"
+      }
     },
     {
       "id": "ch01_takeaway",
@@ -131,7 +156,12 @@
             "height": 1435
           }
         }
-      ]
+      ],
+      "room": {
+        "wall": "#e5dcd0",
+        "floor": "#c2ab90",
+        "furniture": "table"
+      }
     },
     {
       "id": "ch01_wardrobe",
@@ -153,7 +183,12 @@
             "height": 1435
           }
         }
-      ]
+      ],
+      "room": {
+        "wall": "#dde4ea",
+        "floor": "#b3bfcb",
+        "furniture": "wardrobe"
+      }
     },
     {
       "id": "ch01_phone_case",
@@ -175,7 +210,12 @@
             "height": 1435
           }
         }
-      ]
+      ],
+      "room": {
+        "wall": "#ece1d3",
+        "floor": "#cbb090",
+        "furniture": "shelf"
+      }
     },
     {
       "id": "ch01_cables",
@@ -197,7 +237,12 @@
             "height": 1435
           }
         }
-      ]
+      ],
+      "room": {
+        "wall": "#dfe4dc",
+        "floor": "#b3bcb0",
+        "furniture": "desk"
+      }
     },
     {
       "id": "ch01_sofa",
@@ -219,7 +264,12 @@
             "height": 1435
           }
         }
-      ]
+      ],
+      "room": {
+        "wall": "#d8e2da",
+        "floor": "#aabdaf",
+        "furniture": "sofa"
+      }
     }
   ]
 }

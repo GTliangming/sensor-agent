@@ -1,8 +1,16 @@
 import type { ItemInstance, LevelConfig } from "./types";
 import { activeBlockers, transitiveBlockers } from "./occlusion";
+import type { LevelSnapshot } from "./save";
 
 export type InstanceStatus = "available" | "removed" | "in_collection";
 export type SessionStatus = "playing" | "paused" | "rescue" | "completed" | "failed";
+
+/** 限时挑战：每关倒计时秒数 */
+export const TIME_LIMIT_SECONDS = 120;
+/** 找对一个目标的基础分；连击每层 +10%，上限 +50% */
+export const BASE_SCORE = 100;
+const COMBO_STEP = 0.1;
+const COMBO_MAX_BONUS = 0.5;
 
 export interface ObjectiveProgress {
   itemId: string;
@@ -26,6 +34,12 @@ export type ClickResult =
       objectiveIndex: number;
       unlocked: string[];
       levelCompleted: boolean;
+      /** 本次找对的得分（含连击加成） */
+      scoreGain: number;
+      /** 找对后的当前连击数 */
+      combo: number;
+      /** 累计分数 */
+      score: number;
     }
   | {
       type: "missed";
@@ -38,15 +52,25 @@ export type ClickResult =
 /**
  * 单局玩法状态。纯逻辑，不依赖渲染层，后续迁移到 Cocos 时可直接复用。
  * 进度在点击时立即结算，不依赖动画回调。
+ * 计分：找对 100 分起，连续找对每连击 +10%（上限 +50%），点错连击清零、不扣分；星级规则不动。
+ * 限时挑战（opts.timed）：每关 120 秒倒计时，超时按失败处理；不改求解器与最少失误数。
+ * 断点续玩（opts.snapshot）：从存档快照恢复本局状态。
  */
 export class GameSession {
   readonly level: LevelConfig;
   status: SessionStatus = "playing";
+  /** 失败原因：timeout（限时到点）或 giveup（归位格满后放弃），其余状态为 null */
+  failReason: "timeout" | "giveup" | null = null;
   objectives: ObjectiveProgress[];
   collection: (CollectionSlot | null)[];
   wrongCount = 0;
   rescueUsed = false;
   hintUses = 0;
+  /** 当前分数与连击 */
+  score = 0;
+  combo = 0;
+  /** 限时模式剩余秒数，不限时为 null */
+  timeLeft: number | null = null;
   /** 当前提示中的实例及剩余高亮时间（秒） */
   hint: { instanceId: string; remaining: number } | null = null;
 
@@ -55,7 +79,7 @@ export class GameSession {
   private idleSeconds = 0;
   private lastHintId: string | null = null;
 
-  constructor(level: LevelConfig) {
+  constructor(level: LevelConfig, opts: { timed?: boolean; snapshot?: LevelSnapshot } = {}) {
     this.level = level;
     this.byId = new Map(level.itemInstances.map((i) => [i.id, i]));
     for (const inst of level.itemInstances) this.statuses.set(inst.id, "available");
@@ -69,6 +93,50 @@ export class GameSession {
       { length: level.gridConfig.collectionSlots.capacity },
       () => null,
     );
+    if (opts.timed) this.timeLeft = opts.snapshot?.timeLeft ?? TIME_LIMIT_SECONDS;
+    if (opts.snapshot) this.restore(opts.snapshot);
+  }
+
+  /** 从中断点快照恢复：已拿走的、归位格里的、提示次数、分数、连击都按快照来 */
+  private restore(snap: LevelSnapshot): void {
+    const removed = new Set(snap.removed);
+    for (const id of removed) if (this.statuses.has(id)) this.statuses.set(id, "removed");
+    snap.storage.forEach((id, i) => {
+      const inst = this.byId.get(id);
+      if (!inst || i >= this.collection.length) return;
+      this.statuses.set(id, "in_collection");
+      this.collection[i] = { instanceId: id, itemId: inst.itemId, variantId: inst.variantId };
+    });
+    for (const o of this.objectives) {
+      o.collectedCount = [...removed].filter((id) => this.byId.get(id)?.itemId === o.itemId).length;
+      o.completed = o.collectedCount >= o.requiredCount;
+    }
+    this.hintUses = snap.hintUses;
+    this.wrongCount = snap.wrongCount;
+    this.rescueUsed = snap.rescueUsed;
+    this.score = snap.score;
+    this.combo = snap.combo;
+  }
+
+  /** 当前局面的中断点快照（切后台/退出时保存） */
+  snapshot(): LevelSnapshot {
+    const removed: string[] = [];
+    for (const [id, st] of this.statuses) if (st === "removed") removed.push(id);
+    // 归位格按格子顺序排，快照里的 storage 顺序与格子顺序一致
+    const orderedStorage = this.collection
+      .filter((s): s is CollectionSlot => s !== null)
+      .map((s) => s.instanceId);
+    return {
+      levelId: this.level.id,
+      removed,
+      storage: orderedStorage,
+      hintUses: this.hintUses,
+      wrongCount: this.wrongCount,
+      rescueUsed: this.rescueUsed,
+      score: this.score,
+      combo: this.combo,
+      ...(this.timeLeft !== null ? { timeLeft: this.timeLeft } : {}),
+    };
   }
 
   statusOf(id: string): InstanceStatus | undefined {
@@ -106,6 +174,11 @@ export class GameSession {
       const o = this.objectives[objectiveIndex];
       o.collectedCount += 1;
       o.completed = o.collectedCount >= o.requiredCount;
+      // 计分：连续找对加连击，每连击 +10%（上限 +50%）
+      this.combo += 1;
+      const bonus = Math.min(this.combo - 1, 5) * COMBO_STEP;
+      const scoreGain = Math.round(BASE_SCORE * (1 + Math.min(bonus, COMBO_MAX_BONUS)));
+      this.score += scoreGain;
       const levelCompleted = this.objectives.every((x) => x.completed);
       if (levelCompleted) {
         this.status = "completed";
@@ -117,11 +190,15 @@ export class GameSession {
         objectiveIndex,
         unlocked: this.unlockedBy(id),
         levelCompleted,
+        scoreGain,
+        combo: this.combo,
+        score: this.score,
       };
     }
 
-    // 错误物件：进入归位格（调用时一定有空位，满了会先进入 rescue 状态）
+    // 错误物件：进入归位格（调用时一定有空位，满了会先进入 rescue 状态），连击清零、不扣分
     const slotIndex = this.collection.findIndex((s) => s === null);
+    this.combo = 0;
     this.statuses.set(id, "in_collection");
     this.collection[slotIndex] = { instanceId: id, itemId: inst.itemId, variantId: inst.variantId };
     this.wrongCount += 1;
@@ -157,7 +234,10 @@ export class GameSession {
   }
 
   giveUp(): void {
-    if (this.status === "rescue") this.status = "failed";
+    if (this.status === "rescue") {
+      this.status = "failed";
+      this.failReason = "giveup";
+    }
   }
 
   pause(): void {
@@ -170,6 +250,17 @@ export class GameSession {
   /** 每帧调用。返回本帧新触发的自动提示实例 ID */
   update(dt: number): string | null {
     if (this.status !== "playing") return null;
+    // 限时挑战：倒计时到 0 按失败处理（可重试），切后台暂停时计时冻结（update 只在 playing 时跑）
+    if (this.timeLeft !== null) {
+      this.timeLeft -= dt;
+      if (this.timeLeft <= 0) {
+        this.timeLeft = 0;
+        this.status = "failed";
+        this.failReason = "timeout";
+        this.hint = null;
+        return null;
+      }
+    }
     if (this.hint) {
       this.hint.remaining -= dt;
       if (this.hint.remaining <= 0) this.hint = null;

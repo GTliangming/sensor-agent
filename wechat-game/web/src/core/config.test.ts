@@ -3,6 +3,7 @@ import { ITEM_MAP } from "../data";
 import { CONFIG_BUNDLE, LEVELS } from "../data/all-levels";
 import masksFile from "../data/item_masks.json";
 import { decodeMask, shapeContains, shapePoints, type ItemMasksFile } from "./mask";
+import { OCCLUSION_TUNING } from "./tuning";
 import { solveLevel } from "./solver";
 import { validateBundle } from "./validator";
 import { defaultSave, loadSave, recordCompletion } from "./save";
@@ -39,7 +40,10 @@ describe("第一章配置", () => {
         const points = shapePoints(shapes.get(inst.id)!, masks.size);
         for (const other of level.itemInstances.filter((o) => o.layer > inst.layer)) {
           const covered = points.filter((p) => shapeContains(shapes.get(other.id)!, p.x, p.y, masks.size)).length;
-          expect(covered >= 3, `${level.id} ${other.id} → ${inst.id} 覆盖 ${covered} 点`).toBe(inst.blocking.includes(other.id));
+          expect(
+            covered >= OCCLUSION_TUNING.minOverlapPoints,
+            `${level.id} ${other.id} → ${inst.id} 覆盖 ${covered} 点`,
+          ).toBe(inst.blocking.includes(other.id));
         }
       }
     }

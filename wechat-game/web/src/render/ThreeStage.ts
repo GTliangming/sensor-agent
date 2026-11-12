@@ -109,7 +109,8 @@ export class ThreeStage {
   private animateHint() {
     const mesh = this.hintId ? this.meshes.get(this.hintId) : undefined;
     if (!mesh || !mesh.visible) return;
-    const pulse = 1 + 0.12 * Math.sin(this.clock.elapsedTime * 10);
+    // 提示脉冲加强：幅度 0.18、更快，让“该点这里”一眼就能看到
+    const pulse = 1 + 0.18 * Math.sin(this.clock.elapsedTime * 12);
     mesh.scale.setScalar(pulse * (mesh.userData.baseScale as number));
   }
   loadLevel(level: LevelConfig, sceneConfig: SceneConfig, items: Map<string, ItemConfig>) {
@@ -127,7 +128,14 @@ export class ThreeStage {
       const mesh = new THREE.Mesh(new THREE.PlaneGeometry(size, size), material);
       mesh.position.set(inst.position.x, inst.position.y, 10 + inst.layer * 10 + order * 0.01);
       mesh.rotation.z = THREE.MathUtils.degToRad(inst.rotation);
-      mesh.userData = { instanceId: inst.id, itemId: inst.itemId, interactive: true, baseScale: 1 };
+      // 小物件（硬币、钥匙等尺寸 <140px）加大点按热区：掩码外扩 1 格，玩家不用精确点中图标边缘
+      mesh.userData = {
+        instanceId: inst.id,
+        itemId: inst.itemId,
+        interactive: true,
+        baseScale: 1,
+        hitDilate: item.size.width < 140 ? 1 : 0,
+      };
       this.pile.add(mesh);
       this.meshes.set(inst.id, mesh);
     });
@@ -141,15 +149,134 @@ export class ThreeStage {
     return mesh;
   }
 
-  /** 物品区是一整块底板，所有物件堆在上面；底板随布局铺满物品区 */
+  /** 物品区是一整块底板，所有物件堆在上面；底板随布局铺满物品区。
+   * 房间感底衬：上方墙面带 + 下方地板带 + 家具剪影（低饱和扁平色块，程序化绘制，无外部图片），
+   * 10 关靠墙面/地板配色和家具剪影区分。正式美术到位后整段替换为场景底板图。 */
   private buildBackdrop(sceneConfig: SceneConfig) {
     disposeChildren(this.backdrop, true);
     const { x, y, width, height } = this.layout.board;
     this.scene.background = new THREE.Color(sceneConfig.background);
-    this.plane(this.backdrop, width, height, x, y - 8, 0, new THREE.MeshBasicMaterial({ color: "#8f7a63" }));
-    this.plane(this.backdrop, width, height, x, y, 0.2, new THREE.MeshBasicMaterial({ color: sceneConfig.surfaceColor }));
+    const room = sceneConfig.room;
+    const wallH = height * 0.3;
+    // 墙面带（上）+ 地板带（下）+ 踢脚线
+    this.plane(this.backdrop, width, wallH, x, y + height - wallH, 0, new THREE.MeshBasicMaterial({ color: room.wall }));
+    this.plane(this.backdrop, width, height - wallH, x, y, 0.1, new THREE.MeshBasicMaterial({ color: room.floor }));
+    this.plane(this.backdrop, width, 10, x, y + height - wallH - 5, 0.2, new THREE.MeshBasicMaterial({ color: shade(room.floor, 0.82) }));
+    this.drawFurniture(room.furniture, x, y, width, height, wallH);
     const label = new THREE.MeshBasicMaterial({ map: labelTexture(sceneConfig.name, "rgba(255,255,255,0.35)"), transparent: true });
     this.plane(this.backdrop, 512, 96, x + width / 2 - 256, y + height / 2 - 48, 0.4, label);
+  }
+
+  /** 家具剪影：每种 2–5 个扁平色块，画在墙面带与物品区边缘，半透明、不抢物件的戏 */
+  private drawFurniture(
+    kind: SceneConfig["room"]["furniture"],
+    x: number,
+    y: number,
+    w: number,
+    h: number,
+    wallH: number,
+  ) {
+    const main = new THREE.Color("#8a7a66");
+    const dark = new THREE.Color("#6f6152");
+    const mat = (color: THREE.Color) =>
+      new THREE.MeshBasicMaterial({ color, transparent: true, opacity: 0.42 });
+    // 每个矩形用 board 的相对坐标（fx/fy 从左下角起，宽高占 board 的比例），z 统一 0.3
+    const rects: { fx: number; fy: number; fw: number; fh: number; c: THREE.Color }[] = (() => {
+      const top = (h - wallH) / h; // 地板带顶部（相对高度）
+      switch (kind) {
+        case "bed": // 床头柜：床头板 + 枕头 + 被子
+          return [
+            { fx: 0.04, fy: top + 0.06, fw: 0.3, fh: 0.16, c: main },
+            { fx: 0.08, fy: top + 0.02, fw: 0.1, fh: 0.05, c: dark },
+            { fx: 0.2, fy: top + 0.02, fw: 0.1, fh: 0.05, c: dark },
+          ];
+        case "boxes": // 快递堆：三只叠放的纸箱
+          return [
+            { fx: 0.68, fy: top + 0.01, fw: 0.26, fh: 0.09, c: main },
+            { fx: 0.72, fy: top + 0.1, fw: 0.2, fh: 0.08, c: dark },
+            { fx: 0.75, fy: top + 0.18, fw: 0.14, fh: 0.07, c: main },
+          ];
+        case "counter": // 奶茶柜台：长柜台 + 两只杯子
+          return [
+            { fx: 0.05, fy: top + 0.01, fw: 0.9, fh: 0.07, c: main },
+            { fx: 0.2, fy: top + 0.08, fw: 0.06, fh: 0.06, c: dark },
+            { fx: 0.7, fy: top + 0.08, fw: 0.06, fh: 0.06, c: dark },
+          ];
+        case "drawer": // 抽屉柜：柜体 + 三层抽屉线
+          return [
+            { fx: 0.66, fy: top + 0.01, fw: 0.28, fh: 0.22, c: main },
+            { fx: 0.68, fy: top + 0.08, fw: 0.24, fh: 0.015, c: dark },
+            { fx: 0.68, fy: top + 0.15, fw: 0.24, fh: 0.015, c: dark },
+          ];
+        case "desk": // 书桌：桌面 + 两条腿
+          return [
+            { fx: 0.06, fy: top + 0.1, fw: 0.5, fh: 0.03, c: main },
+            { fx: 0.08, fy: top + 0.01, fw: 0.03, fh: 0.1, c: dark },
+            { fx: 0.5, fy: top + 0.01, fw: 0.03, fh: 0.1, c: dark },
+          ];
+        case "wardrobe": // 衣柜：高柜 + 两扇门
+          return [
+            { fx: 0.64, fy: top + 0.01, fw: 0.3, fh: 0.26, c: main },
+            { fx: 0.785, fy: top + 0.01, fw: 0.01, fh: 0.26, c: dark },
+          ];
+        case "shelf": // 置物架：两层隔板
+          return [
+            { fx: 0.06, fy: top + 0.16, fw: 0.4, fh: 0.025, c: main },
+            { fx: 0.06, fy: top + 0.06, fw: 0.4, fh: 0.025, c: main },
+            { fx: 0.12, fy: top + 0.185, fw: 0.06, fh: 0.05, c: dark },
+            { fx: 0.3, fy: top + 0.085, fw: 0.06, fh: 0.05, c: dark },
+          ];
+        case "sofa": // 沙发：靠背 + 座面 + 扶手
+          return [
+            { fx: 0.08, fy: top + 0.08, fw: 0.84, fh: 0.1, c: main },
+            { fx: 0.08, fy: top + 0.01, fw: 0.84, fh: 0.08, c: dark },
+            { fx: 0.08, fy: top + 0.01, fw: 0.08, fh: 0.17, c: main },
+            { fx: 0.84, fy: top + 0.01, fw: 0.08, fh: 0.17, c: main },
+          ];
+        case "table": // 餐桌：桌面 + 两条腿
+          return [
+            { fx: 0.2, fy: top + 0.12, fw: 0.6, fh: 0.035, c: main },
+            { fx: 0.26, fy: top + 0.01, fw: 0.035, fh: 0.12, c: dark },
+            { fx: 0.7, fy: top + 0.01, fw: 0.035, fh: 0.12, c: dark },
+          ];
+      }
+    })();
+    for (const r of rects) {
+      this.plane(this.backdrop, r.fw * w, r.fh * h, x + r.fx * w, y + r.fy * h, 0.3, mat(r.c));
+    }
+  }
+
+  /**
+   * 通关整洁 payoff：剩余物件淡出收起，底板变亮，露出整洁的房间——“从混乱走向整洁”的收尾。
+   * 轻量实现：复用现有补间，不引入持续动画循环；exceptId（刚飞入找寻格的最后一件）不参与淡出。
+   */
+  celebrate(exceptId?: string) {
+    const tidy = new THREE.Color("#f7f2e9");
+    for (const [id, mesh] of this.meshes) {
+      if (!mesh.visible || id === exceptId) continue;
+      const material = mesh.material as THREE.MeshBasicMaterial;
+      const startOpacity = material.opacity;
+      this.addTween(mesh, 0.7, (t) => {
+        material.opacity = startOpacity * (1 - t);
+        mesh.scale.setScalar(1 - 0.25 * t);
+      }, () => {
+        mesh.visible = false;
+        material.opacity = startOpacity;
+        mesh.scale.setScalar(1);
+      });
+    }
+    // 底板同步变亮：取第一个底板网格挂一个补间，update 里改全部底板平面的颜色
+    const planes = this.backdrop.children
+      .map((c) => (c as THREE.Mesh).material as THREE.MeshBasicMaterial | undefined)
+      .filter((m): m is THREE.MeshBasicMaterial => !!m && m.color !== undefined);
+    const starts = planes.map((m) => m.color.clone());
+    const anchor = this.backdrop.children[0] as THREE.Mesh | undefined;
+    if (anchor) {
+      this.addTween(anchor, 0.7, (t) => {
+        planes.forEach((m, i) => m.color.lerpColors(starts[i], tidy, t * 0.6));
+      });
+    }
+    this.invalidate();
   }
 
   private clearPile() {
@@ -175,13 +302,23 @@ export class ThreeStage {
     return this.pickAt(ndc);
   }
 
-  /** 从上往下找第一个点在图标本体上的物件，透明区域不拦截下面的物件 */
+  /** 从上往下找第一个点在图标本体上的物件，透明区域不拦截下面的物件。
+   * 小物件外扩 1 格掩码（loadLevel 里按尺寸写进 userData.hitDilate），不用精确点中图标边缘。 */
   private pickAt(ndc: THREE.Vector2): string | null {
     this.raycaster.setFromCamera(ndc, this.camera);
     const candidates = [...this.meshes.values()].filter((m) => m.visible && m.userData.interactive);
     const hit = this.raycaster
       .intersectObjects(candidates, false)
-      .find((h) => !h.uv || isItemHitAt(h.object.userData.itemId as string, h.uv.x, h.uv.y));
+      .find(
+        (h) =>
+          !h.uv ||
+          isItemHitAt(
+            h.object.userData.itemId as string,
+            h.uv.x,
+            h.uv.y,
+            (h.object.userData.hitDilate as number) ?? 0,
+          ),
+      );
     return hit ? (hit.object.userData.instanceId as string) : null;
   }
   /** 找到一个点下去确实会命中该物件的屏幕坐标（CSS 像素）。用于新手引导和自动化测试 */
@@ -210,6 +347,15 @@ export class ThreeStage {
       [[0, 0], [2, 0], [-2, 0], [0, 2], [0, -2]].every(([dx, dy]) => this.pickAtClient(x + dx, y + dy) === instanceId);
     const best = points.find((p) => solid(p.x, p.y)) ?? points.find((p) => this.pickAtClient(p.x, p.y) === instanceId);
     return best ? { x: best.x, y: best.y } : null;
+  }
+
+  /** 断点续玩：恢复快照时，已拿走 / 已进归位格的物件直接隐藏，不参与点击 */
+  hideInstance(instanceId: string) {
+    const mesh = this.meshes.get(instanceId);
+    if (!mesh) return;
+    mesh.visible = false;
+    mesh.userData.interactive = false;
+    this.invalidate();
   }
 
   /** 被遮挡物件统一压暗（不透明度效果由程序处理，美术无需出暗化图） */
@@ -280,6 +426,11 @@ export class ThreeStage {
     this.renderer.dispose();
     this.renderer.domElement.remove();
   }
+}
+
+/** 颜色加深（f < 1）或变亮（f > 1），用于从地板色派生踢脚线等相近色 */
+function shade(hex: string, f: number): THREE.Color {
+  return new THREE.Color(hex).multiplyScalar(f);
 }
 
 /** 释放并移除分组里的全部网格；disposeMaps 为 true 时连同贴图一起释放（只用于一次性贴图） */

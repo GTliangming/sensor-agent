@@ -34,15 +34,21 @@ export function SessionPanel({
   session,
   showResult,
   adPlaying,
+  adError,
   soundEnabled,
   progress,
+  bestScore,
   actions,
 }: {
   session: GameSession;
   showResult: boolean;
   adPlaying: boolean;
+  /** 广告失败时的提示（“广告加载失败，请重试”），有则显示在救场面板里 */
+  adError?: string | null;
   soundEnabled: boolean;
   progress?: ChapterProgress;
+  /** 本关历史最高分（含本次） */
+  bestScore?: number;
   actions: Actions;
 }) {
   if (adPlaying) {
@@ -70,6 +76,7 @@ export function SessionPanel({
         <Panel title="归位格满了">
           <p className="panel__text">放错的东西太多了，要清空归位格继续吗？</p>
           <p className="panel__note">{fairNote(session)}</p>
+          {adError && <p className="panel__error">{adError}</p>}
           {session.canRescue() && (
             <button className="btn btn--primary" onClick={actions.onRescue}>看广告清空归位格（模拟）</button>
           )}
@@ -80,7 +87,11 @@ export function SessionPanel({
     case "failed":
       return (
         <Panel title="挑战失败">
-          <p className="panel__text">先拿顶上那些压住目标的东西，能少放错几次。</p>
+          <p className="panel__text">
+            {session.failReason === "timeout"
+              ? "时间到了！120 秒内没找完，再试一次吧。"
+              : "先拿顶上那些压住目标的东西，能少放错几次。"}
+          </p>
           <p className="panel__note">{fairNote(session)}</p>
           <button className="btn btn--primary" onClick={actions.onRestart}>重新开始</button>
           <button className="btn btn--ghost" onClick={actions.onExit}>返回选关</button>
@@ -90,6 +101,16 @@ export function SessionPanel({
       return (
         <Panel title="收拾干净了！">
           <Stars count={session.stars()} />
+          <div className="tidy-bar">
+            <div className="tidy-bar__label">整洁度 100%</div>
+            <div className="tidy-bar__track">
+              <span />
+            </div>
+          </div>
+          <p className="panel__text">
+            本关分数 {session.score}
+            {bestScore !== undefined && bestScore > 0 ? ` · 最高分 ${Math.max(bestScore, session.score)}` : ""}
+          </p>
           <p className="panel__text">
             放错 {session.wrongCount} 次{session.level.requiredWrong > 0 ? `（本关至少要放错 ${session.level.requiredWrong} 次）` : ""}
             {session.rescueUsed ? " · 使用了救场" : ""}

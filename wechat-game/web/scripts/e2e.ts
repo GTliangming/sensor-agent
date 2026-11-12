@@ -68,7 +68,8 @@ try {
       if (!(await tapInstance(page, id))) untappable++;
       await page.waitForTimeout(60);
     }
-    await page.waitForTimeout(900);
+    // 飞入动画按渲染帧推进，软件渲染下帧率低、墙钟时间会超过动画时长：等面板出现而不是固定等 900ms
+    await page.waitForSelector(".panel__title", { timeout: 8000 }).catch(() => null);
     const title = await panelTitle(page);
     const ok = title === "收拾干净了！" && untappable === 0;
     if (!ok) {
@@ -125,6 +126,23 @@ try {
   {
     const level = LEVELS[0];
     await openLevel(page, 1);
+    // 断点续玩：上一段从第 1 关退出时存了快照（已找 2 件、分数 210），进关先问“继续还是重新开始”
+    check((await panelTitle(page)) === "上次玩到一半", "重进有快照的关卡时显示断点续玩提示");
+    await clickButton(page, "继续玩");
+    await page.waitForTimeout(300);
+    const countsAfterResume = await page.locator(".target-slot__count").allTextContents();
+    const scoreAfterResume = await page.evaluate(() => document.querySelector(".hud-header__score")?.textContent ?? "");
+    check(countsAfterResume[0] === "1/3" && scoreAfterResume.includes("210"), "点继续玩恢复快照（还差 1 个目标、分数 210）");
+    // 回选关再进一次，选“重新开始”应从干净局面开始
+    await page.locator("button[aria-label='返回选关']").click();
+    await page.waitForTimeout(300);
+    await openLevel(page, 1);
+    check((await panelTitle(page)) === "上次玩到一半", "退出后重进仍显示断点续玩提示");
+    await clickButton(page, "重新开始");
+    await page.waitForTimeout(300);
+    const countsFresh = await page.locator(".target-slot__count").allTextContents();
+    const scoreFresh = await page.evaluate(() => document.querySelector(".hud-header__score")?.textContent ?? "");
+    check(countsFresh[0] === "3/3" && scoreFresh.includes("0"), "点重新开始清空快照、从头开始");
     check((await page.locator(".guide-hand").count()) === 0, "第 1 关通关后再玩不再显示引导");
     const targetIds = new Set(level.objectives.map((o) => o.itemId));
     const wrong = level.itemInstances.filter((i) => !targetIds.has(i.itemId) && i.blocking.length === 0).slice(0, 4);
@@ -136,7 +154,8 @@ try {
         check(warn.includes("只剩 1 格"), "归位格只剩 1 格时显示警告");
       }
     }
-    await page.waitForTimeout(800);
+    // 归位格满的面板在第 4 个物件飞入（0.8s）后才出现，软件渲染下等面板而不是固定等 800ms
+    await page.waitForSelector(".panel__title", { timeout: 8000 }).catch(() => null);
     check((await panelTitle(page)) === "归位格满了", "归位格满后弹出救场面板");
     await page.screenshot({ path: join(outDir, "rescue-panel.png") });
     await clickButton(page, "看广告");

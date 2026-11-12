@@ -1,6 +1,7 @@
 import type { ItemConfig, ItemInstance, LevelConfig, SceneConfig } from "../src/core/types";
 import { createRng, type Rng } from "../src/core/rng";
 import { solveLevel } from "../src/core/solver";
+import { OCCLUSION_TUNING, type OcclusionTuning } from "../src/core/tuning";
 import { MaskLibrary, computeShapeBlocking, type ItemMasksFile } from "../src/core/mask";
 import masksFile from "../src/data/item_masks.json";
 import type { LevelSpec } from "./level-specs";
@@ -163,13 +164,19 @@ function toLevel(spec: LevelSpec, instances: ItemInstance[], scene: SceneConfig,
 /** 各类失败原因的计数，生成失败时输出，便于调整关卡规格 */
 const failures = { roles: 0, solve: 0, tooMany: 0, buried: 0, spread: 0 };
 
-function tryGenerate(spec: LevelSpec, items: Map<string, ItemConfig>, scene: SceneConfig, rng: Rng): LevelConfig | null {
-  const cells = buildPile(spec.pile, rng);
+function tryGenerate(
+  spec: LevelSpec,
+  items: Map<string, ItemConfig>,
+  scene: SceneConfig,
+  rng: Rng,
+  tuning: OcclusionTuning,
+): LevelConfig | null {
+  const cells = buildPile(spec.pile, rng, tuning.blockThreshold);
   const roles = assignRoles(cells, spec, rng);
   if (!roles) return failures.roles++, null;
   const instances = buildInstances(cells, roles, spec, items, rng);
   // 粗排用的是方块近似，身份确定后按图标真实形状重算遮挡
-  applyShapeBlocking(instances, items);
+  applyShapeBlocking(instances, items, tuning.minOverlapPoints);
   const level = toLevel(spec, instances, scene, items);
   const solved = solveLevel(level);
   // 按真实轮廓重算后，个别门槛干扰物可能实际没压住目标，允许比规格少 1 次必要失误
@@ -204,23 +211,30 @@ export function targetSpread(targets: ItemInstance[]): number {
 const MASKS = new MaskLibrary(masksFile as ItemMasksFile);
 
 /** 按图标真实轮廓重算 blocking（与配置校验、运行时点击用同一份掩码和同一个尺寸算法） */
-function applyShapeBlocking(instances: ItemInstance[], items: Map<string, ItemConfig>): void {
-  const blocking = computeShapeBlocking(instances, (i) => items.get(i.itemId)!.size.width * i.scale, MASKS);
+function applyShapeBlocking(
+  instances: ItemInstance[],
+  items: Map<string, ItemConfig>,
+  minOverlapPoints: number = OCCLUSION_TUNING.minOverlapPoints,
+): void {
+  const blocking = computeShapeBlocking(instances, (i) => items.get(i.itemId)!.size.width * i.scale, MASKS, minOverlapPoints);
   for (const inst of instances) inst.blocking = blocking.get(inst.id)!;
 }
 
-/** 从 baseSeed 开始逐个尝试种子，返回第一个满足规格的关卡及其种子 */
+/** 从 baseSeed 开始逐个尝试种子，返回第一个满足规格的关卡及其种子。
+ * tuning 可覆盖遮挡调参（遮挡实验用），默认读 tuning.ts 的集中配置。 */
 export function generateLevel(
   spec: LevelSpec,
   items: Map<string, ItemConfig>,
   scene: SceneConfig,
   baseSeed: number,
   maxTries = 20000,
+  tuningOverrides: Partial<OcclusionTuning> = {},
 ): { level: LevelConfig; seed: number } {
+  const tuning: OcclusionTuning = { ...OCCLUSION_TUNING, ...tuningOverrides };
   failures.roles = failures.solve = failures.tooMany = failures.buried = failures.spread = 0;
   for (let i = 0; i < maxTries; i++) {
     const seed = baseSeed + i;
-    const level = tryGenerate(spec, items, scene, createRng(seed));
+    const level = tryGenerate(spec, items, scene, createRng(seed), tuning);
     if (level) return { level, seed };
   }
   throw new Error(

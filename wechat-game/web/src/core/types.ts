@@ -42,6 +42,25 @@ export interface SceneZone {
   bounds: Rect;
 }
 
+/** 房间感底衬：墙面带 + 地板带 + 家具剪影（低饱和扁平色块，程序化绘制，无外部图片）。
+ * 正式美术到位后替换为场景底板图。 */
+export type FurnitureKind =
+  | "bed"
+  | "boxes"
+  | "counter"
+  | "drawer"
+  | "desk"
+  | "wardrobe"
+  | "shelf"
+  | "sofa"
+  | "table";
+
+export interface RoomBackdrop {
+  wall: string;
+  floor: string;
+  furniture: FurnitureKind;
+}
+
 export interface SceneConfig {
   id: string;
   name: string;
@@ -50,6 +69,7 @@ export interface SceneConfig {
   surfaceColor: string;
   designResolution: { width: number; height: number };
   zones: SceneZone[];
+  room: RoomBackdrop;
 }
 
 export interface ScenesFile {

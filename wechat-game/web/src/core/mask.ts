@@ -2,6 +2,7 @@
 // 关卡生成、配置校验、运行时点击判定都用同一份掩码，保证“看起来压住”“点不动”“校验通过”三者一致。
 
 import type { ItemInstance } from "./types";
+import { OCCLUSION_TUNING } from "./tuning";
 
 export const MASK_SIZE = 48;
 
@@ -24,8 +25,8 @@ export function spriteFileName(itemId: string, variantId: string): string {
   return `${itemId}__${variantId}.webp`;
 }
 
-/** 上层图标至少盖住下层图标这么多个掩码采样点，才算遮挡 */
-export const MIN_OVERLAP_POINTS = 3;
+/** 上层图标至少盖住下层图标这么多个掩码采样点，才算遮挡。集中配置见 tuning.ts，默认 5。 */
+export const MIN_OVERLAP_POINTS = OCCLUSION_TUNING.minOverlapPoints;
 
 export interface ItemMasksFile {
   size: number;
@@ -127,11 +128,13 @@ export class MaskLibrary {
 /**
  * 按真实轮廓计算每个实例的 blocking（谁挡住我）：层级更高、且图标本体实际盖住了本实例的才算。
  * tileOf 返回实例的贴图边长（设计像素）。缺掩码的物件会抛错。
+ * minOverlapPoints 可覆盖集中配置（遮挡实验用），默认读 tuning.ts。
  */
 export function computeShapeBlocking(
   instances: ItemInstance[],
   tileOf: (inst: ItemInstance) => number,
   masks: MaskLibrary,
+  minOverlapPoints: number = OCCLUSION_TUNING.minOverlapPoints,
 ): Map<string, string[]> {
   const shapes = instances.map((inst) => {
     const mask = masks.get(inst.itemId);
@@ -148,7 +151,7 @@ export function computeShapeBlocking(
       if (Math.abs(other.position.x - inst.position.x) > reach || Math.abs(other.position.y - inst.position.y) > reach) return;
       let covered = 0;
       for (const p of points[i]) {
-        if (shapeContains(shapes[j], p.x, p.y, masks.size) && ++covered >= MIN_OVERLAP_POINTS) {
+        if (shapeContains(shapes[j], p.x, p.y, masks.size) && ++covered >= minOverlapPoints) {
           blockers.push(other.id);
           return;
         }

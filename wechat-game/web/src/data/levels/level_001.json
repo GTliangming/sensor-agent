@@ -318,8 +318,7 @@
       "zone": "pile",
       "blocking": [
         "book_001",
-        "earphone_001",
-        "key_001"
+        "earphone_001"
       ]
     },
     {
@@ -337,7 +336,6 @@
       "blocking": [
         "book_001",
         "coin_001",
-        "earphone_002",
         "key_001"
       ]
     },
@@ -354,7 +352,6 @@
       "layer": 0,
       "zone": "pile",
       "blocking": [
-        "coin_001",
         "earphone_002",
         "tissue_001",
         "water_cup_001"
@@ -373,7 +370,6 @@
       "layer": 0,
       "zone": "pile",
       "blocking": [
-        "medicine_bottle_001",
         "notebook_001",
         "tissue_001",
         "water_cup_001"
@@ -392,7 +388,7 @@
       "layer": 0,
       "zone": "pile",
       "blocking": [
-        "book_001",
+        "pen_001",
         "sticky_note_001"
       ]
     },
@@ -409,8 +405,8 @@
       "layer": 0,
       "zone": "pile",
       "blocking": [
-        "book_001",
-        "remote_control_001"
+        "battery_001",
+        "book_001"
       ]
     },
     {
@@ -427,7 +423,6 @@
       "zone": "pile",
       "blocking": [
         "earphone_002",
-        "remote_control_001",
         "sock_001",
         "water_cup_001"
       ]
@@ -445,8 +440,8 @@
       "layer": 0,
       "zone": "pile",
       "blocking": [
-        "earphone_003",
-        "water_cup_001"
+        "notebook_001",
+        "sock_001"
       ]
     },
     {
@@ -463,8 +458,6 @@
       "zone": "pile",
       "blocking": [
         "battery_001",
-        "medicine_bottle_002",
-        "pen_001",
         "power_bank_001"
       ]
     },
@@ -481,9 +474,7 @@
       "layer": 0,
       "zone": "pile",
       "blocking": [
-        "battery_001",
-        "power_bank_001",
-        "remote_control_001"
+        "battery_001"
       ]
     },
     {
@@ -500,7 +491,8 @@
       "zone": "pile",
       "blocking": [
         "hair_tie_001",
-        "remote_control_001"
+        "remote_control_001",
+        "sock_001"
       ]
     },
     {
@@ -517,9 +509,7 @@
       "zone": "pile",
       "blocking": [
         "earphone_003",
-        "glasses_001",
-        "medicine_bottle_003",
-        "sock_001"
+        "glasses_001"
       ]
     }
   ],

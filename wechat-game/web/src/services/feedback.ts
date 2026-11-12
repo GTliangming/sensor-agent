@@ -63,7 +63,7 @@ class Feedback {
     if (this.ctx.state === "suspended") void this.ctx.resume();
   }
 
-  play(event: FeedbackEvent) {
+  play(event: FeedbackEvent, pitch = 1) {
     if (!this.enabled) return;
     this.unlock();
     const ctx = this.ctx;
@@ -73,7 +73,8 @@ class Feedback {
         const osc = ctx.createOscillator();
         const gain = ctx.createGain();
         osc.type = note.type ?? "sine";
-        osc.frequency.value = note.freq;
+        // pitch 按连击变调：collect 音调随连击升高（GameScreen 传 session.combo），其余事件传默认 1
+        osc.frequency.value = note.freq * pitch;
         const peak = note.gain ?? 0.18;
         const t0 = now + note.start;
         gain.gain.setValueAtTime(0.0001, t0);
