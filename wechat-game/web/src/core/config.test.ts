@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { CONFIG_BUNDLE, ITEM_MAP, LEVELS } from "../data";
+import { ITEM_MAP } from "../data";
+import { CONFIG_BUNDLE, LEVELS } from "../data/all-levels";
 import masksFile from "../data/item_masks.json";
 import { decodeMask, shapeContains, shapePoints, type ItemMasksFile } from "./mask";
 import { solveLevel } from "./solver";
@@ -73,6 +74,13 @@ describe("校验器能发现错误配置", () => {
     l.itemInstances[0].blocking = [l.itemInstances[1].id];
     l.itemInstances[1].blocking = [l.itemInstances[0].id];
     expect(errorsOf(l).join()).toContain("成环");
+  });
+
+  it("遮挡与画面不一致（手改 blocking 删掉一个真实遮挡者）", () => {
+    const l = structuredClone(base);
+    const blocked = l.itemInstances.find((i) => i.blocking.length > 0)!;
+    blocked.blocking = blocked.blocking.slice(1);
+    expect(errorsOf(l).join()).toContain("遮挡与画面不一致");
   });
 
   it("目标数量多于场景实例", () => {

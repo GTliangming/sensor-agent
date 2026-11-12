@@ -4,7 +4,9 @@ import { fileURLToPath } from "node:url";
 import itemsFile from "../src/data/items_ch01.json";
 import type { ChapterConfig, ItemsFile, ScenesFile } from "../src/core/types";
 import { validateBundle } from "../src/core/validator";
-import { generateLevel } from "./level-generator";
+import { MaskLibrary, type ItemMasksFile } from "../src/core/mask";
+import masksFile from "../src/data/item_masks.json";
+import { generateLevel, targetSpread } from "./level-generator";
 import { LEVEL_SPECS } from "./level-specs";
 import { SCENES } from "./scene-specs";
 
@@ -26,7 +28,14 @@ const levels = LEVEL_SPECS.map((spec) => {
   const scene = sceneMap.get(spec.sceneId);
   if (!scene) throw new Error(`场景 ${spec.sceneId} 未定义`);
   const { level, seed } = generateLevel(spec, itemMap, scene, spec.number * 1000);
-  console.log(`${level.id} ${level.name}: ${level.itemInstances.length} 个物件, 种子 ${seed}`);
+  const targetIds = new Set(level.objectives.map((o) => o.itemId));
+  const targets = level.itemInstances.filter((i) => targetIds.has(i.itemId));
+  const buried = targets.filter((i) => i.blocking.length > 0).length;
+  const kinds = new Set(level.itemInstances.map((i) => i.itemId)).size;
+  console.log(
+    `${level.id} ${level.name}: ${level.itemInstances.length} 个物件 / ${kinds} 种, ` +
+      `目标被压住 ${buried}/${targets.length}, 目标分布 ${targetSpread(targets)}/9 宫格, 种子 ${seed}`,
+  );
   return level;
 });
 
@@ -36,9 +45,16 @@ const chapter: ChapterConfig = {
   name: "出租屋的凌晨",
   description: "凌晨的出租屋里，东西总是找不到。",
   levelIds: levels.map((l) => l.id),
+  levels: levels.map((l) => ({ id: l.id, levelNumber: l.levelNumber, name: l.name })),
 };
 
-const report = validateBundle({ items, scenes: SCENES, chapter, levels });
+const report = validateBundle({
+  items,
+  scenes: SCENES,
+  chapter,
+  levels,
+  masks: new MaskLibrary(masksFile as ItemMasksFile),
+});
 if (report.errors.length > 0) {
   console.error(report.errors.join("\n"));
   process.exit(1);

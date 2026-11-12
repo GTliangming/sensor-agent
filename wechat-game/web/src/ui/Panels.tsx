@@ -20,19 +20,29 @@ interface Actions {
   onRescue: () => void;
   onGiveUp: () => void;
   onNext?: () => void;
+  onToggleSound: () => void;
+}
+
+/** 章节进度，通关面板上显示，给玩家“在往前走”的感觉 */
+export interface ChapterProgress {
+  completed: number;
+  total: number;
+  stars: number;
 }
 
 export function SessionPanel({
   session,
-  requiredWrong,
   showResult,
   adPlaying,
+  soundEnabled,
+  progress,
   actions,
 }: {
   session: GameSession;
-  requiredWrong: number;
   showResult: boolean;
   adPlaying: boolean;
+  soundEnabled: boolean;
+  progress?: ChapterProgress;
   actions: Actions;
 }) {
   if (adPlaying) {
@@ -51,6 +61,7 @@ export function SessionPanel({
         <Panel title="暂停">
           <button className="btn btn--primary" onClick={actions.onResume}>继续</button>
           <button className="btn" onClick={actions.onRestart}>重新开始</button>
+          <button className="btn" onClick={actions.onToggleSound}>音效与震动：{soundEnabled ? "开" : "关"}</button>
           <button className="btn btn--ghost" onClick={actions.onExit}>返回选关</button>
         </Panel>
       );
@@ -58,6 +69,7 @@ export function SessionPanel({
       return (
         <Panel title="归位格满了">
           <p className="panel__text">放错的东西太多了，要清空归位格继续吗？</p>
+          <p className="panel__note">{fairNote(session)}</p>
           {session.canRescue() && (
             <button className="btn btn--primary" onClick={actions.onRescue}>看广告清空归位格（模拟）</button>
           )}
@@ -68,7 +80,8 @@ export function SessionPanel({
     case "failed":
       return (
         <Panel title="挑战失败">
-          <p className="panel__text">再试一次，先找最上面的目标。</p>
+          <p className="panel__text">先拿顶上那些压住目标的东西，能少放错几次。</p>
+          <p className="panel__note">{fairNote(session)}</p>
           <button className="btn btn--primary" onClick={actions.onRestart}>重新开始</button>
           <button className="btn btn--ghost" onClick={actions.onExit}>返回选关</button>
         </Panel>
@@ -76,10 +89,21 @@ export function SessionPanel({
     case "completed":
       return (
         <Panel title="收拾干净了！">
-          <Stars count={session.stars(requiredWrong)} />
+          <Stars count={session.stars()} />
           <p className="panel__text">
-            放错 {session.wrongCount} 次{session.rescueUsed ? " · 使用了救场" : ""}
+            放错 {session.wrongCount} 次{session.level.requiredWrong > 0 ? `（本关至少要放错 ${session.level.requiredWrong} 次）` : ""}
+            {session.rescueUsed ? " · 使用了救场" : ""}
           </p>
+          {progress && (
+            <div className="chapter-progress">
+              <div className="chapter-progress__label">
+                第一章 {progress.completed}/{progress.total} 关 · ★ {progress.stars}/{progress.total * 3}
+              </div>
+              <div className="chapter-progress__bar">
+                <span style={{ width: `${(progress.completed / progress.total) * 100}%` }} />
+              </div>
+            </div>
+          )}
           {actions.onNext && (
             <button className="btn btn--primary" onClick={actions.onNext}>下一关</button>
           )}
@@ -90,4 +114,10 @@ export function SessionPanel({
     default:
       return null;
   }
+}
+
+/** 明确告诉玩家关卡一定能过，避免“故意做成死局逼人看广告”的观感 */
+function fairNote(session: GameSession): string {
+  const n = session.level.requiredWrong;
+  return n === 0 ? "本关一定有解：一次都不放错就能通关，不需要看广告。" : `本关一定有解：最少只需放错 ${n} 次，不需要看广告。`;
 }

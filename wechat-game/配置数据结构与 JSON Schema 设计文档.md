@@ -7,6 +7,9 @@
 - **配置格式：** JSON
 - **数据校验：** JSON Schema Draft 2020-12 + TypeScript 业务校验器
 
+> 2026-11-11：本文内容已并入《数据结构设计文档》，Web 原型的实际字段与约定见其第十九章。
+> 当前实现用 TypeScript 校验器（`web/src/core/validator.ts`）完成结构与业务校验，暂未接入 Ajv。
+
 # 一、设计目标
 
 本项目采用数据驱动的关卡设计方式。

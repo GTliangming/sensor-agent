@@ -14,5 +14,57 @@
     "level_008",
     "level_009",
     "level_010"
+  ],
+  "levels": [
+    {
+      "id": "level_001",
+      "levelNumber": 1,
+      "name": "床头柜"
+    },
+    {
+      "id": "level_002",
+      "levelNumber": 2,
+      "name": "快递堆成山"
+    },
+    {
+      "id": "level_003",
+      "levelNumber": 3,
+      "name": "奶茶杯的归宿"
+    },
+    {
+      "id": "level_004",
+      "levelNumber": 4,
+      "name": "抽屉里的耳机"
+    },
+    {
+      "id": "level_005",
+      "levelNumber": 5,
+      "name": "桌面大扫除"
+    },
+    {
+      "id": "level_006",
+      "levelNumber": 6,
+      "name": "外卖盒之灾"
+    },
+    {
+      "id": "level_007",
+      "levelNumber": 7,
+      "name": "衣柜里的旧T恤"
+    },
+    {
+      "id": "level_008",
+      "levelNumber": 8,
+      "name": "手机壳博物馆"
+    },
+    {
+      "id": "level_009",
+      "levelNumber": 9,
+      "name": "数据线打结了"
+    },
+    {
+      "id": "level_010",
+      "levelNumber": 10,
+      "name": "沙发缝里的硬币"
+    }
   ]
 }

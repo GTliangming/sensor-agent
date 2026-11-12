@@ -6,9 +6,9 @@ function inst(id: string, itemId: string, blocking: string[] = []): ItemInstance
   return { id, itemId, variantId: "default", position: { x: 500, y: 800 }, rotation: 0, scale: 1, layer: 0, zone: "floor", blocking };
 }
 
-function level(instances: ItemInstance[], capacity = 3): LevelConfig {
+function level(instances: ItemInstance[], capacity = 3, requiredWrong = 0): LevelConfig {
   return {
-    id: "level_test", chapterId: "chapter_01", levelNumber: 1, name: "测试", sceneId: "s", difficulty: 1, teaching: "",
+    id: "level_test", chapterId: "chapter_01", levelNumber: 1, name: "测试", sceneId: "s", difficulty: 1, teaching: "", requiredWrong,
     designResolution: { width: 1080, height: 1920 },
     objectives: [{ itemId: "earphone", requiredCount: 2 }],
     itemInstances: instances,
@@ -54,14 +54,18 @@ describe("GameSession 拾取", () => {
 });
 
 describe("GameSession 遮挡", () => {
-  it("被多个物件遮挡时，全部遮挡者移除后才解锁", () => {
-    const s = new GameSession(level([inst("e1", "earphone", ["a", "e2"]), inst("e2", "earphone"), inst("a", "key")]));
+  it("被多个物件遮挡时，全部遮挡者移除后才解锁；星级只算超出必要失误的部分", () => {
+    const make = (requiredWrong: number) =>
+      new GameSession(level([inst("e1", "earphone", ["a", "e2"]), inst("e2", "earphone"), inst("a", "key")], 3, requiredWrong));
+    const s = make(0);
     expect(s.click("e1")).toEqual({ type: "blocked", instanceId: "e1" });
     expect(s.click("e2")).toMatchObject({ unlocked: [] });
     expect(s.click("a")).toMatchObject({ type: "missed", unlocked: ["e1"] });
     expect(s.click("e1").type).toBe("collected");
     expect(s.stars()).toBe(2);
-    expect(s.stars(1)).toBe(3);
+    const t = make(1);
+    ["e2", "a", "e1"].forEach((id) => t.click(id));
+    expect(t.stars()).toBe(3);
   });
 });
 
@@ -73,6 +77,27 @@ describe("GameSession 提示", () => {
     expect(s.update(4)).toBeNull();
     expect(s.update(1.5)).toBe("a");
     expect(s.hint?.instanceId).toBe("a");
+  });
+
+  it("连续提示时轮换，选离上一次提示最远的目标", () => {
+    const far = { ...inst("e3", "earphone"), position: { x: 1000, y: 1500 } };
+    const lvl = level([inst("e1", "earphone"), inst("e2", "earphone"), far]);
+    lvl.hintConfig.maxFreeUses = 3;
+    lvl.objectives[0].requiredCount = 3;
+    const s = new GameSession(lvl);
+    expect(s.requestHint()).toBe("e1");
+    expect(s.requestHint()).toBe("e3");
+    expect(s.requestHint()).toBe("e1");
+  });
+
+  it("目标只差最后 1 个时可免费定位，被压住时指向压在上面的物件，不消耗提示次数", () => {
+    const s = new GameSession(level([inst("e1", "earphone"), inst("e2", "earphone", ["k"]), inst("k", "key")]));
+    expect(s.canLocateLast(0)).toBe(false);
+    expect(s.locateLast(0)).toBeNull();
+    s.click("e1");
+    expect(s.canLocateLast(0)).toBe(true);
+    expect(s.locateLast(0)).toBe("k");
+    expect(s.hintsLeft()).toBe(1);
   });
 
   it("主动提示消耗免费次数，用完后不再提示", () => {

@@ -1,77 +1,55 @@
 import * as THREE from "three";
-import type { ItemConfig } from "../core/types";
+import { maskHitAt, spriteFileName } from "../core/mask";
+import { MASKS } from "../data";
 
-// 占位贴图：透明底，只有物件图标和一层柔和投影，不带文字和边框。
-// 正式美术资源到位后替换为 PNG 加载。
+// 物件贴图：由 scripts/export-icons.ts 预先烘焙到 public/sprites/，运行时只加载图片，
+// 所以任何设备上看到的图标都与生成关卡用的轮廓一致。
 
-const cache = new Map<string, THREE.CanvasTexture>();
-const PX = 256;
+const loader = new THREE.TextureLoader();
+const cache = new Map<string, THREE.Texture>();
 
-export function itemTexture(item: ItemConfig): THREE.CanvasTexture {
-  const key = item.id;
+/** 贴图的 URL，HUD 的 <img> 也用它 */
+export function spriteUrl(itemId: string, variantId: string): string {
+  return `${import.meta.env.BASE_URL}sprites/${spriteFileName(itemId, variantId)}`;
+}
+
+/** 物件贴图（异步加载，加载完成时调用 onLoad 以便重绘） */
+export function itemTexture(itemId: string, variantId: string, onLoad: () => void): THREE.Texture {
+  const key = `${itemId}:${variantId}`;
   const hit = cache.get(key);
   if (hit) return hit;
-
-  const canvas = document.createElement("canvas");
-  canvas.width = PX;
-  canvas.height = PX;
-  const ctx = canvas.getContext("2d")!;
-
-  ctx.shadowColor = "rgba(50, 40, 30, 0.45)";
-  ctx.shadowBlur = 16;
-  ctx.shadowOffsetY = 8;
-  ctx.textAlign = "center";
-  ctx.textBaseline = "middle";
-  ctx.font = `${PX * 0.84}px "Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif`;
-  ctx.fillText(item.icon, PX / 2, PX * 0.52);
-
-  const texture = new THREE.CanvasTexture(canvas);
+  const texture = loader.load(spriteUrl(itemId, variantId), onLoad);
   texture.colorSpace = THREE.SRGBColorSpace;
   texture.anisotropy = 4;
-  texture.userData.alphaMask = buildAlphaMask(ctx);
   cache.set(key, texture);
   return texture;
 }
 
-const MASK = 64;
-const DILATE = 1; // 掩码外扩格数（约 3 设计像素），只给细线条图标一点容差，不盖过旁边露出的物件
-
-/** 低分辨率不透明度掩码，用于点击时忽略图标外的透明区域 */
-function buildAlphaMask(ctx: CanvasRenderingContext2D): Uint8Array {
-  const data = ctx.getImageData(0, 0, PX, PX).data;
-  const solid = new Uint8Array(MASK * MASK);
-  const step = PX / MASK;
-  for (let my = 0; my < MASK; my++) {
-    for (let mx = 0; mx < MASK; mx++) {
-      const px = Math.floor(mx * step + step / 2);
-      const py = Math.floor(my * step + step / 2);
-      solid[my * MASK + mx] = data[(py * PX + px) * 4 + 3] > 140 ? 1 : 0;
-    }
-  }
-  const mask = new Uint8Array(MASK * MASK);
-  for (let my = 0; my < MASK; my++) {
-    for (let mx = 0; mx < MASK; mx++) {
-      let on = 0;
-      for (let dy = -DILATE; dy <= DILATE && !on; dy++) {
-        for (let dx = -DILATE; dx <= DILATE && !on; dx++) {
-          const x = mx + dx;
-          const y = my + dy;
-          if (x >= 0 && y >= 0 && x < MASK && y < MASK) on = solid[y * MASK + x];
-        }
-      }
-      mask[my * MASK + mx] = on;
-    }
-  }
-  return mask;
+/** 预加载一关用到的全部贴图，全部就绪后 resolve（单张失败也继续，避免卡在加载中） */
+export function preloadSprites(pairs: [itemId: string, variantId: string][]): Promise<void> {
+  const unique = [...new Set(pairs.map(([i, v]) => `${i}:${v}`))];
+  return Promise.all(
+    unique.map(
+      (key) =>
+        new Promise<void>((resolve) => {
+          if (cache.has(key) && cache.get(key)!.image) return resolve();
+          const [itemId, variantId] = key.split(":");
+          const texture = loader.load(spriteUrl(itemId, variantId), () => resolve(), undefined, () => resolve());
+          texture.colorSpace = THREE.SRGBColorSpace;
+          texture.anisotropy = 4;
+          cache.set(key, texture);
+        }),
+    ),
+  ).then(() => undefined);
 }
 
-/** uv 处是否落在图标本体上（含外扩的点击容差） */
-export function isOpaqueAt(texture: THREE.Texture, u: number, v: number): boolean {
-  const mask = texture.userData.alphaMask as Uint8Array | undefined;
-  if (!mask) return true;
-  const mx = Math.min(MASK - 1, Math.max(0, Math.floor(u * MASK)));
-  const my = Math.min(MASK - 1, Math.max(0, Math.floor((1 - v) * MASK)));
-  return mask[my * MASK + mx] === 1;
+/**
+ * uv 处是否落在物件图标本体上。读的是生成关卡时用的同一份形状掩码，
+ * 所以“能点中的区域”和“算遮挡的区域”完全一致。
+ */
+export function isItemHitAt(itemId: string, u: number, v: number): boolean {
+  const mask = MASKS.get(itemId);
+  return mask ? maskHitAt(mask, u, v, 0, MASKS.size) : true;
 }
 
 export function labelTexture(text: string, color = "rgba(70,58,46,0.55)"): THREE.CanvasTexture {

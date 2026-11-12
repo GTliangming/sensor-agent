@@ -6,9 +6,10 @@
   "sceneId": "ch01_sofa",
   "difficulty": 10,
   "teaching": "综合验收",
+  "requiredWrong": 3,
   "designResolution": {
     "width": 1080,
-    "height": 1920
+    "height": 2340
   },
   "objectives": [
     {
@@ -29,15 +30,15 @@
   ],
   "itemInstances": [
     {
-      "id": "sticker_001",
-      "itemId": "sticker",
-      "variantId": "default",
+      "id": "mobile_case_001",
+      "itemId": "mobile_case",
+      "variantId": "yellow",
       "position": {
-        "x": 128,
-        "y": 492
+        "x": 134,
+        "y": 544
       },
-      "rotation": -10,
-      "scale": 1.68,
+      "rotation": -7,
+      "scale": 1.556,
       "layer": 2,
       "zone": "pile",
       "blocking": []
@@ -47,39 +48,11 @@
       "itemId": "plastic_bag",
       "variantId": "default",
       "position": {
-        "x": 143,
-        "y": 686
+        "x": 124,
+        "y": 758
       },
-      "rotation": -5,
+      "rotation": -2,
       "scale": 1.313,
-      "layer": 2,
-      "zone": "pile",
-      "blocking": []
-    },
-    {
-      "id": "cushion_001",
-      "itemId": "cushion",
-      "variantId": "default",
-      "position": {
-        "x": 136,
-        "y": 856
-      },
-      "rotation": 12,
-      "scale": 1.105,
-      "layer": 2,
-      "zone": "pile",
-      "blocking": []
-    },
-    {
-      "id": "key_001",
-      "itemId": "key",
-      "variantId": "default",
-      "position": {
-        "x": 120,
-        "y": 1066
-      },
-      "rotation": 0,
-      "scale": 1.68,
       "layer": 2,
       "zone": "pile",
       "blocking": []
@@ -89,38 +62,24 @@
       "itemId": "pajamas",
       "variantId": "default",
       "position": {
-        "x": 149,
-        "y": 1226
+        "x": 141,
+        "y": 964
       },
-      "rotation": 2,
+      "rotation": -4,
       "scale": 1.105,
       "layer": 2,
       "zone": "pile",
       "blocking": []
     },
     {
-      "id": "glasses_001",
-      "itemId": "glasses",
+      "id": "chopsticks_001",
+      "itemId": "chopsticks",
       "variantId": "default",
       "position": {
-        "x": 139,
-        "y": 1426
+        "x": 152,
+        "y": 1155
       },
       "rotation": -4,
-      "scale": 1.556,
-      "layer": 2,
-      "zone": "pile",
-      "blocking": []
-    },
-    {
-      "id": "tissue_001",
-      "itemId": "tissue",
-      "variantId": "default",
-      "position": {
-        "x": 337,
-        "y": 510
-      },
-      "rotation": 10,
       "scale": 1.556,
       "layer": 2,
       "zone": "pile",
@@ -131,25 +90,165 @@
       "itemId": "sock",
       "variantId": "default",
       "position": {
-        "x": 339,
-        "y": 680
+        "x": 130,
+        "y": 1372
       },
-      "rotation": -6,
+      "rotation": -5,
       "scale": 1.556,
       "layer": 2,
       "zone": "pile",
       "blocking": []
     },
     {
-      "id": "sticker_002",
+      "id": "milk_tea_cup_001",
+      "itemId": "milk_tea_cup",
+      "variantId": "pink",
+      "position": {
+        "x": 137,
+        "y": 1590
+      },
+      "rotation": 9,
+      "scale": 1.313,
+      "layer": 2,
+      "zone": "pile",
+      "blocking": []
+    },
+    {
+      "id": "glasses_001",
+      "itemId": "glasses",
+      "variantId": "default",
+      "position": {
+        "x": 129,
+        "y": 1789
+      },
+      "rotation": -10,
+      "scale": 1.556,
+      "layer": 2,
+      "zone": "pile",
+      "blocking": []
+    },
+    {
+      "id": "cushion_001",
+      "itemId": "cushion",
+      "variantId": "default",
+      "position": {
+        "x": 340,
+        "y": 563
+      },
+      "rotation": 10,
+      "scale": 1.105,
+      "layer": 2,
+      "zone": "pile",
+      "blocking": []
+    },
+    {
+      "id": "key_001",
+      "itemId": "key",
+      "variantId": "default",
+      "position": {
+        "x": 335,
+        "y": 773
+      },
+      "rotation": -3,
+      "scale": 1.68,
+      "layer": 2,
+      "zone": "pile",
+      "blocking": []
+    },
+    {
+      "id": "sticker_001",
       "itemId": "sticker",
       "variantId": "default",
       "position": {
-        "x": 334,
-        "y": 883
+        "x": 353,
+        "y": 962
       },
-      "rotation": -6,
+      "rotation": -7,
       "scale": 1.68,
+      "layer": 2,
+      "zone": "pile",
+      "blocking": []
+    },
+    {
+      "id": "tissue_001",
+      "itemId": "tissue",
+      "variantId": "default",
+      "position": {
+        "x": 331,
+        "y": 1153
+      },
+      "rotation": 10,
+      "scale": 1.556,
+      "layer": 2,
+      "zone": "pile",
+      "blocking": []
+    },
+    {
+      "id": "book_001",
+      "itemId": "book",
+      "variantId": "default",
+      "position": {
+        "x": 339,
+        "y": 1377
+      },
+      "rotation": -11,
+      "scale": 1.313,
+      "layer": 2,
+      "zone": "pile",
+      "blocking": []
+    },
+    {
+      "id": "pen_001",
+      "itemId": "pen",
+      "variantId": "default",
+      "position": {
+        "x": 325,
+        "y": 1588
+      },
+      "rotation": 7,
+      "scale": 1.68,
+      "layer": 2,
+      "zone": "pile",
+      "blocking": []
+    },
+    {
+      "id": "hair_tie_001",
+      "itemId": "hair_tie",
+      "variantId": "pink",
+      "position": {
+        "x": 318,
+        "y": 1786
+      },
+      "rotation": 8,
+      "scale": 1.556,
+      "layer": 2,
+      "zone": "pile",
+      "blocking": []
+    },
+    {
+      "id": "earphone_001",
+      "itemId": "earphone",
+      "variantId": "black",
+      "position": {
+        "x": 554,
+        "y": 572
+      },
+      "rotation": 9,
+      "scale": 1.313,
+      "layer": 2,
+      "zone": "pile",
+      "blocking": []
+    },
+    {
+      "id": "mobile_case_002",
+      "itemId": "mobile_case",
+      "variantId": "frosted",
+      "position": {
+        "x": 531,
+        "y": 767
+      },
+      "rotation": 9,
+      "scale": 1.556,
       "layer": 2,
       "zone": "pile",
       "blocking": []
@@ -159,67 +258,11 @@
       "itemId": "plastic_bag",
       "variantId": "default",
       "position": {
-        "x": 344,
-        "y": 1069
+        "x": 548,
+        "y": 971
       },
-      "rotation": 8,
+      "rotation": 5,
       "scale": 1.313,
-      "layer": 2,
-      "zone": "pile",
-      "blocking": []
-    },
-    {
-      "id": "cushion_002",
-      "itemId": "cushion",
-      "variantId": "default",
-      "position": {
-        "x": 330,
-        "y": 1248
-      },
-      "rotation": 0,
-      "scale": 1.105,
-      "layer": 2,
-      "zone": "pile",
-      "blocking": []
-    },
-    {
-      "id": "key_002",
-      "itemId": "key",
-      "variantId": "default",
-      "position": {
-        "x": 344,
-        "y": 1417
-      },
-      "rotation": 9,
-      "scale": 1.68,
-      "layer": 2,
-      "zone": "pile",
-      "blocking": []
-    },
-    {
-      "id": "hair_tie_001",
-      "itemId": "hair_tie",
-      "variantId": "beige",
-      "position": {
-        "x": 525,
-        "y": 492
-      },
-      "rotation": 4,
-      "scale": 1.556,
-      "layer": 2,
-      "zone": "pile",
-      "blocking": []
-    },
-    {
-      "id": "coin_001",
-      "itemId": "coin",
-      "variantId": "one",
-      "position": {
-        "x": 531,
-        "y": 697
-      },
-      "rotation": 7,
-      "scale": 1.68,
       "layer": 2,
       "zone": "pile",
       "blocking": []
@@ -229,53 +272,39 @@
       "itemId": "pajamas",
       "variantId": "default",
       "position": {
-        "x": 549,
-        "y": 874
+        "x": 521,
+        "y": 1157
       },
-      "rotation": -8,
+      "rotation": 2,
       "scale": 1.105,
       "layer": 2,
       "zone": "pile",
       "blocking": []
     },
     {
-      "id": "glasses_002",
-      "itemId": "glasses",
+      "id": "chopsticks_002",
+      "itemId": "chopsticks",
       "variantId": "default",
       "position": {
-        "x": 528,
-        "y": 1073
+        "x": 530,
+        "y": 1393
       },
-      "rotation": 1,
+      "rotation": 3,
       "scale": 1.556,
       "layer": 2,
       "zone": "pile",
       "blocking": []
     },
     {
-      "id": "tissue_002",
-      "itemId": "tissue",
-      "variantId": "default",
+      "id": "coin_001",
+      "itemId": "coin",
+      "variantId": "half",
       "position": {
-        "x": 546,
-        "y": 1247
+        "x": 549,
+        "y": 1572
       },
-      "rotation": -5,
-      "scale": 1.556,
-      "layer": 2,
-      "zone": "pile",
-      "blocking": []
-    },
-    {
-      "id": "sock_002",
-      "itemId": "sock",
-      "variantId": "default",
-      "position": {
-        "x": 551,
-        "y": 1433
-      },
-      "rotation": 2,
-      "scale": 1.556,
+      "rotation": -10,
+      "scale": 1.68,
       "layer": 2,
       "zone": "pile",
       "blocking": []
@@ -285,25 +314,67 @@
       "itemId": "coin",
       "variantId": "half",
       "position": {
-        "x": 757,
-        "y": 514
+        "x": 537,
+        "y": 1770
       },
-      "rotation": -11,
+      "rotation": 9,
       "scale": 1.68,
       "layer": 2,
       "zone": "pile",
       "blocking": []
     },
     {
-      "id": "sticker_003",
-      "itemId": "sticker",
+      "id": "sock_002",
+      "itemId": "sock",
       "variantId": "default",
       "position": {
-        "x": 760,
-        "y": 702
+        "x": 730,
+        "y": 545
       },
-      "rotation": 4,
-      "scale": 1.68,
+      "rotation": -9,
+      "scale": 1.556,
+      "layer": 2,
+      "zone": "pile",
+      "blocking": []
+    },
+    {
+      "id": "milk_tea_cup_002",
+      "itemId": "milk_tea_cup",
+      "variantId": "brown",
+      "position": {
+        "x": 758,
+        "y": 737
+      },
+      "rotation": -1,
+      "scale": 1.313,
+      "layer": 2,
+      "zone": "pile",
+      "blocking": []
+    },
+    {
+      "id": "glasses_002",
+      "itemId": "glasses",
+      "variantId": "default",
+      "position": {
+        "x": 759,
+        "y": 957
+      },
+      "rotation": 6,
+      "scale": 1.556,
+      "layer": 2,
+      "zone": "pile",
+      "blocking": []
+    },
+    {
+      "id": "cushion_002",
+      "itemId": "cushion",
+      "variantId": "default",
+      "position": {
+        "x": 758,
+        "y": 1183
+      },
+      "rotation": 6,
+      "scale": 1.105,
       "layer": 2,
       "zone": "pile",
       "blocking": []
@@ -313,10 +384,10 @@
       "itemId": "coin",
       "variantId": "half",
       "position": {
-        "x": 725,
-        "y": 865
+        "x": 733,
+        "y": 1380
       },
-      "rotation": 3,
+      "rotation": 4,
       "scale": 1.68,
       "layer": 2,
       "zone": "pile",
@@ -327,11 +398,109 @@
       "itemId": "remote_control",
       "variantId": "default",
       "position": {
-        "x": 761,
-        "y": 1068
+        "x": 764,
+        "y": 1577
       },
-      "rotation": -10,
+      "rotation": 9,
       "scale": 1.313,
+      "layer": 2,
+      "zone": "pile",
+      "blocking": []
+    },
+    {
+      "id": "key_002",
+      "itemId": "key",
+      "variantId": "default",
+      "position": {
+        "x": 726,
+        "y": 1779
+      },
+      "rotation": -1,
+      "scale": 1.68,
+      "layer": 2,
+      "zone": "pile",
+      "blocking": []
+    },
+    {
+      "id": "sticker_002",
+      "itemId": "sticker",
+      "variantId": "default",
+      "position": {
+        "x": 930,
+        "y": 542
+      },
+      "rotation": -3,
+      "scale": 1.68,
+      "layer": 2,
+      "zone": "pile",
+      "blocking": []
+    },
+    {
+      "id": "tissue_002",
+      "itemId": "tissue",
+      "variantId": "default",
+      "position": {
+        "x": 953,
+        "y": 754
+      },
+      "rotation": -1,
+      "scale": 1.556,
+      "layer": 2,
+      "zone": "pile",
+      "blocking": []
+    },
+    {
+      "id": "book_002",
+      "itemId": "book",
+      "variantId": "default",
+      "position": {
+        "x": 959,
+        "y": 974
+      },
+      "rotation": -2,
+      "scale": 1.313,
+      "layer": 2,
+      "zone": "pile",
+      "blocking": []
+    },
+    {
+      "id": "pen_002",
+      "itemId": "pen",
+      "variantId": "default",
+      "position": {
+        "x": 959,
+        "y": 1161
+      },
+      "rotation": 11,
+      "scale": 1.68,
+      "layer": 2,
+      "zone": "pile",
+      "blocking": []
+    },
+    {
+      "id": "earphone_002",
+      "itemId": "earphone",
+      "variantId": "black",
+      "position": {
+        "x": 943,
+        "y": 1364
+      },
+      "rotation": -9,
+      "scale": 1.313,
+      "layer": 2,
+      "zone": "pile",
+      "blocking": []
+    },
+    {
+      "id": "mobile_case_003",
+      "itemId": "mobile_case",
+      "variantId": "yellow",
+      "position": {
+        "x": 948,
+        "y": 1587
+      },
+      "rotation": -8,
+      "scale": 1.556,
       "layer": 2,
       "zone": "pile",
       "blocking": []
@@ -341,39 +510,11 @@
       "itemId": "plastic_bag",
       "variantId": "default",
       "position": {
-        "x": 732,
-        "y": 1227
+        "x": 952,
+        "y": 1802
       },
-      "rotation": -11,
+      "rotation": 2,
       "scale": 1.313,
-      "layer": 2,
-      "zone": "pile",
-      "blocking": []
-    },
-    {
-      "id": "cushion_003",
-      "itemId": "cushion",
-      "variantId": "default",
-      "position": {
-        "x": 738,
-        "y": 1424
-      },
-      "rotation": 12,
-      "scale": 1.105,
-      "layer": 2,
-      "zone": "pile",
-      "blocking": []
-    },
-    {
-      "id": "key_003",
-      "itemId": "key",
-      "variantId": "default",
-      "position": {
-        "x": 948,
-        "y": 492
-      },
-      "rotation": 11,
-      "scale": 1.68,
       "layer": 2,
       "zone": "pile",
       "blocking": []
@@ -383,252 +524,194 @@
       "itemId": "pajamas",
       "variantId": "default",
       "position": {
-        "x": 967,
-        "y": 680
+        "x": 244,
+        "y": 654
       },
-      "rotation": -8,
+      "rotation": 8,
       "scale": 1.105,
-      "layer": 2,
+      "layer": 1,
       "zone": "pile",
-      "blocking": []
+      "blocking": [
+        "cushion_001",
+        "key_001",
+        "mobile_case_001",
+        "plastic_bag_001"
+      ]
     },
     {
-      "id": "glasses_003",
-      "itemId": "glasses",
+      "id": "chopsticks_003",
+      "itemId": "chopsticks",
       "variantId": "default",
       "position": {
-        "x": 957,
-        "y": 888
-      },
-      "rotation": 9,
-      "scale": 1.556,
-      "layer": 2,
-      "zone": "pile",
-      "blocking": []
-    },
-    {
-      "id": "tissue_003",
-      "itemId": "tissue",
-      "variantId": "default",
-      "position": {
-        "x": 940,
-        "y": 1054
+        "x": 224,
+        "y": 872
       },
       "rotation": -6,
       "scale": 1.556,
-      "layer": 2,
+      "layer": 1,
       "zone": "pile",
-      "blocking": []
+      "blocking": [
+        "plastic_bag_001",
+        "sticker_001"
+      ]
     },
     {
       "id": "sock_003",
       "itemId": "sock",
       "variantId": "default",
       "position": {
-        "x": 964,
-        "y": 1235
+        "x": 216,
+        "y": 1057
       },
-      "rotation": 0,
+      "rotation": 10,
       "scale": 1.556,
-      "layer": 2,
-      "zone": "pile",
-      "blocking": []
-    },
-    {
-      "id": "sticker_004",
-      "itemId": "sticker",
-      "variantId": "default",
-      "position": {
-        "x": 963,
-        "y": 1428
-      },
-      "rotation": -7,
-      "scale": 1.68,
-      "layer": 2,
-      "zone": "pile",
-      "blocking": []
-    },
-    {
-      "id": "plastic_bag_004",
-      "itemId": "plastic_bag",
-      "variantId": "default",
-      "position": {
-        "x": 227,
-        "y": 582
-      },
-      "rotation": 5,
-      "scale": 1.313,
       "layer": 1,
       "zone": "pile",
       "blocking": [
-        "plastic_bag_001",
-        "sock_001",
-        "sticker_001",
+        "pajamas_001",
         "tissue_001"
       ]
     },
     {
-      "id": "cushion_004",
-      "itemId": "cushion",
-      "variantId": "default",
+      "id": "milk_tea_cup_003",
+      "itemId": "milk_tea_cup",
+      "variantId": "pink",
       "position": {
-        "x": 243,
-        "y": 783
+        "x": 227,
+        "y": 1281
       },
-      "rotation": -5,
-      "scale": 1.105,
+      "rotation": -7,
+      "scale": 1.313,
       "layer": 1,
       "zone": "pile",
       "blocking": [
-        "cushion_001",
-        "plastic_bag_001",
-        "sticker_002"
+        "chopsticks_001",
+        "tissue_001"
       ]
     },
     {
-      "id": "key_004",
-      "itemId": "key",
-      "variantId": "default",
-      "position": {
-        "x": 228,
-        "y": 960
-      },
-      "rotation": -1,
-      "scale": 1.68,
-      "layer": 1,
-      "zone": "pile",
-      "blocking": [
-        "cushion_001",
-        "plastic_bag_002"
-      ]
-    },
-    {
-      "id": "pajamas_004",
-      "itemId": "pajamas",
-      "variantId": "default",
-      "position": {
-        "x": 229,
-        "y": 1131
-      },
-      "rotation": -12,
-      "scale": 1.105,
-      "layer": 1,
-      "zone": "pile",
-      "blocking": [
-        "cushion_002",
-        "key_001",
-        "pajamas_001",
-        "plastic_bag_002"
-      ]
-    },
-    {
-      "id": "glasses_004",
+      "id": "glasses_003",
       "itemId": "glasses",
       "variantId": "default",
       "position": {
-        "x": 240,
-        "y": 1322
-      },
-      "rotation": 2,
-      "scale": 1.556,
-      "layer": 1,
-      "zone": "pile",
-      "blocking": [
-        "cushion_002",
-        "key_002",
-        "pajamas_001"
-      ]
-    },
-    {
-      "id": "tissue_004",
-      "itemId": "tissue",
-      "variantId": "default",
-      "position": {
-        "x": 428,
-        "y": 609
-      },
-      "rotation": -3,
-      "scale": 1.556,
-      "layer": 1,
-      "zone": "pile",
-      "blocking": [
-        "coin_001",
-        "hair_tie_001",
-        "sock_001",
-        "tissue_001"
-      ]
-    },
-    {
-      "id": "sock_004",
-      "itemId": "sock",
-      "variantId": "default",
-      "position": {
-        "x": 458,
-        "y": 789
+        "x": 250,
+        "y": 1474
       },
       "rotation": -7,
       "scale": 1.556,
       "layer": 1,
       "zone": "pile",
       "blocking": [
-        "coin_001",
-        "pajamas_002",
-        "sock_001"
+        "book_001",
+        "pen_001"
       ]
     },
     {
-      "id": "sticker_005",
-      "itemId": "sticker",
-      "variantId": "default",
-      "position": {
-        "x": 421,
-        "y": 966
-      },
-      "rotation": -7,
-      "scale": 1.68,
-      "layer": 1,
-      "zone": "pile",
-      "blocking": [
-        "pajamas_002",
-        "plastic_bag_002",
-        "sticker_002"
-      ]
-    },
-    {
-      "id": "plastic_bag_005",
-      "itemId": "plastic_bag",
-      "variantId": "default",
-      "position": {
-        "x": 438,
-        "y": 1156
-      },
-      "rotation": -1,
-      "scale": 1.313,
-      "layer": 1,
-      "zone": "pile",
-      "blocking": [
-        "cushion_002",
-        "glasses_002",
-        "plastic_bag_002",
-        "tissue_002"
-      ]
-    },
-    {
-      "id": "cushion_005",
+      "id": "cushion_003",
       "itemId": "cushion",
       "variantId": "default",
       "position": {
-        "x": 424,
-        "y": 1341
+        "x": 216,
+        "y": 1688
       },
       "rotation": -11,
       "scale": 1.105,
       "layer": 1,
       "zone": "pile",
       "blocking": [
-        "cushion_002",
-        "sock_002",
-        "tissue_002"
+        "glasses_001",
+        "milk_tea_cup_001"
+      ]
+    },
+    {
+      "id": "key_003",
+      "itemId": "key",
+      "variantId": "default",
+      "position": {
+        "x": 432,
+        "y": 662
+      },
+      "rotation": -4,
+      "scale": 1.68,
+      "layer": 1,
+      "zone": "pile",
+      "blocking": [
+        "cushion_001",
+        "mobile_case_002"
+      ]
+    },
+    {
+      "id": "sticker_003",
+      "itemId": "sticker",
+      "variantId": "default",
+      "position": {
+        "x": 436,
+        "y": 874
+      },
+      "rotation": 11,
+      "scale": 1.68,
+      "layer": 1,
+      "zone": "pile",
+      "blocking": [
+        "key_001",
+        "mobile_case_002",
+        "plastic_bag_002",
+        "sticker_001"
+      ]
+    },
+    {
+      "id": "tissue_003",
+      "itemId": "tissue",
+      "variantId": "default",
+      "position": {
+        "x": 442,
+        "y": 1052
+      },
+      "rotation": 11,
+      "scale": 1.556,
+      "layer": 1,
+      "zone": "pile",
+      "blocking": [
+        "pajamas_002",
+        "plastic_bag_002",
+        "sticker_001",
+        "tissue_001"
+      ]
+    },
+    {
+      "id": "book_003",
+      "itemId": "book",
+      "variantId": "default",
+      "position": {
+        "x": 421,
+        "y": 1277
+      },
+      "rotation": -11,
+      "scale": 1.313,
+      "layer": 1,
+      "zone": "pile",
+      "blocking": [
+        "book_001",
+        "chopsticks_002",
+        "pajamas_002",
+        "tissue_001"
+      ]
+    },
+    {
+      "id": "pen_003",
+      "itemId": "pen",
+      "variantId": "default",
+      "position": {
+        "x": 430,
+        "y": 1457
+      },
+      "rotation": 0,
+      "scale": 1.68,
+      "layer": 1,
+      "zone": "pile",
+      "blocking": [
+        "book_001",
+        "coin_001"
       ]
     },
     {
@@ -636,15 +719,187 @@
       "itemId": "hair_tie",
       "variantId": "black",
       "position": {
-        "x": 631,
-        "y": 583
+        "x": 457,
+        "y": 1677
       },
-      "rotation": -11,
+      "rotation": -3,
       "scale": 1.556,
       "layer": 1,
       "zone": "pile",
       "blocking": [
-        "coin_001"
+        "coin_002"
+      ]
+    },
+    {
+      "id": "earphone_003",
+      "itemId": "earphone",
+      "variantId": "pink",
+      "position": {
+        "x": 632,
+        "y": 663
+      },
+      "rotation": -2,
+      "scale": 1.313,
+      "layer": 1,
+      "zone": "pile",
+      "blocking": [
+        "earphone_001",
+        "mobile_case_002"
+      ]
+    },
+    {
+      "id": "mobile_case_004",
+      "itemId": "mobile_case",
+      "variantId": "black",
+      "position": {
+        "x": 634,
+        "y": 862
+      },
+      "rotation": 8,
+      "scale": 1.556,
+      "layer": 1,
+      "zone": "pile",
+      "blocking": [
+        "plastic_bag_002"
+      ]
+    },
+    {
+      "id": "plastic_bag_004",
+      "itemId": "plastic_bag",
+      "variantId": "default",
+      "position": {
+        "x": 649,
+        "y": 1053
+      },
+      "rotation": -6,
+      "scale": 1.313,
+      "layer": 1,
+      "zone": "pile",
+      "blocking": [
+        "cushion_002",
+        "glasses_002",
+        "plastic_bag_002"
+      ]
+    },
+    {
+      "id": "hair_tie_003",
+      "itemId": "hair_tie",
+      "variantId": "red",
+      "position": {
+        "x": 650,
+        "y": 1251
+      },
+      "rotation": 9,
+      "scale": 1.556,
+      "layer": 1,
+      "zone": "pile",
+      "blocking": [
+        "coin_003"
+      ]
+    },
+    {
+      "id": "pajamas_004",
+      "itemId": "pajamas",
+      "variantId": "default",
+      "position": {
+        "x": 642,
+        "y": 1460
+      },
+      "rotation": -7,
+      "scale": 1.105,
+      "layer": 1,
+      "zone": "pile",
+      "blocking": [
+        "chopsticks_002",
+        "coin_001",
+        "coin_003",
+        "remote_control_001"
+      ]
+    },
+    {
+      "id": "chopsticks_004",
+      "itemId": "chopsticks",
+      "variantId": "default",
+      "position": {
+        "x": 622,
+        "y": 1687
+      },
+      "rotation": -9,
+      "scale": 1.556,
+      "layer": 1,
+      "zone": "pile",
+      "blocking": [
+        "coin_001",
+        "key_002"
+      ]
+    },
+    {
+      "id": "sock_004",
+      "itemId": "sock",
+      "variantId": "default",
+      "position": {
+        "x": 843,
+        "y": 645
+      },
+      "rotation": 10,
+      "scale": 1.556,
+      "layer": 1,
+      "zone": "pile",
+      "blocking": [
+        "sock_002",
+        "tissue_002"
+      ]
+    },
+    {
+      "id": "milk_tea_cup_004",
+      "itemId": "milk_tea_cup",
+      "variantId": "transparent",
+      "position": {
+        "x": 846,
+        "y": 859
+      },
+      "rotation": 11,
+      "scale": 1.313,
+      "layer": 1,
+      "zone": "pile",
+      "blocking": [
+        "glasses_002",
+        "tissue_002"
+      ]
+    },
+    {
+      "id": "glasses_004",
+      "itemId": "glasses",
+      "variantId": "default",
+      "position": {
+        "x": 834,
+        "y": 1051
+      },
+      "rotation": -7,
+      "scale": 1.556,
+      "layer": 1,
+      "zone": "pile",
+      "blocking": [
+        "book_002",
+        "pen_002"
+      ]
+    },
+    {
+      "id": "coin_004",
+      "itemId": "coin",
+      "variantId": "one",
+      "position": {
+        "x": 855,
+        "y": 1267
+      },
+      "rotation": -7,
+      "scale": 1.68,
+      "layer": 1,
+      "zone": "pile",
+      "blocking": [
+        "coin_003",
+        "cushion_002",
+        "earphone_002"
       ]
     },
     {
@@ -652,180 +907,53 @@
       "itemId": "remote_control",
       "variantId": "default",
       "position": {
-        "x": 622,
-        "y": 789
+        "x": 853,
+        "y": 1456
       },
-      "rotation": 4,
+      "rotation": -4,
       "scale": 1.313,
       "layer": 1,
       "zone": "pile",
       "blocking": [
-        "coin_001",
         "coin_003",
-        "pajamas_002",
-        "sticker_003"
-      ]
-    },
-    {
-      "id": "coin_004",
-      "itemId": "coin",
-      "variantId": "half",
-      "position": {
-        "x": 652,
-        "y": 948
-      },
-      "rotation": -2,
-      "scale": 1.68,
-      "layer": 1,
-      "zone": "pile",
-      "blocking": [
-        "coin_003",
-        "pajamas_002",
+        "earphone_002",
+        "mobile_case_003",
         "remote_control_001"
       ]
     },
     {
-      "id": "key_005",
-      "itemId": "key",
+      "id": "cushion_004",
+      "itemId": "cushion",
       "variantId": "default",
       "position": {
-        "x": 641,
-        "y": 1151
+        "x": 847,
+        "y": 1671
       },
-      "rotation": -4,
-      "scale": 1.68,
-      "layer": 1,
-      "zone": "pile",
-      "blocking": [
-        "glasses_002",
-        "plastic_bag_003",
-        "remote_control_001"
-      ]
-    },
-    {
-      "id": "pajamas_005",
-      "itemId": "pajamas",
-      "variantId": "default",
-      "position": {
-        "x": 648,
-        "y": 1327
-      },
-      "rotation": 1,
+      "rotation": 8,
       "scale": 1.105,
       "layer": 1,
       "zone": "pile",
       "blocking": [
-        "cushion_003",
+        "mobile_case_003",
         "plastic_bag_003",
-        "sock_002",
-        "tissue_002"
+        "remote_control_001"
       ]
     },
     {
-      "id": "glasses_005",
-      "itemId": "glasses",
+      "id": "key_004",
+      "itemId": "key",
       "variantId": "default",
       "position": {
-        "x": 852,
-        "y": 586
+        "x": 445,
+        "y": 533
       },
-      "rotation": 6,
-      "scale": 1.556,
-      "layer": 1,
-      "zone": "pile",
-      "blocking": [
-        "coin_002",
-        "pajamas_003"
-      ]
-    },
-    {
-      "id": "tissue_005",
-      "itemId": "tissue",
-      "variantId": "default",
-      "position": {
-        "x": 853,
-        "y": 769
-      },
-      "rotation": -1,
-      "scale": 1.556,
-      "layer": 1,
-      "zone": "pile",
-      "blocking": [
-        "coin_003",
-        "glasses_003",
-        "pajamas_003",
-        "sticker_003"
-      ]
-    },
-    {
-      "id": "sock_005",
-      "itemId": "sock",
-      "variantId": "default",
-      "position": {
-        "x": 841,
-        "y": 962
-      },
-      "rotation": 12,
-      "scale": 1.556,
-      "layer": 1,
-      "zone": "pile",
-      "blocking": [
-        "coin_003",
-        "remote_control_001",
-        "tissue_003"
-      ]
-    },
-    {
-      "id": "sticker_006",
-      "itemId": "sticker",
-      "variantId": "default",
-      "position": {
-        "x": 862,
-        "y": 1157
-      },
-      "rotation": -1,
+      "rotation": -10,
       "scale": 1.68,
-      "layer": 1,
-      "zone": "pile",
-      "blocking": [
-        "plastic_bag_003",
-        "remote_control_001",
-        "sock_003",
-        "tissue_003"
-      ]
-    },
-    {
-      "id": "hair_tie_003",
-      "itemId": "hair_tie",
-      "variantId": "pink",
-      "position": {
-        "x": 828,
-        "y": 1330
-      },
-      "rotation": 7,
-      "scale": 1.556,
-      "layer": 1,
-      "zone": "pile",
-      "blocking": [
-        "cushion_003"
-      ]
-    },
-    {
-      "id": "plastic_bag_006",
-      "itemId": "plastic_bag",
-      "variantId": "default",
-      "position": {
-        "x": 219,
-        "y": 1433
-      },
-      "rotation": 2,
-      "scale": 1.313,
       "layer": 0,
       "zone": "pile",
       "blocking": [
-        "glasses_001",
-        "glasses_004",
-        "key_002"
+        "cushion_001",
+        "earphone_001"
       ]
     },
     {
@@ -833,10 +961,10 @@
       "itemId": "coin",
       "variantId": "dime",
       "position": {
-        "x": 661,
-        "y": 498
+        "x": 435,
+        "y": 1795
       },
-      "rotation": 7,
+      "rotation": -6,
       "scale": 1.68,
       "layer": 0,
       "zone": "pile",
@@ -847,21 +975,21 @@
       ]
     },
     {
-      "id": "cushion_006",
-      "itemId": "cushion",
+      "id": "sticker_004",
+      "itemId": "sticker",
       "variantId": "default",
       "position": {
-        "x": 864,
-        "y": 1424
+        "x": 842,
+        "y": 1778
       },
-      "rotation": -5,
-      "scale": 1.105,
+      "rotation": 8,
+      "scale": 1.68,
       "layer": 0,
       "zone": "pile",
       "blocking": [
-        "cushion_003",
-        "hair_tie_003",
-        "sticker_004"
+        "cushion_004",
+        "key_002",
+        "plastic_bag_003"
       ]
     }
   ],

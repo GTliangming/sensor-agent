@@ -26,8 +26,9 @@ export interface PileShape {
 const BLOCK_THRESHOLD = 0.08; // 被上层覆盖面积占比超过该值即视为被遮挡
 const MIN_VISIBLE = 0.2; // 下层物件至少露出的面积比例，太少的直接不放
 const JITTER = 0.1; // 位置抖动（相对格宽）
-// 物件只画图标、没有底板，图标本体约占贴图的 78%，遮挡按图标本体计算
-const FOOTPRINT = 0.78;
+// 物件只画图标、没有底板。粗排时把图标近似成边长 76% 的方块（略大于多数图标的实际轮廓，
+// 保证真实遮挡基本是粗排遮挡的子集），身份确定后再按真实轮廓精确重算遮挡
+const FOOTPRINT = 0.76;
 
 function rectAt(x: number, y: number, tile: number): Rect {
   const s = tile * FOOTPRINT;

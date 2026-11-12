@@ -8,7 +8,7 @@
       "surfaceColor": "#c9a47e",
       "designResolution": {
         "width": 1080,
-        "height": 1920
+        "height": 2340
       },
       "zones": [
         {
@@ -16,9 +16,9 @@
           "name": "物品区",
           "bounds": {
             "x": 30,
-            "y": 410,
+            "y": 450,
             "width": 1020,
-            "height": 1105
+            "height": 1435
           }
         }
       ]
@@ -30,7 +30,7 @@
       "surfaceColor": "#cdb08a",
       "designResolution": {
         "width": 1080,
-        "height": 1920
+        "height": 2340
       },
       "zones": [
         {
@@ -38,9 +38,9 @@
           "name": "物品区",
           "bounds": {
             "x": 30,
-            "y": 410,
+            "y": 450,
             "width": 1020,
-            "height": 1105
+            "height": 1435
           }
         }
       ]
@@ -52,7 +52,7 @@
       "surfaceColor": "#c4a07a",
       "designResolution": {
         "width": 1080,
-        "height": 1920
+        "height": 2340
       },
       "zones": [
         {
@@ -60,9 +60,9 @@
           "name": "物品区",
           "bounds": {
             "x": 30,
-            "y": 410,
+            "y": 450,
             "width": 1020,
-            "height": 1105
+            "height": 1435
           }
         }
       ]
@@ -74,7 +74,7 @@
       "surfaceColor": "#b38a63",
       "designResolution": {
         "width": 1080,
-        "height": 1920
+        "height": 2340
       },
       "zones": [
         {
@@ -82,9 +82,9 @@
           "name": "物品区",
           "bounds": {
             "x": 30,
-            "y": 410,
+            "y": 450,
             "width": 1020,
-            "height": 1105
+            "height": 1435
           }
         }
       ]
@@ -96,7 +96,7 @@
       "surfaceColor": "#c9a47e",
       "designResolution": {
         "width": 1080,
-        "height": 1920
+        "height": 2340
       },
       "zones": [
         {
@@ -104,9 +104,9 @@
           "name": "物品区",
           "bounds": {
             "x": 30,
-            "y": 410,
+            "y": 450,
             "width": 1020,
-            "height": 1105
+            "height": 1435
           }
         }
       ]
@@ -118,7 +118,7 @@
       "surfaceColor": "#b9a28a",
       "designResolution": {
         "width": 1080,
-        "height": 1920
+        "height": 2340
       },
       "zones": [
         {
@@ -126,9 +126,9 @@
           "name": "物品区",
           "bounds": {
             "x": 30,
-            "y": 410,
+            "y": 450,
             "width": 1020,
-            "height": 1105
+            "height": 1435
           }
         }
       ]
@@ -140,7 +140,7 @@
       "surfaceColor": "#a9b7c6",
       "designResolution": {
         "width": 1080,
-        "height": 1920
+        "height": 2340
       },
       "zones": [
         {
@@ -148,9 +148,9 @@
           "name": "物品区",
           "bounds": {
             "x": 30,
-            "y": 410,
+            "y": 450,
             "width": 1020,
-            "height": 1105
+            "height": 1435
           }
         }
       ]
@@ -162,7 +162,7 @@
       "surfaceColor": "#c4a07a",
       "designResolution": {
         "width": 1080,
-        "height": 1920
+        "height": 2340
       },
       "zones": [
         {
@@ -170,9 +170,9 @@
           "name": "物品区",
           "bounds": {
             "x": 30,
-            "y": 410,
+            "y": 450,
             "width": 1020,
-            "height": 1105
+            "height": 1435
           }
         }
       ]
@@ -184,7 +184,7 @@
       "surfaceColor": "#a9b2a6",
       "designResolution": {
         "width": 1080,
-        "height": 1920
+        "height": 2340
       },
       "zones": [
         {
@@ -192,9 +192,9 @@
           "name": "物品区",
           "bounds": {
             "x": 30,
-            "y": 410,
+            "y": 450,
             "width": 1020,
-            "height": 1105
+            "height": 1435
           }
         }
       ]
@@ -206,7 +206,7 @@
       "surfaceColor": "#9fb3a6",
       "designResolution": {
         "width": 1080,
-        "height": 1920
+        "height": 2340
       },
       "zones": [
         {
@@ -214,9 +214,9 @@
           "name": "物品区",
           "bounds": {
             "x": 30,
-            "y": 410,
+            "y": 450,
             "width": 1020,
-            "height": 1105
+            "height": 1435
           }
         }
       ]

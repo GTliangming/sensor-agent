@@ -6,9 +6,10 @@
   "sceneId": "ch01_parcels",
   "difficulty": 2,
   "teaching": "连续拾取",
+  "requiredWrong": 0,
   "designResolution": {
     "width": 1080,
-    "height": 1920
+    "height": 2340
   },
   "objectives": [
     {
@@ -24,68 +25,12 @@
   ],
   "itemInstances": [
     {
-      "id": "tape_001",
-      "itemId": "tape",
-      "variantId": "default",
-      "position": {
-        "x": 182,
-        "y": 510
-      },
-      "rotation": 2,
-      "scale": 1.896,
-      "layer": 1,
-      "zone": "pile",
-      "blocking": []
-    },
-    {
-      "id": "plastic_bag_001",
-      "itemId": "plastic_bag",
-      "variantId": "default",
-      "position": {
-        "x": 136,
-        "y": 730
-      },
-      "rotation": -1,
-      "scale": 1.6,
-      "layer": 1,
-      "zone": "pile",
-      "blocking": []
-    },
-    {
-      "id": "bubble_wrap_001",
-      "itemId": "bubble_wrap",
-      "variantId": "default",
-      "position": {
-        "x": 167,
-        "y": 960
-      },
-      "rotation": -1,
-      "scale": 1.6,
-      "layer": 1,
-      "zone": "pile",
-      "blocking": []
-    },
-    {
-      "id": "file_bag_001",
-      "itemId": "file_bag",
-      "variantId": "default",
-      "position": {
-        "x": 141,
-        "y": 1165
-      },
-      "rotation": -1,
-      "scale": 1.6,
-      "layer": 1,
-      "zone": "pile",
-      "blocking": []
-    },
-    {
       "id": "key_001",
       "itemId": "key",
       "variantId": "default",
       "position": {
-        "x": 165,
-        "y": 1410
+        "x": 151,
+        "y": 555
       },
       "rotation": -1,
       "scale": 2.048,
@@ -96,13 +41,41 @@
     {
       "id": "delivery_note_001",
       "itemId": "delivery_note",
-      "variantId": "yellow",
+      "variantId": "white",
       "position": {
-        "x": 407,
-        "y": 510
+        "x": 142,
+        "y": 823
       },
-      "rotation": -6,
+      "rotation": -2,
       "scale": 1.896,
+      "layer": 1,
+      "zone": "pile",
+      "blocking": []
+    },
+    {
+      "id": "pen_001",
+      "itemId": "pen",
+      "variantId": "default",
+      "position": {
+        "x": 136,
+        "y": 1037
+      },
+      "rotation": -4,
+      "scale": 2.048,
+      "layer": 1,
+      "zone": "pile",
+      "blocking": []
+    },
+    {
+      "id": "usb_drive_001",
+      "itemId": "usb_drive",
+      "variantId": "default",
+      "position": {
+        "x": 135,
+        "y": 1294
+      },
+      "rotation": 6,
+      "scale": 2.048,
       "layer": 1,
       "zone": "pile",
       "blocking": []
@@ -112,81 +85,25 @@
       "itemId": "delivery_note",
       "variantId": "white",
       "position": {
-        "x": 390,
-        "y": 747
+        "x": 163,
+        "y": 1547
       },
-      "rotation": 11,
+      "rotation": 1,
       "scale": 1.896,
       "layer": 1,
       "zone": "pile",
       "blocking": []
     },
     {
-      "id": "sticker_001",
-      "itemId": "sticker",
-      "variantId": "default",
+      "id": "takeaway_box_001",
+      "itemId": "takeaway_box",
+      "variantId": "black",
       "position": {
-        "x": 433,
-        "y": 968
+        "x": 137,
+        "y": 1780
       },
-      "rotation": 9,
-      "scale": 2.048,
-      "layer": 1,
-      "zone": "pile",
-      "blocking": []
-    },
-    {
-      "id": "tape_002",
-      "itemId": "tape",
-      "variantId": "default",
-      "position": {
-        "x": 434,
-        "y": 1202
-      },
-      "rotation": 8,
-      "scale": 1.896,
-      "layer": 1,
-      "zone": "pile",
-      "blocking": []
-    },
-    {
-      "id": "delivery_note_003",
-      "itemId": "delivery_note",
-      "variantId": "white",
-      "position": {
-        "x": 431,
-        "y": 1415
-      },
-      "rotation": -11,
-      "scale": 1.896,
-      "layer": 1,
-      "zone": "pile",
-      "blocking": []
-    },
-    {
-      "id": "tape_003",
-      "itemId": "tape",
-      "variantId": "default",
-      "position": {
-        "x": 652,
-        "y": 536
-      },
-      "rotation": 11,
-      "scale": 1.896,
-      "layer": 1,
-      "zone": "pile",
-      "blocking": []
-    },
-    {
-      "id": "tape_004",
-      "itemId": "tape",
-      "variantId": "default",
-      "position": {
-        "x": 693,
-        "y": 749
-      },
-      "rotation": -6,
-      "scale": 1.896,
+      "rotation": -7,
+      "scale": 1.6,
       "layer": 1,
       "zone": "pile",
       "blocking": []
@@ -196,25 +113,109 @@
       "itemId": "carton",
       "variantId": "default",
       "position": {
-        "x": 680,
-        "y": 976
+        "x": 395,
+        "y": 588
       },
-      "rotation": 7,
+      "rotation": 0,
       "scale": 1.347,
       "layer": 1,
       "zone": "pile",
       "blocking": []
     },
     {
-      "id": "newspaper_001",
-      "itemId": "newspaper",
+      "id": "tape_001",
+      "itemId": "tape",
       "variantId": "default",
       "position": {
-        "x": 675,
-        "y": 1194
+        "x": 400,
+        "y": 813
       },
       "rotation": 11,
+      "scale": 1.896,
+      "layer": 1,
+      "zone": "pile",
+      "blocking": []
+    },
+    {
+      "id": "file_bag_001",
+      "itemId": "file_bag",
+      "variantId": "default",
+      "position": {
+        "x": 420,
+        "y": 1071
+      },
+      "rotation": 3,
       "scale": 1.6,
+      "layer": 1,
+      "zone": "pile",
+      "blocking": []
+    },
+    {
+      "id": "bubble_wrap_001",
+      "itemId": "bubble_wrap",
+      "variantId": "default",
+      "position": {
+        "x": 431,
+        "y": 1300
+      },
+      "rotation": -7,
+      "scale": 1.6,
+      "layer": 1,
+      "zone": "pile",
+      "blocking": []
+    },
+    {
+      "id": "water_cup_001",
+      "itemId": "water_cup",
+      "variantId": "default",
+      "position": {
+        "x": 415,
+        "y": 1505
+      },
+      "rotation": 1,
+      "scale": 1.896,
+      "layer": 1,
+      "zone": "pile",
+      "blocking": []
+    },
+    {
+      "id": "glasses_001",
+      "itemId": "glasses",
+      "variantId": "default",
+      "position": {
+        "x": 393,
+        "y": 1743
+      },
+      "rotation": 6,
+      "scale": 1.896,
+      "layer": 1,
+      "zone": "pile",
+      "blocking": []
+    },
+    {
+      "id": "plastic_bag_001",
+      "itemId": "plastic_bag",
+      "variantId": "default",
+      "position": {
+        "x": 666,
+        "y": 581
+      },
+      "rotation": -6,
+      "scale": 1.6,
+      "layer": 1,
+      "zone": "pile",
+      "blocking": []
+    },
+    {
+      "id": "sticker_001",
+      "itemId": "sticker",
+      "variantId": "default",
+      "position": {
+        "x": 644,
+        "y": 799
+      },
+      "rotation": -6,
+      "scale": 2.048,
       "layer": 1,
       "zone": "pile",
       "blocking": []
@@ -224,8 +225,120 @@
       "itemId": "tissue",
       "variantId": "default",
       "position": {
-        "x": 665,
-        "y": 1415
+        "x": 653,
+        "y": 1058
+      },
+      "rotation": 7,
+      "scale": 1.896,
+      "layer": 1,
+      "zone": "pile",
+      "blocking": []
+    },
+    {
+      "id": "newspaper_001",
+      "itemId": "newspaper",
+      "variantId": "default",
+      "position": {
+        "x": 645,
+        "y": 1280
+      },
+      "rotation": 0,
+      "scale": 1.6,
+      "layer": 1,
+      "zone": "pile",
+      "blocking": []
+    },
+    {
+      "id": "sticky_note_001",
+      "itemId": "sticky_note",
+      "variantId": "default",
+      "position": {
+        "x": 655,
+        "y": 1530
+      },
+      "rotation": 6,
+      "scale": 2.048,
+      "layer": 1,
+      "zone": "pile",
+      "blocking": []
+    },
+    {
+      "id": "delivery_note_003",
+      "itemId": "delivery_note",
+      "variantId": "yellow",
+      "position": {
+        "x": 688,
+        "y": 1782
+      },
+      "rotation": -2,
+      "scale": 1.896,
+      "layer": 1,
+      "zone": "pile",
+      "blocking": []
+    },
+    {
+      "id": "key_002",
+      "itemId": "key",
+      "variantId": "default",
+      "position": {
+        "x": 937,
+        "y": 587
+      },
+      "rotation": 10,
+      "scale": 2.048,
+      "layer": 1,
+      "zone": "pile",
+      "blocking": []
+    },
+    {
+      "id": "pen_002",
+      "itemId": "pen",
+      "variantId": "default",
+      "position": {
+        "x": 945,
+        "y": 817
+      },
+      "rotation": 3,
+      "scale": 2.048,
+      "layer": 1,
+      "zone": "pile",
+      "blocking": []
+    },
+    {
+      "id": "usb_drive_002",
+      "itemId": "usb_drive",
+      "variantId": "default",
+      "position": {
+        "x": 928,
+        "y": 1044
+      },
+      "rotation": 5,
+      "scale": 2.048,
+      "layer": 1,
+      "zone": "pile",
+      "blocking": []
+    },
+    {
+      "id": "takeaway_box_002",
+      "itemId": "takeaway_box",
+      "variantId": "black",
+      "position": {
+        "x": 927,
+        "y": 1280
+      },
+      "rotation": -1,
+      "scale": 1.6,
+      "layer": 1,
+      "zone": "pile",
+      "blocking": []
+    },
+    {
+      "id": "tape_002",
+      "itemId": "tape",
+      "variantId": "default",
+      "position": {
+        "x": 930,
+        "y": 1504
       },
       "rotation": -9,
       "scale": 1.896,
@@ -238,125 +351,158 @@
       "itemId": "delivery_note",
       "variantId": "yellow",
       "position": {
-        "x": 903,
-        "y": 534
+        "x": 946,
+        "y": 1783
       },
-      "rotation": 3,
+      "rotation": 2,
       "scale": 1.896,
       "layer": 1,
       "zone": "pile",
       "blocking": []
     },
     {
-      "id": "plastic_bag_002",
-      "itemId": "plastic_bag",
+      "id": "carton_002",
+      "itemId": "carton",
       "variantId": "default",
       "position": {
-        "x": 942,
-        "y": 736
+        "x": 278,
+        "y": 677
       },
-      "rotation": 7,
-      "scale": 1.6,
-      "layer": 1,
+      "rotation": -4,
+      "scale": 1.347,
+      "layer": 0,
       "zone": "pile",
-      "blocking": []
+      "blocking": [
+        "carton_001",
+        "delivery_note_001",
+        "key_001",
+        "tape_001"
+      ]
     },
     {
-      "id": "bubble_wrap_002",
-      "itemId": "bubble_wrap",
+      "id": "tape_003",
+      "itemId": "tape",
       "variantId": "default",
       "position": {
-        "x": 931,
-        "y": 964
+        "x": 295,
+        "y": 910
       },
-      "rotation": -6,
-      "scale": 1.6,
-      "layer": 1,
+      "rotation": -2,
+      "scale": 1.896,
+      "layer": 0,
       "zone": "pile",
-      "blocking": []
+      "blocking": [
+        "delivery_note_001",
+        "tape_001"
+      ]
     },
     {
       "id": "file_bag_002",
       "itemId": "file_bag",
       "variantId": "default",
       "position": {
-        "x": 916,
-        "y": 1174
+        "x": 270,
+        "y": 1151
       },
-      "rotation": 8,
+      "rotation": 10,
       "scale": 1.6,
-      "layer": 1,
+      "layer": 0,
       "zone": "pile",
-      "blocking": []
+      "blocking": [
+        "file_bag_001",
+        "pen_001",
+        "usb_drive_001"
+      ]
     },
     {
-      "id": "key_002",
-      "itemId": "key",
+      "id": "bubble_wrap_002",
+      "itemId": "bubble_wrap",
       "variantId": "default",
       "position": {
-        "x": 937,
-        "y": 1403
+        "x": 260,
+        "y": 1387
       },
-      "rotation": 2,
-      "scale": 2.048,
-      "layer": 1,
+      "rotation": 0,
+      "scale": 1.6,
+      "layer": 0,
       "zone": "pile",
-      "blocking": []
+      "blocking": [
+        "bubble_wrap_001",
+        "delivery_note_002",
+        "usb_drive_001"
+      ]
+    },
+    {
+      "id": "water_cup_002",
+      "itemId": "water_cup",
+      "variantId": "default",
+      "position": {
+        "x": 277,
+        "y": 1640
+      },
+      "rotation": -9,
+      "scale": 1.896,
+      "layer": 0,
+      "zone": "pile",
+      "blocking": [
+        "delivery_note_002",
+        "glasses_001"
+      ]
+    },
+    {
+      "id": "glasses_002",
+      "itemId": "glasses",
+      "variantId": "default",
+      "position": {
+        "x": 533,
+        "y": 684
+      },
+      "rotation": 11,
+      "scale": 1.896,
+      "layer": 0,
+      "zone": "pile",
+      "blocking": [
+        "carton_001",
+        "plastic_bag_001",
+        "sticker_001"
+      ]
+    },
+    {
+      "id": "plastic_bag_002",
+      "itemId": "plastic_bag",
+      "variantId": "default",
+      "position": {
+        "x": 526,
+        "y": 928
+      },
+      "rotation": 4,
+      "scale": 1.6,
+      "layer": 0,
+      "zone": "pile",
+      "blocking": [
+        "file_bag_001",
+        "sticker_001",
+        "tape_001",
+        "tissue_001"
+      ]
     },
     {
       "id": "sticker_002",
       "itemId": "sticker",
       "variantId": "default",
       "position": {
-        "x": 293,
-        "y": 616
+        "x": 522,
+        "y": 1157
       },
-      "rotation": -6,
+      "rotation": 3,
       "scale": 2.048,
-      "layer": 0,
-      "zone": "pile",
-      "blocking": [
-        "delivery_note_001",
-        "delivery_note_002",
-        "plastic_bag_001",
-        "tape_001"
-      ]
-    },
-    {
-      "id": "carton_002",
-      "itemId": "carton",
-      "variantId": "default",
-      "position": {
-        "x": 305,
-        "y": 858
-      },
-      "rotation": 1,
-      "scale": 1.347,
-      "layer": 0,
-      "zone": "pile",
-      "blocking": [
-        "bubble_wrap_001",
-        "delivery_note_002",
-        "sticker_001"
-      ]
-    },
-    {
-      "id": "newspaper_002",
-      "itemId": "newspaper",
-      "variantId": "default",
-      "position": {
-        "x": 309,
-        "y": 1073
-      },
-      "rotation": -5,
-      "scale": 1.6,
       "layer": 0,
       "zone": "pile",
       "blocking": [
         "bubble_wrap_001",
         "file_bag_001",
-        "sticker_001",
-        "tape_002"
+        "newspaper_001",
+        "tissue_001"
       ]
     },
     {
@@ -364,73 +510,55 @@
       "itemId": "tissue",
       "variantId": "default",
       "position": {
-        "x": 266,
-        "y": 1293
+        "x": 565,
+        "y": 1389
       },
-      "rotation": 0,
+      "rotation": 4,
       "scale": 1.896,
       "layer": 0,
       "zone": "pile",
       "blocking": [
-        "delivery_note_003",
-        "file_bag_001",
-        "key_001",
-        "tape_002"
-      ]
-    },
-    {
-      "id": "plastic_bag_003",
-      "itemId": "plastic_bag",
-      "variantId": "default",
-      "position": {
-        "x": 538,
-        "y": 625
-      },
-      "rotation": 10,
-      "scale": 1.6,
-      "layer": 0,
-      "zone": "pile",
-      "blocking": [
-        "delivery_note_001",
-        "delivery_note_002",
-        "tape_003"
-      ]
-    },
-    {
-      "id": "bubble_wrap_003",
-      "itemId": "bubble_wrap",
-      "variantId": "default",
-      "position": {
-        "x": 561,
-        "y": 830
-      },
-      "rotation": -4,
-      "scale": 1.6,
-      "layer": 0,
-      "zone": "pile",
-      "blocking": [
-        "carton_001",
-        "sticker_001",
-        "tape_004"
-      ]
-    },
-    {
-      "id": "file_bag_003",
-      "itemId": "file_bag",
-      "variantId": "default",
-      "position": {
-        "x": 543,
-        "y": 1073
-      },
-      "rotation": 10,
-      "scale": 1.6,
-      "layer": 0,
-      "zone": "pile",
-      "blocking": [
-        "carton_001",
+        "bubble_wrap_001",
         "newspaper_001",
-        "sticker_001",
-        "tape_002"
+        "sticky_note_001",
+        "water_cup_001"
+      ]
+    },
+    {
+      "id": "newspaper_002",
+      "itemId": "newspaper",
+      "variantId": "default",
+      "position": {
+        "x": 550,
+        "y": 1649
+      },
+      "rotation": -6,
+      "scale": 1.6,
+      "layer": 0,
+      "zone": "pile",
+      "blocking": [
+        "delivery_note_003",
+        "glasses_001",
+        "sticky_note_001",
+        "water_cup_001"
+      ]
+    },
+    {
+      "id": "sticky_note_002",
+      "itemId": "sticky_note",
+      "variantId": "default",
+      "position": {
+        "x": 773,
+        "y": 677
+      },
+      "rotation": 11,
+      "scale": 2.048,
+      "layer": 0,
+      "zone": "pile",
+      "blocking": [
+        "pen_002",
+        "plastic_bag_001",
+        "sticker_001"
       ]
     },
     {
@@ -438,91 +566,69 @@
       "itemId": "key",
       "variantId": "default",
       "position": {
-        "x": 554,
-        "y": 1291
+        "x": 806,
+        "y": 921
       },
-      "rotation": -3,
+      "rotation": -5,
+      "scale": 2.048,
+      "layer": 0,
+      "zone": "pile",
+      "blocking": [
+        "sticker_001",
+        "usb_drive_002"
+      ]
+    },
+    {
+      "id": "pen_003",
+      "itemId": "pen",
+      "variantId": "default",
+      "position": {
+        "x": 794,
+        "y": 1189
+      },
+      "rotation": 7,
+      "scale": 2.048,
+      "layer": 0,
+      "zone": "pile",
+      "blocking": [
+        "takeaway_box_002",
+        "tissue_001"
+      ]
+    },
+    {
+      "id": "usb_drive_003",
+      "itemId": "usb_drive",
+      "variantId": "default",
+      "position": {
+        "x": 770,
+        "y": 1427
+      },
+      "rotation": -9,
       "scale": 2.048,
       "layer": 0,
       "zone": "pile",
       "blocking": [
         "newspaper_001",
-        "tape_002",
-        "tissue_001"
+        "sticky_note_001",
+        "takeaway_box_002",
+        "tape_002"
       ]
     },
     {
-      "id": "sticker_003",
-      "itemId": "sticker",
+      "id": "tape_004",
+      "itemId": "tape",
       "variantId": "default",
       "position": {
-        "x": 816,
-        "y": 631
+        "x": 818,
+        "y": 1659
       },
-      "rotation": 3,
-      "scale": 2.048,
-      "layer": 0,
-      "zone": "pile",
-      "blocking": [
-        "delivery_note_004",
-        "plastic_bag_002",
-        "tape_004"
-      ]
-    },
-    {
-      "id": "carton_003",
-      "itemId": "carton",
-      "variantId": "default",
-      "position": {
-        "x": 798,
-        "y": 836
-      },
-      "rotation": -4,
-      "scale": 1.347,
-      "layer": 0,
-      "zone": "pile",
-      "blocking": [
-        "carton_001",
-        "plastic_bag_002",
-        "tape_004"
-      ]
-    },
-    {
-      "id": "newspaper_003",
-      "itemId": "newspaper",
-      "variantId": "default",
-      "position": {
-        "x": 801,
-        "y": 1072
-      },
-      "rotation": 11,
-      "scale": 1.6,
-      "layer": 0,
-      "zone": "pile",
-      "blocking": [
-        "bubble_wrap_002",
-        "carton_001",
-        "file_bag_002",
-        "newspaper_001"
-      ]
-    },
-    {
-      "id": "tissue_003",
-      "itemId": "tissue",
-      "variantId": "default",
-      "position": {
-        "x": 776,
-        "y": 1312
-      },
-      "rotation": 1,
+      "rotation": -1,
       "scale": 1.896,
       "layer": 0,
       "zone": "pile",
       "blocking": [
-        "file_bag_002",
-        "key_002",
-        "newspaper_001",
-        "tissue_001"
+        "delivery_note_003",
+        "delivery_note_004"
       ]
     }
   ],

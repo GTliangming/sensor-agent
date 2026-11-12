@@ -1,3 +1,4 @@
+import { computeShapeBlocking, type MaskLibrary } from "./mask";
 import { findBlockingCycle } from "./occlusion";
 import { solveLevel } from "./solver";
 import type { ChapterConfig, ItemConfig, LevelConfig, SceneConfig } from "./types";
@@ -7,6 +8,32 @@ export interface ConfigBundle {
   scenes: SceneConfig[];
   chapter: ChapterConfig;
   levels: LevelConfig[];
+  /** 提供时会检查 blocking 是否与图标真实轮廓一致 */
+  masks?: MaskLibrary;
+}
+
+/** blocking 必须与图标真实轮廓的重叠完全一致：画面上压住了才算遮挡，没压住就不能算 */
+export function validateShapeBlocking(
+  level: LevelConfig,
+  items: Map<string, ItemConfig>,
+  masks: MaskLibrary,
+  report: ValidationReport,
+): void {
+  const missing = [...new Set(level.itemInstances.map((i) => i.itemId))].filter((id) => !masks.get(id));
+  if (missing.length > 0) {
+    report.errors.push(`关卡 ${level.id}: 物件缺少形状掩码 ${missing.join(", ")}，先运行 npm run export:icons`);
+    return;
+  }
+  const expected = computeShapeBlocking(level.itemInstances, (i) => items.get(i.itemId)!.size.width * i.scale, masks);
+  for (const inst of level.itemInstances) {
+    const want = expected.get(inst.id)!;
+    const got = [...inst.blocking].sort();
+    if (want.join() !== got.join()) {
+      report.errors.push(
+        `关卡 ${level.id}: 实例 ${inst.id} 的遮挡与画面不一致，配置为 [${got.join(", ")}]，按图标轮廓应为 [${want.join(", ")}]`,
+      );
+    }
+  }
 }
 
 export interface ValidationReport {
@@ -102,6 +129,9 @@ export function validateLevel(
 
   const solved = solveLevel(level);
   if (!solved.completable) err(`关卡不可完成: ${solved.reason}`);
+  else if (solved.minWrong !== level.requiredWrong) {
+    err(`requiredWrong 为 ${level.requiredWrong}，实际必要失误为 ${solved.minWrong}，请重新生成关卡`);
+  }
 }
 
 export function validateBundle(bundle: ConfigBundle): ValidationReport {
@@ -119,8 +149,18 @@ export function validateBundle(bundle: ConfigBundle): ValidationReport {
       report.errors.push(`关卡 ${id} 的 chapterId 与章节不一致`);
     }
   }
+  const summaryIds = bundle.chapter.levels.map((s) => s.id).join();
+  if (summaryIds !== bundle.chapter.levelIds.join()) report.errors.push("章节的 levels 摘要与 levelIds 不一致");
+  for (const s of bundle.chapter.levels) {
+    const level = levels.get(s.id);
+    if (level && (level.name !== s.name || level.levelNumber !== s.levelNumber)) {
+      report.errors.push(`章节里关卡 ${s.id} 的摘要与关卡文件不一致`);
+    }
+  }
   for (const level of bundle.levels) {
     validateLevel(level, items, scenes, report);
+    const allItemsKnown = level.itemInstances.every((i) => items.has(i.itemId));
+    if (bundle.masks && allItemsKnown) validateShapeBlocking(level, items, bundle.masks, report);
     const next = level.completionConfig.nextLevelId;
     if (next && !levels.has(next)) report.errors.push(`关卡 ${level.id}: nextLevelId ${next} 不存在`);
   }

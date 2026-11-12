@@ -1,4 +1,4 @@
-import { CONFIG_BUNDLE } from "../src/data";
+import { CONFIG_BUNDLE } from "../src/data/all-levels";
 import { validateBundle } from "../src/core/validator";
 import { solveLevel } from "../src/core/solver";
 

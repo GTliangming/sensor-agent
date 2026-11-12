@@ -6,9 +6,10 @@
   "sceneId": "ch01_bedside",
   "difficulty": 1,
   "teaching": "点击正确物件",
+  "requiredWrong": 0,
   "designResolution": {
     "width": 1080,
-    "height": 1920
+    "height": 2340
   },
   "objectives": [
     {
@@ -24,155 +25,15 @@
   ],
   "itemInstances": [
     {
-      "id": "water_cup_001",
-      "itemId": "water_cup",
-      "variantId": "default",
-      "position": {
-        "x": 173,
-        "y": 566
-      },
-      "rotation": 5,
-      "scale": 2.037,
-      "layer": 1,
-      "zone": "pile",
-      "blocking": []
-    },
-    {
-      "id": "book_001",
-      "itemId": "book",
-      "variantId": "default",
-      "position": {
-        "x": 177,
-        "y": 798
-      },
-      "rotation": -2,
-      "scale": 1.719,
-      "layer": 1,
-      "zone": "pile",
-      "blocking": []
-    },
-    {
-      "id": "sticky_note_001",
-      "itemId": "sticky_note",
-      "variantId": "default",
-      "position": {
-        "x": 147,
-        "y": 1079
-      },
-      "rotation": 6,
-      "scale": 2.2,
-      "layer": 1,
-      "zone": "pile",
-      "blocking": []
-    },
-    {
-      "id": "medicine_bottle_001",
-      "itemId": "medicine_bottle",
-      "variantId": "white",
-      "position": {
-        "x": 168,
-        "y": 1385
-      },
-      "rotation": -8,
-      "scale": 2.037,
-      "layer": 1,
-      "zone": "pile",
-      "blocking": []
-    },
-    {
-      "id": "tissue_001",
-      "itemId": "tissue",
-      "variantId": "default",
-      "position": {
-        "x": 431,
-        "y": 548
-      },
-      "rotation": 1,
-      "scale": 2.037,
-      "layer": 1,
-      "zone": "pile",
-      "blocking": []
-    },
-    {
-      "id": "pen_001",
-      "itemId": "pen",
-      "variantId": "default",
-      "position": {
-        "x": 389,
-        "y": 809
-      },
-      "rotation": -4,
-      "scale": 2.2,
-      "layer": 1,
-      "zone": "pile",
-      "blocking": []
-    },
-    {
-      "id": "medicine_bottle_002",
-      "itemId": "medicine_bottle",
-      "variantId": "amber",
-      "position": {
-        "x": 416,
-        "y": 1118
-      },
-      "rotation": -6,
-      "scale": 2.037,
-      "layer": 1,
-      "zone": "pile",
-      "blocking": []
-    },
-    {
       "id": "earphone_001",
       "itemId": "earphone",
-      "variantId": "black",
-      "position": {
-        "x": 405,
-        "y": 1394
-      },
-      "rotation": -5,
-      "scale": 1.719,
-      "layer": 1,
-      "zone": "pile",
-      "blocking": []
-    },
-    {
-      "id": "glasses_001",
-      "itemId": "glasses",
-      "variantId": "default",
-      "position": {
-        "x": 651,
-        "y": 529
-      },
-      "rotation": -7,
-      "scale": 2.037,
-      "layer": 1,
-      "zone": "pile",
-      "blocking": []
-    },
-    {
-      "id": "earphone_002",
-      "itemId": "earphone",
       "variantId": "white",
       "position": {
-        "x": 683,
-        "y": 844
+        "x": 173,
+        "y": 612
       },
       "rotation": 5,
       "scale": 1.719,
-      "layer": 1,
-      "zone": "pile",
-      "blocking": []
-    },
-    {
-      "id": "power_bank_001",
-      "itemId": "power_bank",
-      "variantId": "default",
-      "position": {
-        "x": 666,
-        "y": 1126
-      },
-      "rotation": -2,
-      "scale": 2.037,
       "layer": 1,
       "zone": "pile",
       "blocking": []
@@ -182,8 +43,148 @@
       "itemId": "key",
       "variantId": "default",
       "position": {
+        "x": 177,
+        "y": 853
+      },
+      "rotation": -2,
+      "scale": 2.2,
+      "layer": 1,
+      "zone": "pile",
+      "blocking": []
+    },
+    {
+      "id": "coin_001",
+      "itemId": "coin",
+      "variantId": "dime",
+      "position": {
+        "x": 147,
+        "y": 1145
+      },
+      "rotation": 6,
+      "scale": 2.2,
+      "layer": 1,
+      "zone": "pile",
+      "blocking": []
+    },
+    {
+      "id": "tissue_001",
+      "itemId": "tissue",
+      "variantId": "default",
+      "position": {
+        "x": 168,
+        "y": 1463
+      },
+      "rotation": -8,
+      "scale": 2.037,
+      "layer": 1,
+      "zone": "pile",
+      "blocking": []
+    },
+    {
+      "id": "medicine_bottle_001",
+      "itemId": "medicine_bottle",
+      "variantId": "amber",
+      "position": {
+        "x": 176,
+        "y": 1742
+      },
+      "rotation": 1,
+      "scale": 2.037,
+      "layer": 1,
+      "zone": "pile",
+      "blocking": []
+    },
+    {
+      "id": "sticky_note_001",
+      "itemId": "sticky_note",
+      "variantId": "default",
+      "position": {
+        "x": 389,
+        "y": 578
+      },
+      "rotation": -4,
+      "scale": 2.2,
+      "layer": 1,
+      "zone": "pile",
+      "blocking": []
+    },
+    {
+      "id": "book_001",
+      "itemId": "book",
+      "variantId": "default",
+      "position": {
+        "x": 416,
+        "y": 899
+      },
+      "rotation": -6,
+      "scale": 1.719,
+      "layer": 1,
+      "zone": "pile",
+      "blocking": []
+    },
+    {
+      "id": "earphone_002",
+      "itemId": "earphone",
+      "variantId": "pink",
+      "position": {
+        "x": 405,
+        "y": 1185
+      },
+      "rotation": -5,
+      "scale": 1.719,
+      "layer": 1,
+      "zone": "pile",
+      "blocking": []
+    },
+    {
+      "id": "water_cup_001",
+      "itemId": "water_cup",
+      "variantId": "default",
+      "position": {
+        "x": 396,
+        "y": 1434
+      },
+      "rotation": -7,
+      "scale": 2.037,
+      "layer": 1,
+      "zone": "pile",
+      "blocking": []
+    },
+    {
+      "id": "notebook_001",
+      "itemId": "notebook",
+      "variantId": "black",
+      "position": {
+        "x": 428,
+        "y": 1762
+      },
+      "rotation": 5,
+      "scale": 1.719,
+      "layer": 1,
+      "zone": "pile",
+      "blocking": []
+    },
+    {
+      "id": "pen_001",
+      "itemId": "pen",
+      "variantId": "default",
+      "position": {
+        "x": 666,
+        "y": 620
+      },
+      "rotation": -2,
+      "scale": 2.2,
+      "layer": 1,
+      "zone": "pile",
+      "blocking": []
+    },
+    {
+      "id": "battery_001",
+      "itemId": "battery",
+      "variantId": "default",
+      "position": {
         "x": 690,
-        "y": 1390
+        "y": 894
       },
       "rotation": -9,
       "scale": 2.2,
@@ -192,26 +193,26 @@
       "blocking": []
     },
     {
-      "id": "medicine_bottle_003",
-      "itemId": "medicine_bottle",
-      "variantId": "amber",
+      "id": "remote_control_001",
+      "itemId": "remote_control",
+      "variantId": "default",
       "position": {
-        "x": 915,
-        "y": 548
+        "x": 660,
+        "y": 1168
       },
       "rotation": -3,
-      "scale": 2.037,
+      "scale": 1.719,
       "layer": 1,
       "zone": "pile",
       "blocking": []
     },
     {
-      "id": "water_cup_002",
-      "itemId": "water_cup",
+      "id": "sock_001",
+      "itemId": "sock",
       "variantId": "default",
       "position": {
-        "x": 908,
-        "y": 798
+        "x": 653,
+        "y": 1427
       },
       "rotation": -11,
       "scale": 2.037,
@@ -224,8 +225,8 @@
       "itemId": "earphone",
       "variantId": "black",
       "position": {
-        "x": 932,
-        "y": 1112
+        "x": 677,
+        "y": 1753
       },
       "rotation": 7,
       "scale": 1.719,
@@ -234,36 +235,110 @@
       "blocking": []
     },
     {
-      "id": "book_002",
-      "itemId": "book",
-      "variantId": "default",
+      "id": "medicine_bottle_002",
+      "itemId": "medicine_bottle",
+      "variantId": "white",
       "position": {
         "x": 933,
-        "y": 1354
+        "y": 569
       },
       "rotation": 8,
-      "scale": 1.719,
+      "scale": 2.037,
       "layer": 1,
       "zone": "pile",
       "blocking": []
     },
     {
-      "id": "sticky_note_002",
-      "itemId": "sticky_note",
+      "id": "power_bank_001",
+      "itemId": "power_bank",
       "variantId": "default",
       "position": {
-        "x": 305,
-        "y": 666
+        "x": 943,
+        "y": 860
       },
       "rotation": -11,
+      "scale": 2.037,
+      "layer": 1,
+      "zone": "pile",
+      "blocking": []
+    },
+    {
+      "id": "hair_tie_001",
+      "itemId": "hair_tie",
+      "variantId": "black",
+      "position": {
+        "x": 926,
+        "y": 1188
+      },
+      "rotation": 1,
+      "scale": 2.037,
+      "layer": 1,
+      "zone": "pile",
+      "blocking": []
+    },
+    {
+      "id": "medicine_bottle_003",
+      "itemId": "medicine_bottle",
+      "variantId": "amber",
+      "position": {
+        "x": 910,
+        "y": 1455
+      },
+      "rotation": -8,
+      "scale": 2.037,
+      "layer": 1,
+      "zone": "pile",
+      "blocking": []
+    },
+    {
+      "id": "glasses_001",
+      "itemId": "glasses",
+      "variantId": "default",
+      "position": {
+        "x": 937,
+        "y": 1750
+      },
+      "rotation": 3,
+      "scale": 2.037,
+      "layer": 1,
+      "zone": "pile",
+      "blocking": []
+    },
+    {
+      "id": "key_002",
+      "itemId": "key",
+      "variantId": "default",
+      "position": {
+        "x": 270,
+        "y": 756
+      },
+      "rotation": 0,
       "scale": 2.2,
       "layer": 0,
       "zone": "pile",
       "blocking": [
         "book_001",
-        "pen_001",
-        "tissue_001",
-        "water_cup_001"
+        "earphone_001",
+        "key_001"
+      ]
+    },
+    {
+      "id": "coin_002",
+      "itemId": "coin",
+      "variantId": "dime",
+      "position": {
+        "x": 262,
+        "y": 1018
+      },
+      "rotation": 3,
+      "scale": 2.2,
+      "layer": 0,
+      "zone": "pile",
+      "blocking": [
+        "book_001",
+        "coin_001",
+        "earphone_002",
+        "key_001"
       ]
     },
     {
@@ -271,115 +346,80 @@
       "itemId": "tissue",
       "variantId": "default",
       "position": {
-        "x": 288,
-        "y": 982
-      },
-      "rotation": 1,
-      "scale": 2.037,
-      "layer": 0,
-      "zone": "pile",
-      "blocking": [
-        "book_001",
-        "medicine_bottle_002",
-        "sticky_note_001"
-      ]
-    },
-    {
-      "id": "pen_002",
-      "itemId": "pen",
-      "variantId": "default",
-      "position": {
-        "x": 273,
-        "y": 1240
-      },
-      "rotation": -8,
-      "scale": 2.2,
-      "layer": 0,
-      "zone": "pile",
-      "blocking": [
-        "earphone_001",
-        "sticky_note_001"
-      ]
-    },
-    {
-      "id": "glasses_002",
-      "itemId": "glasses",
-      "variantId": "default",
-      "position": {
-        "x": 554,
-        "y": 695
-      },
-      "rotation": 3,
-      "scale": 2.037,
-      "layer": 0,
-      "zone": "pile",
-      "blocking": [
-        "earphone_002",
-        "tissue_001"
-      ]
-    },
-    {
-      "id": "power_bank_002",
-      "itemId": "power_bank",
-      "variantId": "default",
-      "position": {
-        "x": 525,
-        "y": 980
-      },
-      "rotation": 0,
-      "scale": 2.037,
-      "layer": 0,
-      "zone": "pile",
-      "blocking": [
-        "earphone_002",
-        "medicine_bottle_002",
-        "pen_001",
-        "power_bank_001"
-      ]
-    },
-    {
-      "id": "key_002",
-      "itemId": "key",
-      "variantId": "default",
-      "position": {
-        "x": 517,
-        "y": 1233
-      },
-      "rotation": 3,
-      "scale": 2.2,
-      "layer": 0,
-      "zone": "pile",
-      "blocking": [
-        "key_001",
-        "medicine_bottle_002",
-        "power_bank_001"
-      ]
-    },
-    {
-      "id": "water_cup_003",
-      "itemId": "water_cup",
-      "variantId": "default",
-      "position": {
-        "x": 811,
-        "y": 696
+        "x": 301,
+        "y": 1322
       },
       "rotation": -2,
       "scale": 2.037,
       "layer": 0,
       "zone": "pile",
       "blocking": [
+        "coin_001",
         "earphone_002",
-        "medicine_bottle_003",
-        "water_cup_002"
+        "tissue_001",
+        "water_cup_001"
       ]
     },
     {
-      "id": "book_003",
+      "id": "sticky_note_002",
+      "itemId": "sticky_note",
+      "variantId": "default",
+      "position": {
+        "x": 281,
+        "y": 1592
+      },
+      "rotation": 9,
+      "scale": 2.2,
+      "layer": 0,
+      "zone": "pile",
+      "blocking": [
+        "medicine_bottle_001",
+        "notebook_001",
+        "tissue_001",
+        "water_cup_001"
+      ]
+    },
+    {
+      "id": "book_002",
       "itemId": "book",
       "variantId": "default",
       "position": {
-        "x": 791,
-        "y": 957
+        "x": 521,
+        "y": 710
+      },
+      "rotation": -6,
+      "scale": 1.719,
+      "layer": 0,
+      "zone": "pile",
+      "blocking": [
+        "book_001",
+        "sticky_note_001"
+      ]
+    },
+    {
+      "id": "water_cup_002",
+      "itemId": "water_cup",
+      "variantId": "default",
+      "position": {
+        "x": 549,
+        "y": 997
+      },
+      "rotation": 5,
+      "scale": 2.037,
+      "layer": 0,
+      "zone": "pile",
+      "blocking": [
+        "book_001",
+        "remote_control_001"
+      ]
+    },
+    {
+      "id": "notebook_002",
+      "itemId": "notebook",
+      "variantId": "blue",
+      "position": {
+        "x": 530,
+        "y": 1299
       },
       "rotation": 9,
       "scale": 1.719,
@@ -387,27 +427,99 @@
       "zone": "pile",
       "blocking": [
         "earphone_002",
-        "earphone_003",
-        "power_bank_001",
-        "water_cup_002"
+        "remote_control_001",
+        "sock_001",
+        "water_cup_001"
       ]
     },
     {
-      "id": "sticky_note_003",
-      "itemId": "sticky_note",
+      "id": "pen_002",
+      "itemId": "pen",
       "variantId": "default",
       "position": {
-        "x": 776,
-        "y": 1213
+        "x": 560,
+        "y": 1602
       },
-      "rotation": -6,
+      "rotation": -10,
       "scale": 2.2,
       "layer": 0,
       "zone": "pile",
       "blocking": [
-        "book_002",
         "earphone_003",
+        "water_cup_001"
+      ]
+    },
+    {
+      "id": "battery_002",
+      "itemId": "battery",
+      "variantId": "default",
+      "position": {
+        "x": 816,
+        "y": 727
+      },
+      "rotation": -2,
+      "scale": 2.2,
+      "layer": 0,
+      "zone": "pile",
+      "blocking": [
+        "battery_001",
+        "medicine_bottle_002",
+        "pen_001",
         "power_bank_001"
+      ]
+    },
+    {
+      "id": "remote_control_002",
+      "itemId": "remote_control",
+      "variantId": "default",
+      "position": {
+        "x": 776,
+        "y": 1001
+      },
+      "rotation": -5,
+      "scale": 1.719,
+      "layer": 0,
+      "zone": "pile",
+      "blocking": [
+        "battery_001",
+        "power_bank_001",
+        "remote_control_001"
+      ]
+    },
+    {
+      "id": "sock_002",
+      "itemId": "sock",
+      "variantId": "default",
+      "position": {
+        "x": 773,
+        "y": 1287
+      },
+      "rotation": -8,
+      "scale": 2.037,
+      "layer": 0,
+      "zone": "pile",
+      "blocking": [
+        "hair_tie_001",
+        "remote_control_001"
+      ]
+    },
+    {
+      "id": "power_bank_002",
+      "itemId": "power_bank",
+      "variantId": "default",
+      "position": {
+        "x": 796,
+        "y": 1627
+      },
+      "rotation": 10,
+      "scale": 2.037,
+      "layer": 0,
+      "zone": "pile",
+      "blocking": [
+        "earphone_003",
+        "glasses_001",
+        "medicine_bottle_003",
+        "sock_001"
       ]
     }
   ],

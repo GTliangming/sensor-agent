@@ -6,9 +6,10 @@
   "sceneId": "ch01_wardrobe",
   "difficulty": 7,
   "teaching": "三个目标一起找",
+  "requiredWrong": 1,
   "designResolution": {
     "width": 1080,
-    "height": 1920
+    "height": 2340
   },
   "objectives": [
     {
@@ -29,26 +30,26 @@
   ],
   "itemInstances": [
     {
-      "id": "plastic_bag_001",
-      "itemId": "plastic_bag",
+      "id": "sock_001",
+      "itemId": "sock",
       "variantId": "default",
       "position": {
-        "x": 146,
-        "y": 492
+        "x": 118,
+        "y": 559
       },
       "rotation": 8,
-      "scale": 1.313,
+      "scale": 1.556,
       "layer": 2,
       "zone": "pile",
       "blocking": []
     },
     {
-      "id": "sock_001",
-      "itemId": "sock",
+      "id": "tissue_001",
+      "itemId": "tissue",
       "variantId": "default",
       "position": {
-        "x": 150,
-        "y": 675
+        "x": 124,
+        "y": 762
       },
       "rotation": -10,
       "scale": 1.556,
@@ -61,53 +62,11 @@
       "itemId": "cushion",
       "variantId": "default",
       "position": {
-        "x": 138,
-        "y": 872
+        "x": 117,
+        "y": 967
       },
-      "rotation": 7,
+      "rotation": 10,
       "scale": 1.105,
-      "layer": 2,
-      "zone": "pile",
-      "blocking": []
-    },
-    {
-      "id": "glasses_001",
-      "itemId": "glasses",
-      "variantId": "default",
-      "position": {
-        "x": 134,
-        "y": 1065
-      },
-      "rotation": 1,
-      "scale": 1.556,
-      "layer": 2,
-      "zone": "pile",
-      "blocking": []
-    },
-    {
-      "id": "pajamas_001",
-      "itemId": "pajamas",
-      "variantId": "default",
-      "position": {
-        "x": 129,
-        "y": 1226
-      },
-      "rotation": -3,
-      "scale": 1.105,
-      "layer": 2,
-      "zone": "pile",
-      "blocking": []
-    },
-    {
-      "id": "hair_tie_001",
-      "itemId": "hair_tie",
-      "variantId": "red",
-      "position": {
-        "x": 121,
-        "y": 1416
-      },
-      "rotation": 8,
-      "scale": 1.556,
       "layer": 2,
       "zone": "pile",
       "blocking": []
@@ -117,22 +76,8 @@
       "itemId": "hanger",
       "variantId": "default",
       "position": {
-        "x": 330,
-        "y": 503
-      },
-      "rotation": -4,
-      "scale": 1.313,
-      "layer": 2,
-      "zone": "pile",
-      "blocking": []
-    },
-    {
-      "id": "plastic_bag_002",
-      "itemId": "plastic_bag",
-      "variantId": "default",
-      "position": {
-        "x": 345,
-        "y": 685
+        "x": 128,
+        "y": 1152
       },
       "rotation": -11,
       "scale": 1.313,
@@ -141,15 +86,15 @@
       "blocking": []
     },
     {
-      "id": "sock_002",
-      "itemId": "sock",
+      "id": "sticker_001",
+      "itemId": "sticker",
       "variantId": "default",
       "position": {
-        "x": 325,
-        "y": 861
+        "x": 115,
+        "y": 1361
       },
-      "rotation": 8,
-      "scale": 1.556,
+      "rotation": 11,
+      "scale": 1.68,
       "layer": 2,
       "zone": "pile",
       "blocking": []
@@ -159,25 +104,11 @@
       "itemId": "long_pants",
       "variantId": "default",
       "position": {
-        "x": 318,
-        "y": 1049
+        "x": 117,
+        "y": 1577
       },
-      "rotation": -12,
+      "rotation": 2,
       "scale": 1.105,
-      "layer": 2,
-      "zone": "pile",
-      "blocking": []
-    },
-    {
-      "id": "tshirt_001",
-      "itemId": "tshirt",
-      "variantId": "gray",
-      "position": {
-        "x": 320,
-        "y": 1233
-      },
-      "rotation": 10,
-      "scale": 1.313,
       "layer": 2,
       "zone": "pile",
       "blocking": []
@@ -187,50 +118,36 @@
       "itemId": "short_pants",
       "variantId": "default",
       "position": {
-        "x": 337,
-        "y": 1422
+        "x": 124,
+        "y": 1785
       },
-      "rotation": -10,
+      "rotation": 2,
       "scale": 1.313,
       "layer": 2,
       "zone": "pile",
       "blocking": []
     },
     {
-      "id": "cushion_002",
-      "itemId": "cushion",
+      "id": "carton_001",
+      "itemId": "carton",
       "variantId": "default",
       "position": {
-        "x": 559,
-        "y": 513
+        "x": 343,
+        "y": 543
       },
-      "rotation": 5,
+      "rotation": 2,
       "scale": 1.105,
       "layer": 2,
       "zone": "pile",
       "blocking": []
     },
     {
-      "id": "glasses_002",
-      "itemId": "glasses",
-      "variantId": "default",
-      "position": {
-        "x": 549,
-        "y": 675
-      },
-      "rotation": 3,
-      "scale": 1.556,
-      "layer": 2,
-      "zone": "pile",
-      "blocking": []
-    },
-    {
-      "id": "pajamas_002",
+      "id": "pajamas_001",
       "itemId": "pajamas",
       "variantId": "default",
       "position": {
-        "x": 533,
-        "y": 880
+        "x": 321,
+        "y": 752
       },
       "rotation": 1,
       "scale": 1.105,
@@ -239,28 +156,56 @@
       "blocking": []
     },
     {
-      "id": "hair_tie_002",
+      "id": "hair_tie_001",
       "itemId": "hair_tie",
       "variantId": "beige",
       "position": {
-        "x": 560,
-        "y": 1038
+        "x": 318,
+        "y": 957
       },
-      "rotation": -1,
+      "rotation": 6,
       "scale": 1.556,
       "layer": 2,
       "zone": "pile",
       "blocking": []
     },
     {
-      "id": "short_pants_002",
-      "itemId": "short_pants",
+      "id": "glasses_001",
+      "itemId": "glasses",
       "variantId": "default",
       "position": {
-        "x": 546,
-        "y": 1240
+        "x": 346,
+        "y": 1151
       },
-      "rotation": -1,
+      "rotation": 11,
+      "scale": 1.556,
+      "layer": 2,
+      "zone": "pile",
+      "blocking": []
+    },
+    {
+      "id": "file_bag_001",
+      "itemId": "file_bag",
+      "variantId": "default",
+      "position": {
+        "x": 318,
+        "y": 1369
+      },
+      "rotation": -4,
+      "scale": 1.313,
+      "layer": 2,
+      "zone": "pile",
+      "blocking": []
+    },
+    {
+      "id": "earphone_001",
+      "itemId": "earphone",
+      "variantId": "black",
+      "position": {
+        "x": 355,
+        "y": 1562
+      },
+      "rotation": 4,
       "scale": 1.313,
       "layer": 2,
       "zone": "pile",
@@ -271,10 +216,108 @@
       "itemId": "long_pants",
       "variantId": "default",
       "position": {
-        "x": 557,
-        "y": 1421
+        "x": 332,
+        "y": 1763
+      },
+      "rotation": 9,
+      "scale": 1.105,
+      "layer": 2,
+      "zone": "pile",
+      "blocking": []
+    },
+    {
+      "id": "coin_001",
+      "itemId": "coin",
+      "variantId": "one",
+      "position": {
+        "x": 529,
+        "y": 545
+      },
+      "rotation": -11,
+      "scale": 1.68,
+      "layer": 2,
+      "zone": "pile",
+      "blocking": []
+    },
+    {
+      "id": "key_001",
+      "itemId": "key",
+      "variantId": "default",
+      "position": {
+        "x": 555,
+        "y": 743
+      },
+      "rotation": -2,
+      "scale": 1.68,
+      "layer": 2,
+      "zone": "pile",
+      "blocking": []
+    },
+    {
+      "id": "tshirt_001",
+      "itemId": "tshirt",
+      "variantId": "black",
+      "position": {
+        "x": 540,
+        "y": 944
+      },
+      "rotation": 3,
+      "scale": 1.313,
+      "layer": 2,
+      "zone": "pile",
+      "blocking": []
+    },
+    {
+      "id": "plastic_bag_001",
+      "itemId": "plastic_bag",
+      "variantId": "default",
+      "position": {
+        "x": 553,
+        "y": 1183
+      },
+      "rotation": 6,
+      "scale": 1.313,
+      "layer": 2,
+      "zone": "pile",
+      "blocking": []
+    },
+    {
+      "id": "sock_002",
+      "itemId": "sock",
+      "variantId": "default",
+      "position": {
+        "x": 523,
+        "y": 1357
       },
       "rotation": 4,
+      "scale": 1.556,
+      "layer": 2,
+      "zone": "pile",
+      "blocking": []
+    },
+    {
+      "id": "tissue_002",
+      "itemId": "tissue",
+      "variantId": "default",
+      "position": {
+        "x": 552,
+        "y": 1585
+      },
+      "rotation": 10,
+      "scale": 1.556,
+      "layer": 2,
+      "zone": "pile",
+      "blocking": []
+    },
+    {
+      "id": "cushion_002",
+      "itemId": "cushion",
+      "variantId": "default",
+      "position": {
+        "x": 528,
+        "y": 1773
+      },
+      "rotation": 11,
       "scale": 1.105,
       "layer": 2,
       "zone": "pile",
@@ -285,24 +328,178 @@
       "itemId": "hanger",
       "variantId": "default",
       "position": {
-        "x": 728,
-        "y": 502
+        "x": 749,
+        "y": 561
       },
-      "rotation": 9,
+      "rotation": 0,
       "scale": 1.313,
       "layer": 2,
       "zone": "pile",
       "blocking": []
     },
     {
-      "id": "plastic_bag_003",
+      "id": "long_pants_003",
+      "itemId": "long_pants",
+      "variantId": "default",
+      "position": {
+        "x": 749,
+        "y": 747
+      },
+      "rotation": 5,
+      "scale": 1.105,
+      "layer": 2,
+      "zone": "pile",
+      "blocking": []
+    },
+    {
+      "id": "sticker_002",
+      "itemId": "sticker",
+      "variantId": "default",
+      "position": {
+        "x": 754,
+        "y": 971
+      },
+      "rotation": 4,
+      "scale": 1.68,
+      "layer": 2,
+      "zone": "pile",
+      "blocking": []
+    },
+    {
+      "id": "carton_002",
+      "itemId": "carton",
+      "variantId": "default",
+      "position": {
+        "x": 738,
+        "y": 1175
+      },
+      "rotation": -8,
+      "scale": 1.105,
+      "layer": 2,
+      "zone": "pile",
+      "blocking": []
+    },
+    {
+      "id": "pajamas_002",
+      "itemId": "pajamas",
+      "variantId": "default",
+      "position": {
+        "x": 727,
+        "y": 1383
+      },
+      "rotation": -8,
+      "scale": 1.105,
+      "layer": 2,
+      "zone": "pile",
+      "blocking": []
+    },
+    {
+      "id": "hair_tie_002",
+      "itemId": "hair_tie",
+      "variantId": "red",
+      "position": {
+        "x": 749,
+        "y": 1569
+      },
+      "rotation": 8,
+      "scale": 1.556,
+      "layer": 2,
+      "zone": "pile",
+      "blocking": []
+    },
+    {
+      "id": "glasses_002",
+      "itemId": "glasses",
+      "variantId": "default",
+      "position": {
+        "x": 764,
+        "y": 1766
+      },
+      "rotation": -2,
+      "scale": 1.556,
+      "layer": 2,
+      "zone": "pile",
+      "blocking": []
+    },
+    {
+      "id": "file_bag_002",
+      "itemId": "file_bag",
+      "variantId": "default",
+      "position": {
+        "x": 943,
+        "y": 571
+      },
+      "rotation": -9,
+      "scale": 1.313,
+      "layer": 2,
+      "zone": "pile",
+      "blocking": []
+    },
+    {
+      "id": "earphone_002",
+      "itemId": "earphone",
+      "variantId": "white",
+      "position": {
+        "x": 965,
+        "y": 744
+      },
+      "rotation": 0,
+      "scale": 1.313,
+      "layer": 2,
+      "zone": "pile",
+      "blocking": []
+    },
+    {
+      "id": "coin_002",
+      "itemId": "coin",
+      "variantId": "half",
+      "position": {
+        "x": 952,
+        "y": 959
+      },
+      "rotation": 7,
+      "scale": 1.68,
+      "layer": 2,
+      "zone": "pile",
+      "blocking": []
+    },
+    {
+      "id": "key_002",
+      "itemId": "key",
+      "variantId": "default",
+      "position": {
+        "x": 951,
+        "y": 1185
+      },
+      "rotation": -9,
+      "scale": 1.68,
+      "layer": 2,
+      "zone": "pile",
+      "blocking": []
+    },
+    {
+      "id": "plastic_bag_002",
       "itemId": "plastic_bag",
       "variantId": "default",
       "position": {
-        "x": 759,
-        "y": 682
+        "x": 951,
+        "y": 1386
       },
-      "rotation": 8,
+      "rotation": -10,
+      "scale": 1.313,
+      "layer": 2,
+      "zone": "pile",
+      "blocking": []
+    },
+    {
+      "id": "tshirt_002",
+      "itemId": "tshirt",
+      "variantId": "black",
+      "position": {
+        "x": 953,
+        "y": 1591
+      },
+      "rotation": -11,
       "scale": 1.313,
       "layer": 2,
       "zone": "pile",
@@ -313,193 +510,349 @@
       "itemId": "sock",
       "variantId": "default",
       "position": {
-        "x": 724,
-        "y": 874
+        "x": 940,
+        "y": 1793
       },
-      "rotation": 4,
+      "rotation": 0,
       "scale": 1.556,
       "layer": 2,
       "zone": "pile",
       "blocking": []
+    },
+    {
+      "id": "tissue_003",
+      "itemId": "tissue",
+      "variantId": "default",
+      "position": {
+        "x": 231,
+        "y": 653
+      },
+      "rotation": 0,
+      "scale": 1.556,
+      "layer": 1,
+      "zone": "pile",
+      "blocking": [
+        "carton_001",
+        "pajamas_001",
+        "sock_001",
+        "tissue_001"
+      ]
     },
     {
       "id": "cushion_003",
       "itemId": "cushion",
       "variantId": "default",
       "position": {
-        "x": 753,
-        "y": 1036
+        "x": 234,
+        "y": 851
       },
-      "rotation": 8,
+      "rotation": 4,
       "scale": 1.105,
-      "layer": 2,
+      "layer": 1,
       "zone": "pile",
-      "blocking": []
-    },
-    {
-      "id": "long_pants_003",
-      "itemId": "long_pants",
-      "variantId": "default",
-      "position": {
-        "x": 760,
-        "y": 1247
-      },
-      "rotation": 5,
-      "scale": 1.105,
-      "layer": 2,
-      "zone": "pile",
-      "blocking": []
-    },
-    {
-      "id": "glasses_003",
-      "itemId": "glasses",
-      "variantId": "default",
-      "position": {
-        "x": 752,
-        "y": 1424
-      },
-      "rotation": -1,
-      "scale": 1.556,
-      "layer": 2,
-      "zone": "pile",
-      "blocking": []
-    },
-    {
-      "id": "pajamas_003",
-      "itemId": "pajamas",
-      "variantId": "default",
-      "position": {
-        "x": 939,
-        "y": 519
-      },
-      "rotation": 8,
-      "scale": 1.105,
-      "layer": 2,
-      "zone": "pile",
-      "blocking": []
-    },
-    {
-      "id": "hair_tie_003",
-      "itemId": "hair_tie",
-      "variantId": "red",
-      "position": {
-        "x": 932,
-        "y": 670
-      },
-      "rotation": -7,
-      "scale": 1.556,
-      "layer": 2,
-      "zone": "pile",
-      "blocking": []
+      "blocking": [
+        "cushion_001",
+        "pajamas_001",
+        "tissue_001"
+      ]
     },
     {
       "id": "hanger_003",
       "itemId": "hanger",
       "variantId": "default",
       "position": {
-        "x": 932,
-        "y": 883
+        "x": 238,
+        "y": 1061
       },
-      "rotation": 10,
+      "rotation": -6,
       "scale": 1.313,
-      "layer": 2,
+      "layer": 1,
       "zone": "pile",
-      "blocking": []
+      "blocking": [
+        "glasses_001",
+        "hair_tie_001"
+      ]
     },
     {
-      "id": "plastic_bag_004",
+      "id": "sticker_003",
+      "itemId": "sticker",
+      "variantId": "default",
+      "position": {
+        "x": 239,
+        "y": 1257
+      },
+      "rotation": -4,
+      "scale": 1.68,
+      "layer": 1,
+      "zone": "pile",
+      "blocking": [
+        "file_bag_001",
+        "glasses_001",
+        "sticker_001"
+      ]
+    },
+    {
+      "id": "carton_003",
+      "itemId": "carton",
+      "variantId": "default",
+      "position": {
+        "x": 241,
+        "y": 1460
+      },
+      "rotation": 3,
+      "scale": 1.105,
+      "layer": 1,
+      "zone": "pile",
+      "blocking": [
+        "earphone_001",
+        "file_bag_001",
+        "long_pants_001"
+      ]
+    },
+    {
+      "id": "tshirt_003",
+      "itemId": "tshirt",
+      "variantId": "gray",
+      "position": {
+        "x": 230,
+        "y": 1691
+      },
+      "rotation": 0,
+      "scale": 1.313,
+      "layer": 1,
+      "zone": "pile",
+      "blocking": [
+        "long_pants_002",
+        "short_pants_001"
+      ]
+    },
+    {
+      "id": "pajamas_003",
+      "itemId": "pajamas",
+      "variantId": "default",
+      "position": {
+        "x": 443,
+        "y": 644
+      },
+      "rotation": -1,
+      "scale": 1.105,
+      "layer": 1,
+      "zone": "pile",
+      "blocking": [
+        "carton_001",
+        "coin_001",
+        "key_001"
+      ]
+    },
+    {
+      "id": "tshirt_004",
+      "itemId": "tshirt",
+      "variantId": "stripe",
+      "position": {
+        "x": 456,
+        "y": 845
+      },
+      "rotation": 8,
+      "scale": 1.313,
+      "layer": 1,
+      "zone": "pile",
+      "blocking": [
+        "tshirt_001"
+      ]
+    },
+    {
+      "id": "hair_tie_003",
+      "itemId": "hair_tie",
+      "variantId": "red",
+      "position": {
+        "x": 455,
+        "y": 1075
+      },
+      "rotation": 10,
+      "scale": 1.556,
+      "layer": 1,
+      "zone": "pile",
+      "blocking": [
+        "plastic_bag_001"
+      ]
+    },
+    {
+      "id": "glasses_003",
+      "itemId": "glasses",
+      "variantId": "default",
+      "position": {
+        "x": 430,
+        "y": 1278
+      },
+      "rotation": 9,
+      "scale": 1.556,
+      "layer": 1,
+      "zone": "pile",
+      "blocking": [
+        "sock_002"
+      ]
+    },
+    {
+      "id": "file_bag_003",
+      "itemId": "file_bag",
+      "variantId": "default",
+      "position": {
+        "x": 428,
+        "y": 1468
+      },
+      "rotation": -4,
+      "scale": 1.313,
+      "layer": 1,
+      "zone": "pile",
+      "blocking": [
+        "earphone_001",
+        "file_bag_001",
+        "tissue_002"
+      ]
+    },
+    {
+      "id": "earphone_003",
+      "itemId": "earphone",
+      "variantId": "white",
+      "position": {
+        "x": 434,
+        "y": 1691
+      },
+      "rotation": 12,
+      "scale": 1.313,
+      "layer": 1,
+      "zone": "pile",
+      "blocking": [
+        "cushion_002",
+        "earphone_001",
+        "long_pants_002",
+        "tissue_002"
+      ]
+    },
+    {
+      "id": "coin_003",
+      "itemId": "coin",
+      "variantId": "dime",
+      "position": {
+        "x": 628,
+        "y": 648
+      },
+      "rotation": -7,
+      "scale": 1.68,
+      "layer": 1,
+      "zone": "pile",
+      "blocking": [
+        "coin_001",
+        "key_001",
+        "long_pants_003"
+      ]
+    },
+    {
+      "id": "short_pants_002",
+      "itemId": "short_pants",
+      "variantId": "default",
+      "position": {
+        "x": 629,
+        "y": 852
+      },
+      "rotation": 9,
+      "scale": 1.313,
+      "layer": 1,
+      "zone": "pile",
+      "blocking": [
+        "key_001",
+        "long_pants_003",
+        "tshirt_001"
+      ]
+    },
+    {
+      "id": "key_003",
+      "itemId": "key",
+      "variantId": "default",
+      "position": {
+        "x": 651,
+        "y": 1077
+      },
+      "rotation": -10,
+      "scale": 1.68,
+      "layer": 1,
+      "zone": "pile",
+      "blocking": [
+        "carton_002",
+        "tshirt_001"
+      ]
+    },
+    {
+      "id": "plastic_bag_003",
       "itemId": "plastic_bag",
       "variantId": "default",
       "position": {
-        "x": 943,
-        "y": 1037
+        "x": 661,
+        "y": 1257
       },
-      "rotation": 2,
+      "rotation": 3,
       "scale": 1.313,
-      "layer": 2,
+      "layer": 1,
       "zone": "pile",
-      "blocking": []
+      "blocking": [
+        "carton_002",
+        "pajamas_002",
+        "plastic_bag_001"
+      ]
     },
     {
       "id": "sock_004",
       "itemId": "sock",
       "variantId": "default",
       "position": {
-        "x": 959,
-        "y": 1255
+        "x": 634,
+        "y": 1493
       },
-      "rotation": 12,
+      "rotation": 0,
       "scale": 1.556,
-      "layer": 2,
+      "layer": 1,
       "zone": "pile",
-      "blocking": []
+      "blocking": [
+        "hair_tie_002",
+        "pajamas_002",
+        "sock_002"
+      ]
+    },
+    {
+      "id": "tissue_004",
+      "itemId": "tissue",
+      "variantId": "default",
+      "position": {
+        "x": 646,
+        "y": 1683
+      },
+      "rotation": -4,
+      "scale": 1.556,
+      "layer": 1,
+      "zone": "pile",
+      "blocking": [
+        "cushion_002",
+        "glasses_002",
+        "hair_tie_002",
+        "tissue_002"
+      ]
     },
     {
       "id": "cushion_004",
       "itemId": "cushion",
       "variantId": "default",
       "position": {
-        "x": 941,
-        "y": 1417
+        "x": 829,
+        "y": 655
       },
-      "rotation": -4,
-      "scale": 1.105,
-      "layer": 2,
-      "zone": "pile",
-      "blocking": []
-    },
-    {
-      "id": "glasses_004",
-      "itemId": "glasses",
-      "variantId": "default",
-      "position": {
-        "x": 225,
-        "y": 591
-      },
-      "rotation": -9,
-      "scale": 1.556,
-      "layer": 1,
-      "zone": "pile",
-      "blocking": [
-        "plastic_bag_001",
-        "plastic_bag_002",
-        "sock_001"
-      ]
-    },
-    {
-      "id": "pajamas_004",
-      "itemId": "pajamas",
-      "variantId": "default",
-      "position": {
-        "x": 242,
-        "y": 770
-      },
-      "rotation": 0,
+      "rotation": 2,
       "scale": 1.105,
       "layer": 1,
       "zone": "pile",
       "blocking": [
-        "cushion_001",
-        "plastic_bag_002",
-        "sock_001",
-        "sock_002"
-      ]
-    },
-    {
-      "id": "hair_tie_004",
-      "itemId": "hair_tie",
-      "variantId": "beige",
-      "position": {
-        "x": 236,
-        "y": 1150
-      },
-      "rotation": 11,
-      "scale": 1.556,
-      "layer": 1,
-      "zone": "pile",
-      "blocking": [
-        "pajamas_001",
-        "tshirt_001"
+        "file_bag_002",
+        "hanger_002",
+        "long_pants_003"
       ]
     },
     {
@@ -507,162 +860,104 @@
       "itemId": "hanger",
       "variantId": "default",
       "position": {
-        "x": 253,
-        "y": 1318
+        "x": 850,
+        "y": 846
+      },
+      "rotation": -2,
+      "scale": 1.313,
+      "layer": 1,
+      "zone": "pile",
+      "blocking": [
+        "coin_002"
+      ]
+    },
+    {
+      "id": "sticker_004",
+      "itemId": "sticker",
+      "variantId": "default",
+      "position": {
+        "x": 847,
+        "y": 1075
+      },
+      "rotation": 4,
+      "scale": 1.68,
+      "layer": 1,
+      "zone": "pile",
+      "blocking": [
+        "coin_002",
+        "key_002",
+        "sticker_002"
+      ]
+    },
+    {
+      "id": "carton_004",
+      "itemId": "carton",
+      "variantId": "default",
+      "position": {
+        "x": 845,
+        "y": 1280
       },
       "rotation": 5,
-      "scale": 1.313,
-      "layer": 1,
-      "zone": "pile",
-      "blocking": [
-        "pajamas_001",
-        "short_pants_001",
-        "tshirt_001"
-      ]
-    },
-    {
-      "id": "plastic_bag_005",
-      "itemId": "plastic_bag",
-      "variantId": "default",
-      "position": {
-        "x": 434,
-        "y": 602
-      },
-      "rotation": 1,
-      "scale": 1.313,
-      "layer": 1,
-      "zone": "pile",
-      "blocking": [
-        "cushion_002",
-        "glasses_002",
-        "hanger_001",
-        "plastic_bag_002"
-      ]
-    },
-    {
-      "id": "sock_005",
-      "itemId": "sock",
-      "variantId": "default",
-      "position": {
-        "x": 452,
-        "y": 767
-      },
-      "rotation": -12,
-      "scale": 1.556,
-      "layer": 1,
-      "zone": "pile",
-      "blocking": [
-        "glasses_002",
-        "pajamas_002",
-        "plastic_bag_002"
-      ]
-    },
-    {
-      "id": "cushion_005",
-      "itemId": "cushion",
-      "variantId": "default",
-      "position": {
-        "x": 454,
-        "y": 969
-      },
-      "rotation": 0,
       "scale": 1.105,
       "layer": 1,
       "zone": "pile",
       "blocking": [
+        "carton_002",
         "pajamas_002",
-        "sock_002"
+        "plastic_bag_002"
       ]
     },
     {
-      "id": "tshirt_002",
-      "itemId": "tshirt",
-      "variantId": "stripe",
-      "position": {
-        "x": 425,
-        "y": 1162
-      },
-      "rotation": 2,
-      "scale": 1.313,
-      "layer": 1,
-      "zone": "pile",
-      "blocking": [
-        "long_pants_001",
-        "short_pants_002",
-        "tshirt_001"
-      ]
-    },
-    {
-      "id": "tshirt_003",
-      "itemId": "tshirt",
-      "variantId": "white",
-      "position": {
-        "x": 447,
-        "y": 1349
-      },
-      "rotation": 9,
-      "scale": 1.313,
-      "layer": 1,
-      "zone": "pile",
-      "blocking": [
-        "long_pants_002",
-        "short_pants_001",
-        "short_pants_002"
-      ]
-    },
-    {
-      "id": "glasses_005",
-      "itemId": "glasses",
+      "id": "pajamas_004",
+      "itemId": "pajamas",
       "variantId": "default",
       "position": {
-        "x": 646,
-        "y": 603
+        "x": 858,
+        "y": 1480
+      },
+      "rotation": -6,
+      "scale": 1.105,
+      "layer": 1,
+      "zone": "pile",
+      "blocking": [
+        "hair_tie_002",
+        "pajamas_002",
+        "plastic_bag_002",
+        "tshirt_002"
+      ]
+    },
+    {
+      "id": "hair_tie_004",
+      "itemId": "hair_tie",
+      "variantId": "pink",
+      "position": {
+        "x": 866,
+        "y": 1672
       },
       "rotation": -11,
       "scale": 1.556,
       "layer": 1,
       "zone": "pile",
       "blocking": [
-        "cushion_002",
-        "glasses_002",
-        "hanger_002",
-        "plastic_bag_003"
+        "sock_003",
+        "tshirt_002"
       ]
     },
     {
-      "id": "pajamas_005",
-      "itemId": "pajamas",
+      "id": "glasses_004",
+      "itemId": "glasses",
       "variantId": "default",
       "position": {
-        "x": 625,
-        "y": 780
+        "x": 224,
+        "y": 539
       },
-      "rotation": -5,
-      "scale": 1.105,
-      "layer": 1,
+      "rotation": -8,
+      "scale": 1.556,
+      "layer": 0,
       "zone": "pile",
       "blocking": [
-        "glasses_002",
-        "pajamas_002",
-        "plastic_bag_003",
-        "sock_003"
-      ]
-    },
-    {
-      "id": "tshirt_004",
-      "itemId": "tshirt",
-      "variantId": "gray",
-      "position": {
-        "x": 628,
-        "y": 1148
-      },
-      "rotation": 8,
-      "scale": 1.313,
-      "layer": 1,
-      "zone": "pile",
-      "blocking": [
-        "hair_tie_002",
-        "short_pants_002"
+        "carton_001",
+        "sock_001"
       ]
     },
     {
@@ -670,144 +965,90 @@
       "itemId": "short_pants",
       "variantId": "default",
       "position": {
-        "x": 623,
-        "y": 1320
+        "x": 253,
+        "y": 1783
       },
-      "rotation": 3,
+      "rotation": 4,
       "scale": 1.313,
-      "layer": 1,
+      "layer": 0,
       "zone": "pile",
       "blocking": [
         "long_pants_002",
-        "long_pants_003",
-        "short_pants_002"
+        "short_pants_001",
+        "tshirt_003"
       ]
     },
     {
-      "id": "hair_tie_005",
-      "itemId": "hair_tie",
-      "variantId": "pink",
-      "position": {
-        "x": 852,
-        "y": 591
-      },
-      "rotation": 4,
-      "scale": 1.556,
-      "layer": 1,
-      "zone": "pile",
-      "blocking": [
-        "hair_tie_003",
-        "pajamas_003",
-        "plastic_bag_003"
-      ]
-    },
-    {
-      "id": "hanger_005",
-      "itemId": "hanger",
+      "id": "file_bag_004",
+      "itemId": "file_bag",
       "variantId": "default",
       "position": {
-        "x": 841,
-        "y": 793
+        "x": 420,
+        "y": 967
       },
       "rotation": 3,
       "scale": 1.313,
-      "layer": 1,
-      "zone": "pile",
-      "blocking": [
-        "hair_tie_003",
-        "plastic_bag_003"
-      ]
-    },
-    {
-      "id": "plastic_bag_006",
-      "itemId": "plastic_bag",
-      "variantId": "default",
-      "position": {
-        "x": 832,
-        "y": 969
-      },
-      "rotation": 8,
-      "scale": 1.313,
-      "layer": 1,
-      "zone": "pile",
-      "blocking": [
-        "cushion_003",
-        "hanger_003",
-        "plastic_bag_004",
-        "sock_003"
-      ]
-    },
-    {
-      "id": "sock_006",
-      "itemId": "sock",
-      "variantId": "default",
-      "position": {
-        "x": 836,
-        "y": 1144
-      },
-      "rotation": -4,
-      "scale": 1.556,
-      "layer": 1,
-      "zone": "pile",
-      "blocking": [
-        "cushion_003",
-        "plastic_bag_004",
-        "sock_004"
-      ]
-    },
-    {
-      "id": "cushion_006",
-      "itemId": "cushion",
-      "variantId": "default",
-      "position": {
-        "x": 849,
-        "y": 1321
-      },
-      "rotation": 4,
-      "scale": 1.105,
-      "layer": 1,
-      "zone": "pile",
-      "blocking": [
-        "cushion_004",
-        "glasses_003",
-        "long_pants_003",
-        "sock_004"
-      ]
-    },
-    {
-      "id": "glasses_006",
-      "itemId": "glasses",
-      "variantId": "default",
-      "position": {
-        "x": 240,
-        "y": 1433
-      },
-      "rotation": -11,
-      "scale": 1.556,
       "layer": 0,
       "zone": "pile",
       "blocking": [
         "hair_tie_001",
-        "hanger_004",
-        "short_pants_001"
+        "hair_tie_003",
+        "tshirt_001",
+        "tshirt_004"
       ]
     },
     {
-      "id": "pajamas_006",
-      "itemId": "pajamas",
-      "variantId": "default",
+      "id": "earphone_004",
+      "itemId": "earphone",
+      "variantId": "black",
       "position": {
-        "x": 432,
-        "y": 511
+        "x": 633,
+        "y": 562
       },
-      "rotation": 0,
-      "scale": 1.105,
+      "rotation": 3,
+      "scale": 1.313,
+      "layer": 0,
+      "zone": "pile",
+      "blocking": [
+        "coin_001",
+        "coin_003",
+        "hanger_002"
+      ]
+    },
+    {
+      "id": "coin_004",
+      "itemId": "coin",
+      "variantId": "one",
+      "position": {
+        "x": 628,
+        "y": 1781
+      },
+      "rotation": -3,
+      "scale": 1.68,
       "layer": 0,
       "zone": "pile",
       "blocking": [
         "cushion_002",
-        "hanger_001",
-        "plastic_bag_005"
+        "glasses_002",
+        "tissue_004"
+      ]
+    },
+    {
+      "id": "key_004",
+      "itemId": "key",
+      "variantId": "default",
+      "position": {
+        "x": 837,
+        "y": 558
+      },
+      "rotation": 3,
+      "scale": 1.68,
+      "layer": 0,
+      "zone": "pile",
+      "blocking": [
+        "cushion_004",
+        "file_bag_002",
+        "hanger_002"
       ]
     }
   ],

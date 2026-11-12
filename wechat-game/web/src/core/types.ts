@@ -63,6 +63,8 @@ export interface ChapterConfig {
   name: string;
   description: string;
   levelIds: string[];
+  /** 选关界面用的关卡摘要，关卡 JSON 按需加载，选关时不需要整关数据 */
+  levels: { id: string; levelNumber: number; name: string }[];
 }
 
 export interface Objective {
@@ -110,6 +112,8 @@ export interface LevelConfig {
   sceneId: string;
   difficulty: number;
   teaching: string;
+  /** 必要失误：不看广告通关至少要放进归位格的干扰物数量。生成时算出，星级按超出它的失误计算 */
+  requiredWrong: number;
   designResolution: { width: number; height: number };
   objectives: Objective[];
   itemInstances: ItemInstance[];

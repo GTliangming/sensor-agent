@@ -53,6 +53,7 @@ export class GameSession {
   private statuses = new Map<string, InstanceStatus>();
   private byId: Map<string, ItemInstance>;
   private idleSeconds = 0;
+  private lastHintId: string | null = null;
 
   constructor(level: LevelConfig) {
     this.level = level;
@@ -200,29 +201,81 @@ export class GameSession {
     return id;
   }
 
-  /** 优先提示可直接点击的目标；目标都被压住时，提示挡住目标的最上层物件 */
+  /** 当前可以直接点击、且还需要的目标实例 */
+  clickableTargets(): string[] {
+    return this.level.itemInstances
+      .filter((i) => this.isClickable(i.id) && this.openObjectiveIndex(i.itemId) >= 0)
+      .map((i) => i.id);
+  }
+
+  /** 该目标只差最后 1 个时可以免费定位，解决“最后一个怎么也找不到”的问题 */
+  canLocateLast(objectiveIndex: number): boolean {
+    const o = this.objectives[objectiveIndex];
+    return this.status === "playing" && !!o && !o.completed && o.requiredCount - o.collectedCount === 1;
+  }
+
+  /**
+   * 免费定位最后 1 个目标：能直接点就提示它本身，被压住就提示压在它上面、当前可点的物件。
+   * 不消耗主动提示次数。
+   */
+  locateLast(objectiveIndex: number): string | null {
+    if (!this.canLocateLast(objectiveIndex)) return null;
+    const itemId = this.objectives[objectiveIndex].itemId;
+    const remaining = this.level.itemInstances.filter((i) => i.itemId === itemId && this.inScene(i.id));
+    let id = remaining.find((i) => this.isClickable(i.id))?.id ?? null;
+    if (!id) {
+      for (const inst of remaining) {
+        id = [...transitiveBlockers(inst.id, this.byId, this.inScene)].find((b) => this.isClickable(b)) ?? null;
+        if (id) break;
+      }
+    }
+    if (id) {
+      this.hint = { instanceId: id, remaining: this.level.hintConfig.highlightDuration };
+      this.idleSeconds = 0;
+    }
+    return id;
+  }
+
+  /**
+   * 优先提示可直接点击的目标；目标都被压住时，提示挡住目标、当前可点的物件。
+   * 有多个候选时选离上一次提示最远的，避免每次都提示同一处。
+   */
   pickHintTarget(): string | null {
     const wanted = this.level.itemInstances.filter(
       (i) => this.inScene(i.id) && this.openObjectiveIndex(i.itemId) >= 0,
     );
-    const direct = wanted.find((i) => !this.isBlocked(i.id));
-    if (direct) return direct.id;
-    for (const target of wanted) {
-      for (const b of transitiveBlockers(target.id, this.byId, this.inScene)) {
-        if (this.isClickable(b)) return b;
+    let candidates = this.clickableTargets();
+    if (candidates.length === 0) {
+      const gates = new Set<string>();
+      for (const target of wanted) {
+        for (const b of transitiveBlockers(target.id, this.byId, this.inScene)) {
+          if (this.isClickable(b)) gates.add(b);
+        }
       }
+      candidates = [...gates];
     }
-    return null;
+    if (candidates.length === 0) return null;
+    const last = this.lastHintId ? this.byId.get(this.lastHintId) : undefined;
+    let best = candidates[0];
+    if (last) {
+      const dist = (id: string) => {
+        const p = this.byId.get(id)!.position;
+        return Math.hypot(p.x - last.position.x, p.y - last.position.y);
+      };
+      for (const id of candidates) if (dist(id) > dist(best)) best = id;
+    }
+    this.lastHintId = best;
+    return best;
   }
 
   /**
-   * 星级按“超出关卡最少必要失误”的次数计算，避免设计上必须放错的关卡永远拿不到 3 星：
+   * 星级按“超出关卡必要失误（level.requiredWrong）”的次数计算，避免设计上必须放错的关卡永远拿不到 3 星：
    * 用过救场 1 星；没有多余失误 3 星；多余失误不超过 2 次 2 星；其余 1 星。
    */
-  stars(requiredWrong = 0): number {
+  stars(): number {
     if (this.status !== "completed") return 0;
     if (this.rescueUsed) return 1;
-    const extra = this.wrongCount - requiredWrong;
+    const extra = this.wrongCount - this.level.requiredWrong;
     if (extra <= 0) return 3;
     return extra <= 2 ? 2 : 1;
   }

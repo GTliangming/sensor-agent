@@ -1,5 +1,5 @@
 import type { SceneConfig } from "../src/core/types";
-import { DESIGN_HEIGHT, DESIGN_WIDTH, SCENE_RECT } from "../src/layout";
+import { DESIGN_WIDTH, REFERENCE_HEIGHT, SCENE_RECT } from "../src/layout";
 
 // 第一章 10 个场景。物品区是一整块，所有物件堆在同一个区域里逐层叠放。
 // background 为舞台底色，surfaceColor 为物品区（桌面/床面/沙发面等）的占位底色，
@@ -11,7 +11,7 @@ function scene(id: string, name: string, surfaceColor: string, background = "#ef
     name,
     background,
     surfaceColor,
-    designResolution: { width: DESIGN_WIDTH, height: DESIGN_HEIGHT },
+    designResolution: { width: DESIGN_WIDTH, height: REFERENCE_HEIGHT },
     zones: [{ id: "pile", name: "物品区", bounds: { ...SCENE_RECT } }],
   };
 }

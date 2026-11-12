@@ -1,42 +1,62 @@
 import type { SaveData } from "../core/save";
-import type { ChapterConfig, LevelConfig } from "../core/types";
+import type { ChapterConfig } from "../core/types";
 import { Stars } from "./ItemIcon";
+import type { ChapterProgress } from "./Panels";
+
+type LevelSummary = ChapterConfig["levels"][number];
 
 interface Props {
   chapter: ChapterConfig;
-  levels: LevelConfig[];
   save: SaveData;
-  onSelect: (level: LevelConfig) => void;
+  progress: ChapterProgress;
+  /** 正在加载的关卡 ID（显示加载中，避免重复点击） */
+  loadingId: string | null;
+  onSelect: (level: LevelSummary) => void;
+  onToggleSound: () => void;
   onReset: () => void;
 }
 
-export function LevelSelect({ chapter, levels, save, onSelect, onReset }: Props) {
+export function LevelSelect({ chapter, save, progress, loadingId, onSelect, onToggleSound, onReset }: Props) {
   return (
     <div className="stage stage--menu">
       <div className="menu">
         <p className="menu__eyebrow">一屋百年 · 第 {chapter.chapterNumber} 章</p>
         <h1 className="menu__title">{chapter.name}</h1>
         <p className="menu__desc">{chapter.description}</p>
+        <div className="chapter-progress chapter-progress--menu">
+          <div className="chapter-progress__label">
+            已收拾 {progress.completed}/{progress.total} 处 · ★ {progress.stars}/{progress.total * 3}
+          </div>
+          <div className="chapter-progress__bar">
+            <span style={{ width: `${(progress.completed / progress.total) * 100}%` }} />
+          </div>
+        </div>
         <div className="level-grid">
-          {levels.map((level) => {
+          {chapter.levels.map((level) => {
             const locked = level.levelNumber > save.unlockedLevel;
+            const loading = loadingId === level.id;
             return (
               <button
                 key={level.id}
                 className={locked ? "level-card level-card--locked" : "level-card"}
-                disabled={locked}
+                disabled={locked || loadingId !== null}
                 onClick={() => onSelect(level)}
               >
                 <span className="level-card__num">{locked ? "🔒" : level.levelNumber}</span>
-                <span className="level-card__name">{level.name}</span>
+                <span className="level-card__name">{loading ? "加载中…" : level.name}</span>
                 <Stars count={save.stars[level.id] ?? 0} />
               </button>
             );
           })}
         </div>
-        <button className="btn btn--ghost menu__reset" onClick={onReset}>
-          清空存档
-        </button>
+        <div className="menu__footer">
+          <button className="btn btn--ghost" onClick={onToggleSound}>
+            音效与震动：{save.settings.soundEnabled ? "开" : "关"}
+          </button>
+          <button className="btn btn--ghost" onClick={onReset}>
+            清空存档
+          </button>
+        </div>
       </div>
     </div>
   );
