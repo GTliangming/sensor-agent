@@ -1,5 +1,6 @@
 import { useEffect, useReducer, useRef, useState } from "react";
 import { GameSession } from "../core/GameSession";
+import { e2eSeed, freshSeed, randomizeObjectives } from "../core/randomObjectives";
 import type { LevelSnapshot } from "../core/save";
 import type { LevelConfig } from "../core/types";
 import { ITEM_MAP, SCENE_MAP } from "../data";
@@ -21,6 +22,8 @@ interface Props {
   timed: boolean;
   /** 本关历史最高分 */
   bestScore: number;
+  /** 本关是否已通关：通关后目标固定用设计目标，不再随机 */
+  completed: boolean;
   /** 本关的中断点快照（有则进关时问“继续还是重新开始”） */
   resumeSnapshot?: LevelSnapshot | null;
   onToggleSound: () => void;
@@ -93,13 +96,23 @@ export function GameScreen(props: Props) {
   useEffect(() => {
     if (resumeDecision === null) return; // 断点续玩还没决定，先不进关
     const stage = stageRef.current!;
-    const session = new GameSession(level, {
+    const snap = resumeDecision === "resume" ? propsRef.current.resumeSnapshot ?? undefined : undefined;
+    // 目标随机规则：已通关的关固定用设计目标；没通关的关，每次重新进（无快照、或点“重新开始”）才随机；
+    // 正在玩的关（断点续玩）用快照里的种子复现同一局目标，不会中途变目标
+    // e2e 用固定种子，同一关每次跑同一局目标，浏览器测试可复现
+    const isE2e = new URLSearchParams(location.search).has("e2e");
+    const seed = propsRef.current.completed
+      ? null
+      : snap?.seed ?? (resumeDecision === "resume" ? null : isE2e ? e2eSeed(level.levelNumber) : freshSeed());
+    const playLevel = seed === null ? level : randomizeObjectives(level, seed);
+    const session = new GameSession(playLevel, {
       timed: propsRef.current.timed,
-      snapshot: resumeDecision === "resume" ? propsRef.current.resumeSnapshot ?? undefined : undefined,
+      snapshot: snap,
+      seed,
     });
     sessionRef.current = session;
-    stage.loadLevel(level, SCENE_MAP.get(level.sceneId)!, ITEM_MAP);
-    for (const inst of level.itemInstances) {
+    stage.loadLevel(playLevel, SCENE_MAP.get(playLevel.sceneId)!, ITEM_MAP);
+    for (const inst of playLevel.itemInstances) {
       if (!session.inScene(inst.id)) stage.hideInstance(inst.id);
     }
     stage.onTick = (dt) => {

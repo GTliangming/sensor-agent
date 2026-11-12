@@ -4,6 +4,7 @@ import { fileURLToPath } from "node:url";
 import { preview } from "vite";
 import type { Page } from "playwright-core";
 import { LEVELS } from "../src/data/all-levels";
+import { e2eSeed, randomizeObjectives } from "../src/core/randomObjectives";
 import { solveLevel } from "../src/core/solver";
 import { launchChrome } from "./browser";
 
@@ -54,6 +55,8 @@ try {
   await page.waitForSelector(".level-card");
 
   for (const level of LEVELS) {
+    // 目标每次进关随机：e2e 用固定种子，游戏里跑的是同一局随机目标
+    const play = randomizeObjectives(level, e2eSeed(level.levelNumber));
     await openLevel(page, level.levelNumber);
     if (level.levelNumber === 1) {
       const stageBox = await page.locator(".stage").boundingBox();
@@ -64,7 +67,7 @@ try {
       await page.screenshot({ path: join(outDir, `${level.id}-start.png`) });
     }
     let untappable = 0;
-    for (const id of solveLevel(level).path) {
+    for (const id of solveLevel(play).path) {
       if (!(await tapInstance(page, id))) untappable++;
       await page.waitForTimeout(60);
     }
@@ -103,6 +106,7 @@ try {
   }
 
   // 只差最后 1 个时，找寻格上出现放大镜，点它免费定位
+  // 注意：第 1 关在主循环里已通关，按规则目标固定用设计目标，不再随机
   {
     const level = LEVELS[0];
     await openLevel(page, 1);
@@ -144,6 +148,7 @@ try {
     const scoreFresh = await page.evaluate(() => document.querySelector(".hud-header__score")?.textContent ?? "");
     check(countsFresh[0] === "3/3" && scoreFresh.includes("0"), "点重新开始清空快照、从头开始");
     check((await page.locator(".guide-hand").count()) === 0, "第 1 关通关后再玩不再显示引导");
+    // 第 1 关已通关，目标固定用设计目标（见上）
     const targetIds = new Set(level.objectives.map((o) => o.itemId));
     const wrong = level.itemInstances.filter((i) => !targetIds.has(i.itemId) && i.blocking.length === 0).slice(0, 4);
     for (const [n, inst] of wrong.entries()) {

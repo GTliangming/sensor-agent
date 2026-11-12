@@ -69,6 +69,8 @@ export class GameSession {
   /** 当前分数与连击 */
   score = 0;
   combo = 0;
+  /** 本局随机目标的种子（null = 设计目标）；断点续玩靠它复现同一局目标 */
+  readonly seed: number | null = null;
   /** 限时模式剩余秒数，不限时为 null */
   timeLeft: number | null = null;
   /** 当前提示中的实例及剩余高亮时间（秒） */
@@ -79,8 +81,9 @@ export class GameSession {
   private idleSeconds = 0;
   private lastHintId: string | null = null;
 
-  constructor(level: LevelConfig, opts: { timed?: boolean; snapshot?: LevelSnapshot } = {}) {
+  constructor(level: LevelConfig, opts: { timed?: boolean; snapshot?: LevelSnapshot; seed?: number | null } = {}) {
     this.level = level;
+    this.seed = opts.seed ?? opts.snapshot?.seed ?? null;
     this.byId = new Map(level.itemInstances.map((i) => [i.id, i]));
     for (const inst of level.itemInstances) this.statuses.set(inst.id, "available");
     this.objectives = level.objectives.map((o) => ({
@@ -136,6 +139,7 @@ export class GameSession {
       score: this.score,
       combo: this.combo,
       ...(this.timeLeft !== null ? { timeLeft: this.timeLeft } : {}),
+      ...(this.seed !== null ? { seed: this.seed } : {}),
     };
   }
 

@@ -12,6 +12,8 @@ export interface LevelSnapshot {
   combo: number;
   /** 限时模式剩余秒数（不限时为空） */
   timeLeft?: number;
+  /** 随机目标的种子：有则进关时用它复现同一局目标，没有时用设计目标（老存档兼容） */
+  seed?: number;
 }
 
 export interface SaveData {

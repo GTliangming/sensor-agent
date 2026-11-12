@@ -88,6 +88,7 @@ export function App() {
       soundEnabled={save.settings.soundEnabled}
       timed={save.settings.timedChallenge}
       bestScore={save.bestScores[level.id] ?? 0}
+      completed={save.completedLevels.includes(level.id)}
       resumeSnapshot={save.inProgress?.levelId === level.id ? save.inProgress : null}
       progress={chapterProgress(save)}
       onToggleSound={toggleSound}
