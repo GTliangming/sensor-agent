@@ -1,7 +1,7 @@
 import * as THREE from "three";
 import type { ItemConfig, LevelConfig, SceneConfig } from "../core/types";
 import { DESIGN_WIDTH, computeLayout, type StageLayout } from "../layout";
-import { isItemHitAt, itemTexture, labelTexture } from "./sprites";
+import { itemTexture, labelTexture } from "./sprites";
 
 // Three.js 渲染层：只负责画面和点击拾取，玩法状态全部在 GameSession。
 // 正交相机直接使用设计坐标（宽 1080，高随屏幕比例变化，原点左下角）。
@@ -15,7 +15,6 @@ interface Tween {
   onDone?: () => void;
 }
 
-const BLOCKED_TINT = new THREE.Color(0.48, 0.48, 0.5);
 const NORMAL_TINT = new THREE.Color(1, 1, 1);
 const easeInOut = (t: number) => (t < 0.5 ? 2 * t * t : 1 - (-2 * t + 2) ** 2 / 2);
 
@@ -128,13 +127,12 @@ export class ThreeStage {
       const mesh = new THREE.Mesh(new THREE.PlaneGeometry(size, size), material);
       mesh.position.set(inst.position.x, inst.position.y, 10 + inst.layer * 10 + order * 0.01);
       mesh.rotation.z = THREE.MathUtils.degToRad(inst.rotation);
-      // 小物件（硬币、钥匙等尺寸 <140px）加大点按热区：掩码外扩 1 格，玩家不用精确点中图标边缘
+      // 整个贴图四边形都是点按热区（见 pickAt），不用精确点中图标线条
       mesh.userData = {
         instanceId: inst.id,
         itemId: inst.itemId,
         interactive: true,
         baseScale: 1,
-        hitDilate: item.size.width < 140 ? 1 : 0,
       };
       this.pile.add(mesh);
       this.meshes.set(inst.id, mesh);
@@ -302,23 +300,13 @@ export class ThreeStage {
     return this.pickAt(ndc);
   }
 
-  /** 从上往下找第一个点在图标本体上的物件，透明区域不拦截下面的物件。
-   * 小物件外扩 1 格掩码（loadLevel 里按尺寸写进 userData.hitDilate），不用精确点中图标边缘。 */
+  /** 从上往下找第一个被点中的物件：整个贴图四边形都是热区，透明区域也算，
+   * 是否可点完全由层级决定——点中谁就由最上层的物件说了算，不再按图标轮廓掩码过滤。
+   * （旧做法只认 48×48 掩码里的实心格，细线条图标大半区域点不中，只能点正中间。） */
   private pickAt(ndc: THREE.Vector2): string | null {
     this.raycaster.setFromCamera(ndc, this.camera);
     const candidates = [...this.meshes.values()].filter((m) => m.visible && m.userData.interactive);
-    const hit = this.raycaster
-      .intersectObjects(candidates, false)
-      .find(
-        (h) =>
-          !h.uv ||
-          isItemHitAt(
-            h.object.userData.itemId as string,
-            h.uv.x,
-            h.uv.y,
-            (h.object.userData.hitDilate as number) ?? 0,
-          ),
-      );
+    const hit = this.raycaster.intersectObjects(candidates, false)[0];
     return hit ? (hit.object.userData.instanceId as string) : null;
   }
   /** 找到一个点下去确实会命中该物件的屏幕坐标（CSS 像素）。用于新手引导和自动化测试 */
@@ -358,15 +346,13 @@ export class ThreeStage {
     this.invalidate();
   }
 
-  /** 被遮挡物件统一压暗（不透明度效果由程序处理，美术无需出暗化图） */
-  setBlocked(instanceId: string, blocked: boolean, animate = false) {
+  /** 解锁脉冲：刚变为可点的物件轻轻放大一下作为提示。
+   * 所有物件始终保持全亮、不压暗（2026-11-12 改：被遮挡不再灰化，是否可点完全由层级决定，
+   * 点中被压住的物件时由 GameSession 返回 blocked、舞台抖动反馈）。 */
+  pulseUnblocked(instanceId: string) {
     const mesh = this.meshes.get(instanceId);
-    if (!mesh) return;
-    const material = mesh.material as THREE.MeshBasicMaterial;
-    material.color.copy(blocked ? BLOCKED_TINT : NORMAL_TINT);
-    if (animate && !blocked) {
-      this.addTween(mesh, 0.25, (t) => mesh.scale.setScalar(1 + 0.12 * Math.sin(t * Math.PI)));
-    }
+    if (!mesh || !mesh.visible || this.tweens.some((tw) => tw.mesh === mesh)) return;
+    this.addTween(mesh, 0.25, (t) => mesh.scale.setScalar(1 + 0.12 * Math.sin(t * Math.PI)));
     this.invalidate();
   }
 

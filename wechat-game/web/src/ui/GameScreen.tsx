@@ -101,7 +101,6 @@ export function GameScreen(props: Props) {
     stage.loadLevel(level, SCENE_MAP.get(level.sceneId)!, ITEM_MAP);
     for (const inst of level.itemInstances) {
       if (!session.inScene(inst.id)) stage.hideInstance(inst.id);
-      else stage.setBlocked(inst.id, session.isBlocked(inst.id));
     }
     stage.onTick = (dt) => {
       const before = session.hint?.instanceId ?? null;
@@ -218,7 +217,7 @@ export function GameScreen(props: Props) {
       });
     }
     if (r.type === "collected" || r.type === "missed") {
-      r.unlocked.forEach((u) => stage.setBlocked(u, false, true));
+      r.unlocked.forEach((u) => stage.pulseUnblocked(u));
       setToast(null);
     }
     refresh();

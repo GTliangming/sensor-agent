@@ -1,6 +1,5 @@
 import * as THREE from "three";
-import { maskHitAt, spriteFileName } from "../core/mask";
-import { MASKS } from "../data";
+import { spriteFileName } from "../core/mask";
 
 // 物件贴图：由 scripts/export-icons.ts 预先烘焙到 public/sprites/，运行时只加载图片，
 // 所以任何设备上看到的图标都与生成关卡用的轮廓一致。
@@ -64,16 +63,6 @@ export function preloadSprites(
         }),
     ),
   ).then(() => undefined);
-}
-
-/**
- * uv 处是否落在物件图标本体上。读的是生成关卡时用的同一份形状掩码，
- * 所以“能点中的区域”和“算遮挡的区域”完全一致。
- * dilate 为外扩格数（小物件的点按容差，见 ThreeStage.loadLevel）。
- */
-export function isItemHitAt(itemId: string, u: number, v: number, dilate = 0): boolean {
-  const mask = MASKS.get(itemId);
-  return mask ? maskHitAt(mask, u, v, dilate, MASKS.size) : true;
 }
 
 export function labelTexture(text: string, color = "rgba(70,58,46,0.55)"): THREE.CanvasTexture {
