@@ -1,0 +1,2368 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="color-scheme" content="light dark" />
+    <link rel="icon" href="data:," />
+    <title>脆皮捏捏 Demo</title>
+    <style>
+      :root {
+        --bg: #fdf6ec;
+        --bg2: #f7e8d5;
+        --surface: #fffaf2;
+        --ink: #3a2417;
+        --ink-soft: #7a5c44;
+        --line: #ecd9c0;
+        --accent: #e86a17;
+        --accent-ink: #ffffff;
+        --chip: #fff3e0;
+        --chip-on: #e86a17;
+        --stage-a: #e9c48c;
+        --stage-b: #cf9a58;
+        --shadow: rgba(120, 62, 10, 0.18);
+        color-scheme: light dark;
+      }
+      @media (prefers-color-scheme: dark) {
+        :root {
+          --bg: #1d130c;
+          --bg2: #241810;
+          --surface: #2b1c11;
+          --ink: #f7e7d3;
+          --ink-soft: #c9a37e;
+          --line: #4a3120;
+          --accent: #ff8a3c;
+          --accent-ink: #241105;
+          --chip: #3a2415;
+          --chip-on: #ff8a3c;
+          --stage-a: #4a2c14;
+          --stage-b: #38200e;
+          --shadow: rgba(0, 0, 0, 0.45);
+        }
+      }
+      * { box-sizing: border-box; }
+      html, body { margin: 0; padding: 0; }
+      body {
+        font-family: "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", system-ui, sans-serif;
+        background: linear-gradient(180deg, var(--bg) 0%, var(--bg2) 100%);
+        color: var(--ink);
+        min-height: 100vh;
+      }
+      .wrap { max-width: 560px; margin: 0 auto; padding: 16px 14px 28px; }
+      h1 { font-size: 26px; margin: 4px 0 2px; letter-spacing: 0.5px; }
+      .sub { color: var(--ink-soft); font-size: 13.5px; margin: 0 0 12px; line-height: 1.55; }
+      .stage-card {
+        background: var(--surface);
+        border: 1px solid var(--line);
+        border-radius: 18px;
+        padding: 10px;
+        box-shadow: 0 10px 28px var(--shadow);
+      }
+      .stage {
+        position: relative;
+        border-radius: 12px;
+        overflow: hidden;
+        background:
+          radial-gradient(90% 55% at 50% 0%, rgba(255,244,214,0.28) 0%, rgba(255,244,214,0) 55%),
+          radial-gradient(120% 90% at 50% 18%, var(--stage-a) 0%, var(--stage-b) 100%);
+        aspect-ratio: 640 / 560;
+      }
+      .stage canvas { display: block; width: 100% !important; height: 100% !important; touch-action: none; cursor: pointer; }
+      .stage-fallback {
+        position: absolute; inset: 0; display: none;
+        align-items: center; justify-content: center; text-align: center;
+        padding: 24px; font-size: 14px; line-height: 1.7; color: var(--ink-soft);
+      }
+      .hint {
+        position: absolute; left: 0; right: 0; bottom: 10px;
+        text-align: center; font-size: 14px; font-weight: 600;
+        color: var(--ink); pointer-events: none;
+        text-shadow: 0 1px 0 rgba(255,255,255,0.35);
+        z-index: 3;
+      }
+      @media (prefers-color-scheme: dark) { .hint { text-shadow: 0 1px 0 rgba(0,0,0,0.4); } }
+      .badge3d {
+        position: absolute; top: 10px; right: 10px; z-index: 3;
+        font-size: 11.5px; font-weight: 700; letter-spacing: 1px;
+        background: var(--accent); color: var(--accent-ink);
+        padding: 4px 10px; border-radius: 99px; pointer-events: none;
+      }
+      .meter-row { display: flex; align-items: center; gap: 10px; margin-top: 10px; }
+      .meter-label { font-size: 12.5px; color: var(--ink-soft); white-space: nowrap; }
+      .meter { flex: 1; height: 10px; border-radius: 99px; background: var(--chip); border: 1px solid var(--line); overflow: hidden; }
+      .meter-fill { height: 100%; width: 0%; background: linear-gradient(90deg, #ffb03a, #e86a17, #d63c14); transition: width 60ms linear; }
+      .meter-pct { font-size: 12.5px; font-variant-numeric: tabular-nums; min-width: 38px; text-align: right; color: var(--ink-soft); }
+      .stats { margin-top: 8px; font-size: 13px; color: var(--ink-soft); text-align: center; }
+      .stats b { color: var(--accent); font-size: 15px; }
+      .panel {
+        margin-top: 14px; background: var(--surface);
+        border: 1px solid var(--line); border-radius: 18px; padding: 14px;
+        box-shadow: 0 6px 18px var(--shadow);
+      }
+      .panel h2 { font-size: 14px; margin: 0 0 10px; color: var(--ink-soft); font-weight: 700; letter-spacing: 1px; }
+      .chips { display: flex; flex-wrap: wrap; gap: 8px; }
+      .chip {
+        min-height: 44px; padding: 8px 16px; border-radius: 99px;
+        border: 1.5px solid var(--line); background: var(--chip);
+        color: var(--ink); font-size: 15px; font-family: inherit; cursor: pointer;
+      }
+      .chip[aria-pressed="true"] { background: var(--chip-on); border-color: var(--chip-on); color: var(--accent-ink); font-weight: 700; }
+      .color-row { display: flex; flex-wrap: wrap; gap: 14px; align-items: center; }
+      .color-item { display: flex; align-items: center; gap: 8px; font-size: 14px; min-height: 44px; }
+      input[type="color"] {
+        width: 46px; height: 40px; border: 1.5px solid var(--line);
+        border-radius: 10px; background: none; padding: 2px; cursor: pointer;
+      }
+      .btn-row { display: flex; flex-wrap: wrap; gap: 8px; }
+      .btn {
+        min-height: 44px; padding: 8px 16px; border-radius: 12px;
+        border: 1.5px solid var(--line); background: var(--chip);
+        color: var(--ink); font-size: 14.5px; font-family: inherit; cursor: pointer;
+        display: inline-flex; align-items: center; gap: 6px;
+      }
+      .btn.primary { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); font-weight: 700; }
+      .btn:active { transform: scale(0.97); }
+      .upload-wrap { position: relative; display: inline-flex; overflow: hidden; border-radius: 12px; }
+      .upload-wrap input[type="file"] {
+        position: absolute; inset: 0; width: 100%; height: 100%;
+        opacity: 0.01; font-size: 16px; cursor: pointer; color: transparent;
+      }
+      .upload-wrap input[type="file"]::file-selector-button { display: none; }
+      .file-name { font-size: 12.5px; color: var(--ink-soft); align-self: center; }
+      .seg-row { display: flex; gap: 8px; margin-bottom: 10px; }
+      .seg-btn {
+        flex: 1; min-height: 42px; border-radius: 99px; padding: 8px 10px;
+        border: 1.5px solid var(--line); background: var(--chip);
+        color: var(--ink); font-size: 14.5px; font-family: inherit; cursor: pointer;
+      }
+      .seg-btn[aria-pressed="true"] { background: var(--chip-on); border-color: var(--chip-on); color: var(--accent-ink); font-weight: 700; }
+      .zoom-ctl { position: absolute; right: 10px; bottom: 44px; display: flex; flex-direction: column; gap: 6px; z-index: 4; }
+      .zoom-btn {
+        width: 42px; height: 42px; border-radius: 50%;
+        border: 1px solid var(--line); background: var(--surface);
+        color: var(--ink); font-size: 19px; font-family: inherit; cursor: pointer;
+        box-shadow: 0 3px 10px var(--shadow); line-height: 1;
+      }
+      .zoom-btn.small { font-size: 12px; font-weight: 700; }
+      .zoom-btn:active { transform: scale(0.93); }
+      .stat-tiles { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 12px; }
+      .tile { background: var(--chip); border: 1px solid var(--line); border-radius: 12px; padding: 10px 6px; text-align: center; }
+      .tile b { display: block; font-size: 20px; color: var(--accent); font-variant-numeric: tabular-nums; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+      .tile span { font-size: 12px; color: var(--ink-soft); }
+      .journal-date { font-size: 13px; color: var(--ink-soft); margin: 0 0 10px; }
+      textarea {
+        width: 100%; margin-top: 10px; padding: 10px 12px; resize: vertical;
+        border: 1.5px solid var(--line); border-radius: 12px;
+        background: var(--bg); color: var(--ink);
+        font-size: 16px; font-family: inherit; line-height: 1.55;
+      }
+      .entries { display: flex; flex-direction: column; gap: 8px; margin-top: 12px; }
+      .entry { border: 1px solid var(--line); border-radius: 12px; padding: 10px 12px; background: var(--chip); }
+      .entry-head { display: flex; justify-content: space-between; gap: 8px; font-size: 12.5px; color: var(--ink-soft); }
+      .entry-mood { font-weight: 700; color: var(--accent); font-size: 13.5px; }
+      .entry-note { font-size: 14px; margin-top: 4px; line-height: 1.6; white-space: pre-wrap; word-break: break-word; }
+      .empty-note { font-size: 13px; color: var(--ink-soft); margin: 0; line-height: 1.6; }
+      .howto { margin-top: 14px; font-size: 13px; line-height: 1.75; color: var(--ink-soft); padding: 0 4px; }
+      .howto b { color: var(--ink); }
+      .swatch-row { display: flex; align-items: flex-start; gap: 10px; margin-top: 12px; }
+      .swatch-row > span { font-size: 13px; color: var(--ink-soft); padding-top: 8px; white-space: nowrap; }
+      .swatches { display: flex; flex-wrap: wrap; gap: 7px; }
+      .swatch {
+        width: 32px; height: 32px; border-radius: 50%; cursor: pointer;
+        border: 2px solid rgba(0,0,0,0.14); padding: 0;
+        box-shadow: inset 0 -4px 7px rgba(0,0,0,0.16), inset 0 3px 5px rgba(255,255,255,0.35);
+      }
+      .swatch:active { transform: scale(0.92); }
+      .toast {
+        position: fixed; left: 50%; bottom: 26px; transform: translateX(-50%) translateY(20px);
+        background: var(--ink); color: var(--bg); font-size: 14px; font-weight: 600;
+        padding: 10px 18px; border-radius: 99px; opacity: 0; pointer-events: none;
+        transition: opacity 0.25s, transform 0.25s; z-index: 10; white-space: nowrap;
+      }
+      .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+      .gesture-row {
+        display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px;
+      }
+      .gesture-row span {
+        flex: 1 1 40%; text-align: center; font-size: 12.5px; font-weight: 600;
+        color: var(--ink-soft); background: var(--chip);
+        border: 1px solid var(--line); border-radius: 99px; padding: 6px 4px;
+        white-space: nowrap;
+      }
+      .gesture-row b { color: var(--accent); }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <h1>脆皮捏捏</h1>
+      <p class="sub">3D 虚拟版，玩法照着蜡裂球来：点一下就裂、双指一拉炸开大片、裂开的壳能一片片剥下来露软芯。捏碎不花钱、不心疼，还能反复捏。建议戴耳机、开声音——咔嚓声和震动才是灵魂。</p>
+
+      <div class="stage-card">
+        <div class="seg-row" role="group" aria-label="互动模式">
+          <button class="seg-btn" id="modeSqueeze" type="button" aria-pressed="true">捏一捏</button>
+          <button class="seg-btn" id="modeOrbit" type="button" aria-pressed="false">360° 看细节</button>
+        </div>
+        <div class="stage" id="stage3d">
+          <span class="badge3d">3D</span>
+          <div class="stage-fallback" id="stageFallback">3D 引擎没加载成功，检查一下网络再刷新试试。<br />（捏捏本体还在赶来的路上）</div>
+          <div class="zoom-ctl">
+            <button class="zoom-btn" id="zoomIn" type="button" aria-label="放大看细节">+</button>
+            <button class="zoom-btn" id="zoomOut" type="button" aria-label="缩小">−</button>
+            <button class="zoom-btn small" id="zoomReset" type="button" aria-label="复位视角">复位</button>
+          </div>
+          <div class="hint" id="hint">点它一下就裂开 · 按住蓄力捏碎</div>
+        </div>
+        <div class="meter-row" id="meterRow">
+          <span class="meter-label">壳的压力</span>
+          <div class="meter"><div class="meter-fill" id="meterFill"></div></div>
+          <span class="meter-pct" id="meterPct">0%</span>
+        </div>
+        <div class="gesture-row" aria-label="手势说明">
+          <span><b>点按</b> 裂开</span>
+          <span><b>长按</b> 捏碎</span>
+          <span><b>双指</b> 拉伸</span>
+          <span><b>拖动</b> 剥壳</span>
+        </div>
+        <div class="stats" id="stats">今日已捏 <b>0</b> 个 · 约省 <b>¥0</b>（按一只 ¥48 粗估，仅供娱乐）</div>
+      </div>
+
+      <div class="panel">
+        <h2>1 · 选个形状</h2>
+        <div class="chips" id="shapeChips">
+          <button class="chip" data-shape="mango" aria-pressed="true">肥嘟嘟芒果</button>
+          <button class="chip" data-shape="egg" aria-pressed="false">咸鸭蛋</button>
+          <button class="chip" data-shape="cake" aria-pressed="false">小蛋糕</button>
+          <button class="chip" data-shape="peach" aria-pressed="false">脆桃</button>
+          <button class="chip" data-shape="heart" aria-pressed="false">爱心</button>
+        </div>
+      </div>
+
+      <div class="panel">
+        <h2>2 · 上色 / 贴图（DIY 你的专属款）</h2>
+        <div class="color-row">
+          <label class="color-item">脆壳 <input type="color" id="shellColor" value="#f2a81d" /></label>
+          <label class="color-item">内芯 <input type="color" id="gooColor" value="#ffb340" /></label>
+        </div>
+        <div class="swatch-row"><span>壳·自然色</span><div class="swatches" id="shellSwatches"></div></div>
+        <div class="swatch-row"><span>芯·自然色</span><div class="swatches" id="gooSwatches"></div></div>
+        <div class="chips" id="finishChips" style="margin-top:12px;">
+          <button class="chip" type="button" id="finishGloss" aria-pressed="true">质感 · 湿亮</button>
+          <button class="chip" type="button" id="finishMatte" aria-pressed="false">质感 · 哑光细孔</button>
+        </div>
+        <div class="btn-row" style="margin-top:10px;">
+          <span class="upload-wrap">
+            <span class="btn" aria-hidden="true">上传图片当花纹</span>
+            <input type="file" id="fileInput" accept="image/*" aria-label="上传图片当花纹" />
+          </span>
+          <button class="btn" id="clearTex" type="button">清除花纹</button>
+          <span class="file-name" id="fileName"></span>
+        </div>
+      </div>
+
+      <div class="panel">
+        <h2>3 · 开捏</h2>
+        <div class="btn-row">
+          <button class="btn primary" id="resetBtn" type="button">再来一个（免费）</button>
+          <button class="btn" id="soundBtn" type="button" aria-pressed="true">声音：开</button>
+          <button class="btn" id="vibeBtn" type="button" aria-pressed="true">震动：开</button>
+        </div>
+      </div>
+
+      <div class="panel">
+        <h2>4 · 今日手帐</h2>
+        <p class="journal-date" id="journalDate"></p>
+        <div class="stat-tiles">
+          <div class="tile"><b id="tileCount">0</b><span>今天捏了（个）</span></div>
+          <div class="tile"><b id="tileSaved">¥0</b><span>约省下</span></div>
+          <div class="tile"><b id="tileMood">—</b><span>最近心情</span></div>
+        </div>
+        <div class="chips" id="moodChips">
+          <button class="chip" type="button" data-mood="超爽" aria-pressed="false">超爽</button>
+          <button class="chip" type="button" data-mood="解压" aria-pressed="false">解压</button>
+          <button class="chip" type="button" data-mood="放松" aria-pressed="false">放松</button>
+          <button class="chip" type="button" data-mood="开心" aria-pressed="false">开心</button>
+          <button class="chip" type="button" data-mood="平静" aria-pressed="false">平静</button>
+          <button class="chip" type="button" data-mood="有点烦" aria-pressed="false">有点烦</button>
+          <button class="chip" type="button" data-mood="累了" aria-pressed="false">累了</button>
+        </div>
+        <textarea id="moodNote" rows="2" maxlength="120" placeholder="写一句当下的心情…比如：开会前捏爆一个，爽了。"></textarea>
+        <div class="btn-row" style="margin-top:10px;">
+          <button class="btn primary" id="addEntryBtn" type="button">记入手帐</button>
+          <button class="btn" id="downloadBtn" type="button">下载今天的手帐</button>
+        </div>
+        <div class="entries" id="entries">
+          <p class="empty-note" id="entriesEmpty">还没有记录。捏完一个，顺手选个心情、写一句话，今天的手帐就留下来了。</p>
+        </div>
+      </div>
+
+      <p class="howto">
+        <b>四种手势，各玩各的：</b><b>点按裂开</b>——轻点一下，手指点的那个位置立刻「咔」一声裂开一小块，裂纹从指尖往外爬、小壳块掉到台面上，露出里面软芯的颜色；连续点，裂块一块块掉，点够几下壳就松了。<b>拖动剥壳</b>——壳松了以后按住一片壳往外拖，拖够距离就整片剥下来落在台面上，里面的软芯露得越来越多；六片全剥完，完整的软黏土芯就出来了，随便揉。<b>双指拉伸</b>——两根手指张开往外拉，壳沿拉伸方向炸开更大一片，碎片飞出、内芯被拉长，松手慢回弹。<b>长按捏碎</b>——按住不放蓄力，手指按到的地方会先凹下去、壳顶住你，耳边是壳在受力的咯吱声，压力到六成开始出裂纹——顶点一到就「咔嚓」一声，壳从裂口裂成两半、抱着内芯向两边倒开，果浆从裂口里鼓出来还拉着丝，大小不一的碎片和碎屑飞出来落在台面上、弹一下就停住，浆滴落地摊成浆渍留着，手机短震，还有 0.3 秒慢动作。
+        碎了别松手，<b>按住拖着揉</b>，它会变成手作袋，咕唧咕唧、颜色慢慢揉混，松手还会慢回弹。
+        它是软的：压扁的地方会往两边鼓出来（体积守恒），底部粘在台面上不会被拖走；<b>按住后拖动是拉伸</b>，伴着滋滋拉丝声和持续轻震，松手带惯性晃回来；<b>双指张开也能拉伸</b>它。质感可在「湿亮」和「哑光细孔」之间切换，凑近看完全是两种面。<br />
+        <b>想看清细节：</b>切到「360° 看细节」，拖动任意角度旋转，双指捏合、滚轮或 +/− 按钮放大缩小，凑近看蜡壳的光泽和裂纹，双击画面复位视角。捏碎后的碎片和果浆团也能转着看。
+      </p>
+    </div>
+    <div class="toast" id="toast"></div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/0.160.0/three.min.js"></script>
+    <script>
+      (function () {
+        "use strict";
+        var hint = document.getElementById("hint");
+        var meterFill = document.getElementById("meterFill");
+        var meterPct = document.getElementById("meterPct");
+        var meterRow = document.getElementById("meterRow");
+        var statsEl = document.getElementById("stats");
+        var toast = document.getElementById("toast");
+        var stageEl = document.getElementById("stage3d");
+
+        // ---------- state ----------
+        var SHAPES = {
+          mango: { shell: "#f2a81d", goo: "#ffb340" },
+          egg:   { shell: "#f1ecdd", goo: "#f0be4e" },
+          cake:  { shell: "#fbf3df", goo: "#6b4423" },
+          peach: { shell: "#f6c39a", goo: "#f49b6c" },
+          heart: { shell: "#c8102e", goo: "#fdf6ec" }
+        };
+        var shape = "mango";
+        var shellColor = SHAPES.mango.shell;
+        var gooColor = SHAPES.mango.goo;
+        var texImage = null;
+
+        var state = "intact"; // intact | broken
+        var pressing = false;
+        var pressure = 0;
+        var squash = 0, squashV = 0;
+        var crackStage = 0;
+        var gooSpread = 0;
+        var gooSquash = 0, gooSquashV = 0;
+        var mixLevel = 0;
+        var kneadTime = 0;
+        var brokenCount = 0;
+        var timeScale = 1, slowUntil = 0;
+        var shake = 0;
+        var lastSquishSound = 0;
+        var soundOn = true, vibeOn = true;
+        // view / orbit state
+        var viewMode = "squeeze"; // squeeze | orbit
+        var camTheta = 0, camPhi = 1.35, camDist = 5.6;
+        var camThetaT = 0, camPhiT = 1.35, camDistT = 5.6;
+        var CAM_MIN = 3.0, CAM_MAX = 9.0;
+        // crack strokes painted into the shell texture (uv space)
+        var crackStrokes = [];
+        var pressUV = null;
+        var lastTick = 0, lastVibeLevel = 0;
+        // soft-body spring state (integrated at 120Hz substeps in the loop)
+        var dentV = 0;
+        var stretchX = 0, stretchY = 0, stretchVX = 0, stretchVY = 0;
+        var stretchTX = 0, stretchTY = 0;
+        var pinchStretch = 0, pinchStretchV = 0, pinchTarget = 0;
+        var shapeBottom = 0.94;
+        var blobBase = 1.0;
+        // --- Wakppuball-style tap-crack / stretch-burst / peel state ---
+        var tapCount = 0;          // quick taps landed on the intact shell
+        var peelReady = false;     // shell loosened enough to peel
+        var peelPieces = [];       // attached peelable shell pieces
+        var peelTotal = 0;
+        var peeledCount = 0;
+        var peelDrag = null;       // { mesh, startX, startY, len, sounded }
+        var tapDyn = [];           // fallen flakes / peeled shards physics
+        var pinchBurstDone = false;
+        var downTime = 0;
+        var finish = "gloss";
+        var lastStretchVibe = 0;
+        var reducedMotion = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+        var darkMode = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
+
+        // ---------- audio (all synthesized, no files) ----------
+        var AC = null;
+        function ensureAudio() {
+          if (!AC) {
+            try { AC = new (window.AudioContext || window.webkitAudioContext)(); } catch (e) { AC = null; }
+          }
+          if (AC && AC.state === "suspended") AC.resume();
+        }
+        function noiseBuffer(dur) {
+          var len = Math.floor(AC.sampleRate * dur);
+          var buf = AC.createBuffer(1, len, AC.sampleRate);
+          var d = buf.getChannelData(0);
+          for (var i = 0; i < len; i++) d[i] = Math.random() * 2 - 1;
+          return buf;
+        }
+        function playNoise(dur, filterType, f0, f1, gainVal, when) {
+          if (!AC || !soundOn) return;
+          var t0 = AC.currentTime + (when || 0);
+          var src = AC.createBufferSource(); src.buffer = noiseBuffer(dur);
+          var flt = AC.createBiquadFilter(); flt.type = filterType;
+          flt.frequency.setValueAtTime(f0, t0);
+          flt.frequency.exponentialRampToValueAtTime(Math.max(40, f1), t0 + dur);
+          var g = AC.createGain();
+          g.gain.setValueAtTime(gainVal, t0);
+          g.gain.exponentialRampToValueAtTime(0.001, t0 + dur);
+          src.connect(flt); flt.connect(g); g.connect(AC.destination);
+          src.start(t0); src.stop(t0 + dur + 0.02);
+        }
+        function playBlip(f0, f1, dur, gainVal, type, when) {
+          if (!AC || !soundOn) return;
+          var t0 = AC.currentTime + (when || 0);
+          var o = AC.createOscillator(); o.type = type || "sine";
+          o.frequency.setValueAtTime(f0, t0);
+          o.frequency.exponentialRampToValueAtTime(Math.max(30, f1), t0 + dur);
+          var g = AC.createGain();
+          g.gain.setValueAtTime(gainVal, t0);
+          g.gain.exponentialRampToValueAtTime(0.001, t0 + dur);
+          o.connect(g); g.connect(AC.destination);
+          o.start(t0); o.stop(t0 + dur + 0.02);
+        }
+        function creakSound(stage) {
+          playNoise(0.07, "bandpass", 1800 + stage * 500, 900, 0.10 + stage * 0.04, 0);
+          playBlip(220 + stage * 60, 140, 0.06, 0.05, "triangle", 0.01);
+        }
+        // tap crack: fired the instant a tap lands — short, sharp, no delay
+        function tapCrackSound() {
+          playNoise(0.10, "highpass", 1600, 700, 0.42, 0);
+          playNoise(0.045, "bandpass", 2600 + Math.random() * 1400, 900, 0.30, 0.008);
+          playBlip(430, 110, 0.07, 0.14, "triangle", 0);
+        }
+        // peel: a slow waxy tear as a shell piece lifts away
+        function peelSound() {
+          playNoise(0.22, "lowpass", 1400, 300, 0.30, 0);
+          playNoise(0.10, "bandpass", 900, 2400, 0.16, 0.05);
+          playBlip(240, 90, 0.16, 0.10, "sine", 0.08);
+        }
+        function crackSound() {
+          playNoise(0.28, "highpass", 1200, 500, 0.55, 0);
+          for (var i = 0; i < 6; i++) {
+            playNoise(0.05, "bandpass", 2200 + Math.random() * 2200, 800, 0.30, i * 0.028 + Math.random() * 0.012);
+          }
+          playBlip(500, 90, 0.18, 0.20, "triangle", 0);
+          playNoise(0.35, "lowpass", 900, 200, 0.35, 0.06);
+          playBlip(320, 60, 0.32, 0.28, "sine", 0.06);
+          playBlip(180, 50, 0.4, 0.18, "sine", 0.12);
+        }
+        function squishSound(force) {
+          var now = performance.now();
+          if (now - lastSquishSound < 130) return;
+          lastSquishSound = now;
+          var f = 0.4 + force * 0.6;
+          playNoise(0.13, "lowpass", 500 * f + 150, 160, 0.16 + force * 0.14, 0);
+          playBlip(150 + Math.random() * 60, 65, 0.12, 0.10 + force * 0.08, "sine", 0);
+        }
+        function vibe(pattern) {
+          if (vibeOn && navigator.vibrate) { try { navigator.vibrate(pattern); } catch (e) {} }
+        }
+        // continuous strain creak while pressing: looping noise through a
+        // bandpass whose pitch/gain follow pressure (driven in the frame loop)
+        var strainSrc = null, strainGain = null, strainFilter = null;
+        function startStrain() {
+          if (!AC || !soundOn || strainSrc) return;
+          try {
+            strainSrc = AC.createBufferSource();
+            strainSrc.buffer = noiseBuffer(1.2);
+            strainSrc.loop = true;
+            strainFilter = AC.createBiquadFilter();
+            strainFilter.type = "bandpass";
+            strainFilter.frequency.value = 360;
+            strainFilter.Q.value = 1.2;
+            strainGain = AC.createGain();
+            strainGain.gain.value = 0;
+            strainSrc.connect(strainFilter);
+            strainFilter.connect(strainGain);
+            strainGain.connect(AC.destination);
+            strainSrc.start();
+          } catch (e) { strainSrc = null; strainGain = null; strainFilter = null; }
+        }
+        function stopStrain() {
+          if (strainSrc) { try { strainSrc.stop(); } catch (e) {} }
+          strainSrc = null; strainGain = null; strainFilter = null;
+        }
+        // stretch "拉丝" sizzle: looping highpassed noise, gain follows stretch
+        var sizzleSrc = null, sizzleGain = null;
+        function startSizzle() {
+          if (!AC || !soundOn || sizzleSrc) return;
+          try {
+            sizzleSrc = AC.createBufferSource();
+            sizzleSrc.buffer = noiseBuffer(1.1);
+            sizzleSrc.loop = true;
+            var hp = AC.createBiquadFilter();
+            hp.type = "highpass"; hp.frequency.value = 2600;
+            sizzleGain = AC.createGain();
+            sizzleGain.gain.value = 0;
+            sizzleSrc.connect(hp); hp.connect(sizzleGain); sizzleGain.connect(AC.destination);
+            sizzleSrc.start();
+          } catch (e) { sizzleSrc = null; sizzleGain = null; }
+        }
+        function stopSizzle() {
+          if (sizzleSrc) { try { sizzleSrc.stop(); } catch (e) {} }
+          sizzleSrc = null; sizzleGain = null;
+        }
+
+        function hexToRgb(h) {
+          h = h.replace("#", "");
+          if (h.length === 3) h = h[0] + h[0] + h[1] + h[1] + h[2] + h[2];
+          var n = parseInt(h, 16);
+          return [(n >> 16) & 255, (n >> 8) & 255, n & 255];
+        }
+        function shade(hex, amt) {
+          var c = hexToRgb(hex);
+          var f = function (v) { return Math.max(0, Math.min(255, Math.round(v + amt))); };
+          return "rgb(" + f(c[0]) + "," + f(c[1]) + "," + f(c[2]) + ")";
+        }
+        function updateMeter() {
+          meterFill.style.width = pressure.toFixed(0) + "%";
+          meterPct.textContent = pressure.toFixed(0) + "%";
+        }
+        var tileCount = document.getElementById("tileCount");
+        var tileSaved = document.getElementById("tileSaved");
+        function updateStats() {
+          statsEl.innerHTML = "今日已捏 <b>" + brokenCount + "</b> 个 · 约省 <b>¥" + (brokenCount * 48) + "</b>（按一只 ¥48 粗估，仅供娱乐）";
+          if (tileCount) tileCount.textContent = brokenCount;
+          if (tileSaved) tileSaved.textContent = "¥" + (brokenCount * 48);
+        }
+        var toastTimer = null;
+        function showToast(msg) {
+          toast.textContent = msg;
+          toast.classList.add("show");
+          clearTimeout(toastTimer);
+          toastTimer = setTimeout(function () { toast.classList.remove("show"); }, 1600);
+        }
+
+        // ---------- three.js boot ----------
+        if (typeof THREE === "undefined") {
+          document.getElementById("stageFallback").style.display = "flex";
+          hint.style.display = "none";
+          return;
+        }
+
+        var renderer;
+        try {
+          renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+        } catch (e) {
+          document.getElementById("stageFallback").style.display = "flex";
+          hint.style.display = "none";
+          return;
+        }
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+        renderer.shadowMap.enabled = true;
+        renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+        renderer.toneMapping = THREE.ACESFilmicToneMapping;
+        renderer.toneMappingExposure = 1.12;
+        if (THREE.SRGBColorSpace) renderer.outputColorSpace = THREE.SRGBColorSpace;
+        renderer.domElement.setAttribute("aria-label", "3D 捏捏互动区：按住中间的捏捏蓄力，捏碎后拖动揉捏");
+        stageEl.insertBefore(renderer.domElement, hint);
+
+        var scene = new THREE.Scene();
+        var camera = new THREE.PerspectiveCamera(38, 640 / 560, 0.1, 60);
+        var CAM_BASE = new THREE.Vector3(0, 1.75, 5.6);
+        camera.position.copy(CAM_BASE);
+        camera.lookAt(0, 0.95, 0);
+
+        // studio environment: dark warm room + two bright strip softboxes,
+        // so clearcoat picks up narrow streak highlights that travel
+        // across the curved surface as the object rotates
+        (function makeEnv() {
+          var c = document.createElement("canvas"); c.width = 1024; c.height = 512;
+          var g = c.getContext("2d");
+          var grad = g.createLinearGradient(0, 0, 0, 512);
+          grad.addColorStop(0, "#8a6b48"); grad.addColorStop(0.45, "#5d422a"); grad.addColorStop(0.75, "#3a2817"); grad.addColorStop(1, "#241708");
+          g.fillStyle = grad; g.fillRect(0, 0, 1024, 512);
+          function strip(x, y, w, h, color, blur) {
+            g.save();
+            g.shadowColor = color; g.shadowBlur = blur;
+            g.fillStyle = color;
+            g.fillRect(x, y, w, h); g.fillRect(x, y, w, h);
+            g.restore();
+          }
+          // key strip softbox (narrow, very bright → the travelling streak)
+          strip(210, 30, 54, 300, "rgba(255,252,240,0.98)", 26);
+          // second cooler strip for the opposite edge
+          strip(700, 20, 30, 230, "rgba(226,238,255,0.85)", 20);
+          // warm bounce card low right (orange rim source)
+          strip(880, 300, 120, 130, "rgba(255,150,60,0.55)", 42);
+          // soft top glow so the crown is never dead black
+          var tg = g.createRadialGradient(512, 40, 10, 512, 40, 420);
+          tg.addColorStop(0, "rgba(255,240,205,0.5)"); tg.addColorStop(1, "rgba(255,240,205,0)");
+          g.fillStyle = tg; g.fillRect(0, 0, 1024, 512);
+          var tex = new THREE.CanvasTexture(c);
+          tex.mapping = THREE.EquirectangularReflectionMapping;
+          if (THREE.SRGBColorSpace) tex.colorSpace = THREE.SRGBColorSpace;
+          var pmrem = new THREE.PMREMGenerator(renderer);
+          scene.environment = pmrem.fromEquirectangular(tex).texture;
+          tex.dispose(); pmrem.dispose();
+        })();
+
+        // lights: warm studio key + rim + fill
+        scene.add(new THREE.HemisphereLight(0xfff2dd, 0x6b4a2c, 0.34));
+        var key = new THREE.DirectionalLight(0xfff3da, 2.7);
+        key.position.set(3.2, 5.5, 4.2);
+        key.castShadow = true;
+        key.shadow.mapSize.set(2048, 2048);
+        key.shadow.camera.left = -4; key.shadow.camera.right = 4;
+        key.shadow.camera.top = 5; key.shadow.camera.bottom = -3;
+        key.shadow.camera.far = 20;
+        key.shadow.radius = 6;
+        key.shadow.bias = -0.0004;
+        scene.add(key);
+        var rim = new THREE.DirectionalLight(0xff9a4d, 1.5);
+        rim.position.set(-4.5, 2.6, -3.5);
+        scene.add(rim);
+        var fill = new THREE.DirectionalLight(0xdfeaff, 0.30);
+        fill.position.set(-3, 1.5, 4.5);
+        scene.add(fill);
+        // tight specular kicker: small bright source whose highlight sits
+        // on the most convex part of the curve and slides as it turns
+        var spec = new THREE.PointLight(0xffffff, 14, 0, 2);
+        spec.position.set(-1.7, 3.1, 3.4);
+        scene.add(spec);
+        var topLight = new THREE.SpotLight(0xffe9c0, 22, 0, 0.5, 0.65, 1.6);
+        topLight.position.set(0.6, 6.2, 1.2);
+        topLight.target.position.set(0, 0.9, 0);
+        scene.add(topLight); scene.add(topLight.target);
+
+        // pedestal + shadow catcher
+        var pedestal = new THREE.Mesh(
+          new THREE.CylinderGeometry(2.55, 2.8, 0.28, 56),
+          new THREE.MeshStandardMaterial({ color: darkMode ? 0x4a3018 : 0xdcc093, roughness: 0.85, metalness: 0 })
+        );
+        pedestal.position.y = -0.14;
+        pedestal.receiveShadow = true;
+        scene.add(pedestal);
+        var ground = new THREE.Mesh(
+          new THREE.CircleGeometry(14, 40),
+          new THREE.ShadowMaterial({ opacity: darkMode ? 0.4 : 0.22 })
+        );
+        ground.rotation.x = -Math.PI / 2;
+        ground.position.y = -0.285;
+        ground.receiveShadow = true;
+        scene.add(ground);
+        // soft contact-shadow blob that grows as the body squashes onto the stand
+        var blobShadow = (function () {
+          var c = document.createElement("canvas"); c.width = c.height = 256;
+          var g = c.getContext("2d");
+          var rg = g.createRadialGradient(128, 128, 8, 128, 128, 128);
+          rg.addColorStop(0, "rgba(40,18,4,0.85)");
+          rg.addColorStop(0.6, "rgba(40,18,4,0.35)");
+          rg.addColorStop(1, "rgba(40,18,4,0)");
+          g.fillStyle = rg; g.fillRect(0, 0, 256, 256);
+          var m = new THREE.Mesh(
+            new THREE.PlaneGeometry(3.3, 3.3),
+            new THREE.MeshBasicMaterial({ map: new THREE.CanvasTexture(c), transparent: true, opacity: 0.30, depthWrite: false })
+          );
+          m.rotation.x = -Math.PI / 2;
+          m.position.y = 0.006;
+          m.renderOrder = 1;
+          scene.add(m);
+          return m;
+        })();
+
+        var OBJ_Y = 1.06;
+        var rotGroup = new THREE.Group(); rotGroup.position.y = OBJ_Y; scene.add(rotGroup);
+        var squashGroup = new THREE.Group(); rotGroup.add(squashGroup);
+        var brokenGroup = new THREE.Group(); brokenGroup.visible = false; scene.add(brokenGroup);
+        // peelable shell pieces live on the rotating body, above the shell
+        var peelGroup = new THREE.Group(); rotGroup.add(peelGroup);
+
+        // ---------- shell texture (painted canvas) ----------
+        var texCanvas = document.createElement("canvas");
+        texCanvas.width = 2048; texCanvas.height = 1024;
+        var shellTex = new THREE.CanvasTexture(texCanvas);
+        if (THREE.SRGBColorSpace) shellTex.colorSpace = THREE.SRGBColorSpace;
+        shellTex.anisotropy = 8;
+        shellTex.wrapS = THREE.RepeatWrapping;
+        // micro-surface bump (pores / fuzz / grain), painted per shape
+        var bumpCanvas = document.createElement("canvas");
+        bumpCanvas.width = 1024; bumpCanvas.height = 512;
+        var bumpTex = new THREE.CanvasTexture(bumpCanvas);
+        bumpTex.wrapS = THREE.RepeatWrapping;
+        // deterministic rng so the skin looks identical on every repaint
+        function rng(seed) {
+          var a = seed >>> 0;
+          return function () {
+            a |= 0; a = (a + 0x6D2B79F5) | 0;
+            var t = Math.imul(a ^ (a >>> 15), 1 | a);
+            t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+            return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+          };
+        }
+
+        function paintTexture() {
+          var g = texCanvas.getContext("2d");
+          var W2 = 2048, H2 = 1024;
+          var R = rng(1234567);
+          // ---- base coat: the object's own real colour, gently shaded ----
+          var baseStops;
+          if (shape === "mango") baseStops = [[0, "#a9b04c"], [0.16, "#e9b32a"], [0.45, "#f6a81d"], [0.78, "#f08a1d"], [1, "#dd7414"]];
+          else if (shape === "egg") baseStops = [[0, "#f7f3e8"], [0.5, "#f1ecdd"], [1, "#e3dcc6"]];
+          else if (shape === "cake") baseStops = [[0, "#fdf8ec"], [0.55, "#fbf3df"], [1, "#f3e5c3"]];
+          else if (shape === "peach") baseStops = [[0, "#fbd9b8"], [0.5, "#f6c39a"], [1, "#ee9d72"]];
+          else baseStops = [[0, "#d21f38"], [0.5, "#c8102e"], [1, "#a50d24"]];
+          var grad = g.createLinearGradient(0, 0, 0, H2);
+          for (var bs = 0; bs < baseStops.length; bs++) grad.addColorStop(baseStops[bs][0], baseStops[bs][1]);
+          g.fillStyle = grad; g.fillRect(0, 0, W2, H2);
+          // blend the user's DIY shell colour in, kept subordinate to the
+          // object's real palette so it can never turn fluorescent
+          g.globalAlpha = 0.28;
+          g.fillStyle = shellColor; g.fillRect(0, 0, W2, H2);
+          g.globalAlpha = 1;
+          if (shape === "mango") {
+            // green crown around the stem end, fading down the shoulders
+            var mg = g.createLinearGradient(0, 0, 0, H2 * 0.42);
+            mg.addColorStop(0, "rgba(122,140,52,0.75)"); mg.addColorStop(1, "rgba(122,140,52,0)");
+            g.fillStyle = mg; g.fillRect(0, 0, W2, H2 * 0.42);
+            // sun-blush: warm orange-red cheek, low on one side
+            var rg2 = g.createRadialGradient(1450, 640, 30, 1450, 640, 620);
+            rg2.addColorStop(0, "rgba(226,84,32,0.55)"); rg2.addColorStop(0.6, "rgba(232,110,40,0.22)"); rg2.addColorStop(1, "rgba(232,110,40,0)");
+            g.fillStyle = rg2; g.fillRect(0, 0, W2, H2);
+            var rg2b = g.createRadialGradient(420, 760, 20, 420, 760, 380);
+            rg2b.addColorStop(0, "rgba(230,100,40,0.28)"); rg2b.addColorStop(1, "rgba(230,100,40,0)");
+            g.fillStyle = rg2b; g.fillRect(0, 0, W2, H2);
+            // lenticel speckles: tiny pale dots, denser near the crown
+            for (var i = 0; i < 1500; i++) {
+              var sx = R() * W2, sy = Math.pow(R(), 1.5) * H2;
+              g.fillStyle = R() < 0.6 ? "rgba(255,240,190,0.20)" : "rgba(150,100,20,0.16)";
+              g.beginPath(); g.arc(sx, sy, 1 + R() * 2.2, 0, Math.PI * 2); g.fill();
+            }
+            // faint vertical skin streaks
+            g.fillStyle = "rgba(190,120,10,0.05)";
+            for (var st2 = 0; st2 < 46; st2++) { g.fillRect(R() * W2, 0, 2 + R() * 5, H2); }
+          } else if (shape === "egg") {
+            // palest blue-white cast at the crown
+            var eg = g.createRadialGradient(1024, 120, 40, 1024, 120, 700);
+            eg.addColorStop(0, "rgba(214,228,222,0.5)"); eg.addColorStop(1, "rgba(214,228,222,0)");
+            g.fillStyle = eg; g.fillRect(0, 0, W2, H2);
+            // shell pores: thousands of pin-prick dots
+            for (var p = 0; p < 2600; p++) {
+              g.fillStyle = R() < 0.5 ? "rgba(168,152,116,0.20)" : "rgba(255,255,250,0.22)";
+              g.beginPath(); g.arc(R() * W2, R() * H2, 0.8 + R() * 1.7, 0, Math.PI * 2); g.fill();
+            }
+            // a few faint hairline shell cracks
+            g.strokeStyle = "rgba(150,138,110,0.35)"; g.lineWidth = 1.4;
+            for (var hc = 0; hc < 5; hc++) {
+              var hx = R() * W2, hy = R() * H2;
+              g.beginPath(); g.moveTo(hx, hy);
+              for (var hs = 0; hs < 5; hs++) { hx += (R() - 0.5) * 60; hy += R() * 42; g.lineTo(hx, hy); }
+              g.stroke();
+            }
+            // sparse natural tan freckles
+            g.fillStyle = "rgba(178,146,92,0.16)";
+            for (var fr = 0; fr < 26; fr++) { g.beginPath(); g.arc(R() * W2, R() * H2, 4 + R() * 8, 0, Math.PI * 2); g.fill(); }
+          } else if (shape === "peach") {
+            // pink-white blush blooming from the suture side
+            var rg3 = g.createRadialGradient(1350, 580, 40, 1350, 580, 760);
+            rg3.addColorStop(0, "rgba(238,90,80,0.42)"); rg3.addColorStop(1, "rgba(238,90,80,0)");
+            g.fillStyle = rg3; g.fillRect(0, 0, W2, H2);
+            var rg4 = g.createRadialGradient(480, 240, 30, 480, 240, 520);
+            rg4.addColorStop(0, "rgba(255,246,214,0.55)"); rg4.addColorStop(1, "rgba(255,246,214,0)");
+            g.fillStyle = rg4; g.fillRect(0, 0, W2, H2);
+            // peach fuzz: dense micro grain, light catching specks
+            for (var fz = 0; fz < 3200; fz++) {
+              g.fillStyle = R() < 0.55 ? "rgba(255,255,246,0.13)" : "rgba(214,120,80,0.10)";
+              g.fillRect(R() * W2, R() * H2, 1.6, 1.6);
+            }
+          } else if (shape === "cake") {
+            // sponge band + deep-brown chocolate layer + cream top with drips
+            g.fillStyle = "#eecfa0";
+            g.fillRect(0, 690, W2, 334);
+            g.fillStyle = "#6b4423";
+            g.fillRect(0, 600, W2, 92);
+            g.fillStyle = "rgba(255,252,244,0.96)";
+            g.fillRect(0, 0, W2, 150);
+            for (var d = 0; d < 30; d++) {
+              g.beginPath();
+              g.ellipse(d * 70 + 34, 150, 19, 26 + (d % 3) * 12, 0, 0, Math.PI * 2);
+              g.fill();
+            }
+            // sponge crumb speckle on the lower band
+            for (var cb = 0; cb < 900; cb++) {
+              g.fillStyle = R() < 0.5 ? "rgba(160,110,50,0.18)" : "rgba(255,244,214,0.20)";
+              g.beginPath(); g.arc(R() * W2, 700 + R() * 310, 1 + R() * 2.4, 0, Math.PI * 2); g.fill();
+            }
+          } else if (shape === "heart") {
+            // candy shell: single true red, gentle curvature shading only
+            var hg = g.createRadialGradient(620, 300, 40, 620, 300, 700);
+            hg.addColorStop(0, "rgba(255,120,120,0.20)"); hg.addColorStop(1, "rgba(255,120,120,0)");
+            g.fillStyle = hg; g.fillRect(0, 0, W2, H2);
+            var hg2 = g.createLinearGradient(0, H2 * 0.6, 0, H2);
+            hg2.addColorStop(0, "rgba(60,0,10,0)"); hg2.addColorStop(1, "rgba(60,0,10,0.22)");
+            g.fillStyle = hg2; g.fillRect(0, H2 * 0.6, W2, H2 * 0.4);
+          }
+          // fine all-over grain so close-ups never look airbrushed flat
+          for (var gr = 0; gr < 5200; gr++) {
+            g.fillStyle = R() < 0.5 ? "rgba(60,30,5,0.028)" : "rgba(255,252,240,0.030)";
+            g.fillRect(R() * W2, R() * H2, 2, 2);
+          }
+          if (texImage) {
+            // uploaded art becomes localised pattern patches only — the
+            // object's own colour stays in charge everywhere else
+            var iw = texImage.width, ih = texImage.height;
+            var patches = [[0.24, 0.34, 300], [0.55, 0.55, 380], [0.78, 0.30, 260], [0.40, 0.74, 240], [0.68, 0.80, 200]];
+            for (var pi2 = 0; pi2 < patches.length; pi2++) {
+              var pcx = patches[pi2][0] * W2, pcy = patches[pi2][1] * H2, prad = patches[pi2][2];
+              g.save();
+              g.beginPath(); g.arc(pcx, pcy, prad, 0, Math.PI * 2); g.clip();
+              g.globalAlpha = 0.88;
+              var psc = Math.max((prad * 2) / iw, (prad * 2) / ih);
+              g.drawImage(texImage, pcx - (iw * psc) / 2, pcy - (ih * psc) / 2, iw * psc, ih * psc);
+              g.restore();
+            }
+            g.globalAlpha = 1;
+          }
+          // cracks painted into the texture itself, so they hug the surface
+          // and stay visible when zoomed right in
+          if (crackStrokes.length) {
+            g.lineCap = "round"; g.lineJoin = "round";
+            for (var ci = 0; ci < crackStrokes.length; ci++) {
+              var st = crackStrokes[ci];
+              for (var off = -W2; off <= W2; off += W2) {
+                // pale stress halo under the crack line
+                g.strokeStyle = "rgba(255,250,238,0.5)";
+                g.lineWidth = st.w + 2.4;
+                g.beginPath();
+                for (var pi = 0; pi < st.pts.length; pi++) {
+                  var px = st.pts[pi][0] * W2 + off, py = (1 - st.pts[pi][1]) * H2;
+                  if (pi === 0) g.moveTo(px, py); else g.lineTo(px, py);
+                }
+                g.stroke();
+                g.strokeStyle = "rgba(62,32,12,0.88)";
+                g.lineWidth = st.w;
+                g.beginPath();
+                for (var pj = 0; pj < st.pts.length; pj++) {
+                  var qx = st.pts[pj][0] * W2 + off, qy = (1 - st.pts[pj][1]) * H2;
+                  if (pj === 0) g.moveTo(qx, qy); else g.lineTo(qx, qy);
+                }
+                g.stroke();
+              }
+            }
+          }
+          paintBump();
+          shellTex.needsUpdate = true;
+        }
+
+        // micro-relief matched to each skin: egg pores, mango lenticels,
+        // peach fuzz, cake crumb, candy heart near-smooth
+        function paintBump() {
+          var g = bumpCanvas.getContext("2d");
+          var W2 = 1024, H2 = 512;
+          var R = rng(987654);
+          g.fillStyle = "#808080"; g.fillRect(0, 0, W2, H2);
+          var density = shape === "egg" ? 5200 : shape === "peach" ? 6000 : shape === "mango" ? 2400 : shape === "cake" ? 3400 : 700;
+          var amp = shape === "heart" ? 10 : 26;
+          for (var i = 0; i < density; i++) {
+            var v = 128 + Math.round((R() - 0.5) * 2 * amp);
+            g.fillStyle = "rgb(" + v + "," + v + "," + v + ")";
+            g.beginPath(); g.arc(R() * W2, R() * H2, 0.7 + R() * 1.9, 0, Math.PI * 2); g.fill();
+          }
+          if (shape === "peach") {
+            g.strokeStyle = "rgba(150,150,150,0.25)"; g.lineWidth = 1;
+            for (var f = 0; f < 1500; f++) {
+              var fx = R() * W2, fy = R() * H2;
+              g.beginPath(); g.moveTo(fx, fy); g.lineTo(fx + (R() - 0.5) * 5, fy - 2 - R() * 3); g.stroke();
+            }
+          }
+          bumpTex.needsUpdate = true;
+        }
+
+        var shellMat = new THREE.MeshPhysicalMaterial({
+          map: shellTex,
+          bumpMap: bumpTex,
+          bumpScale: 0.02,
+          roughness: 0.22,
+          metalness: 0,
+          clearcoat: 1,
+          clearcoatRoughness: 0.08,
+          sheen: 0.3,
+          sheenRoughness: 0.5,
+          sheenColor: new THREE.Color(0xffe2b8),
+          envMapIntensity: 1.25
+        });
+
+        // ---------- geometry builders ----------
+        function deformSphere(geo, fn) {
+          var pos = geo.attributes.position;
+          var v = new THREE.Vector3();
+          for (var i = 0; i < pos.count; i++) {
+            v.fromBufferAttribute(pos, i);
+            fn(v);
+            pos.setXYZ(i, v.x, v.y, v.z);
+          }
+          geo.computeVertexNormals();
+          return geo;
+        }
+        function buildGeometry(name) {
+          if (name === "mango") {
+            return deformSphere(new THREE.SphereGeometry(1, 72, 52), function (v) {
+              var bend = 0.10 * Math.sin((v.y + 1) * 0.9);
+              v.x = v.x * 1.14 + bend * (1 - Math.abs(v.y)) * 0.4;
+              v.y *= 0.94;
+              v.z *= 0.84;
+              var d = Math.abs(v.x - 0.12);
+              if (v.z > 0 && d < 0.2) v.z -= (0.2 - d) * 0.10 * v.z;
+            });
+          }
+          if (name === "egg") {
+            return deformSphere(new THREE.SphereGeometry(1, 64, 48), function (v) {
+              var t = Math.max(0, v.y);
+              var taper = 1 - 0.20 * t * t;
+              v.x *= 0.94 * taper + 0.06;
+              v.z *= 0.94 * taper + 0.06;
+              v.y *= 1.14;
+            });
+          }
+          if (name === "peach") {
+            return deformSphere(new THREE.SphereGeometry(1, 64, 48), function (v) {
+              v.y *= 0.96; v.z *= 0.96;
+              var d = Math.abs(v.x);
+              if (v.z > 0 && d < 0.22) v.z -= (0.22 - d) * 0.55 * Math.max(0, v.z);
+              if (v.y > 0.86) v.y = 0.86 + (v.y - 0.86) * 0.35;
+            });
+          }
+          if (name === "cake") {
+            var pts = [];
+            var prof = [[0, -0.78], [0.72, -0.78], [0.95, -0.70], [0.99, -0.45], [0.94, 0.02], [0.97, 0.34], [0.88, 0.55], [0.62, 0.68], [0.3, 0.73], [0, 0.74]];
+            for (var i = 0; i < prof.length; i++) pts.push(new THREE.Vector2(prof[i][0], prof[i][1]));
+            var geo = new THREE.LatheGeometry(pts, 56);
+            geo.computeVertexNormals();
+            return geo;
+          }
+          var s = new THREE.Shape();
+          s.moveTo(0, -0.92);
+          s.bezierCurveTo(-1.12, -0.22, -0.96, 0.72, -0.48, 0.80);
+          s.bezierCurveTo(-0.17, 0.86, 0, 0.60, 0, 0.40);
+          s.bezierCurveTo(0, 0.60, 0.17, 0.86, 0.48, 0.80);
+          s.bezierCurveTo(0.96, 0.72, 1.12, -0.22, 0, -0.92);
+          var hgeo = new THREE.ExtrudeGeometry(s, { depth: 0.62, bevelEnabled: true, bevelThickness: 0.16, bevelSize: 0.15, bevelSegments: 5, curveSegments: 24 });
+          hgeo.center();
+          hgeo.computeVertexNormals();
+          return hgeo;
+        }
+
+        var mainMesh = null, basePos = null, baseNor = null;
+        function disposeObj(o) {
+          o.traverse(function (n) {
+            if (n.geometry) n.geometry.dispose();
+            if (n.material && n.material._own) n.material.dispose();
+          });
+        }
+        function clearGroup(gr) {
+          while (gr.children.length) {
+            var ch = gr.children[0];
+            gr.remove(ch);
+            disposeObj(ch);
+          }
+        }
+        function buildShape() {
+          clearGroup(squashGroup);
+          squashGroup.add(stressSprite);
+          crackGroup = null;
+          crackStrokes = [];
+          pressUV = null;
+          paintTexture();
+          var useMap = !(shape === "heart" && !texImage);
+          shellMat.map = useMap ? shellTex : null;
+          shellMat.color.set(useMap ? "#ffffff" : shellColor);
+          shellMat.needsUpdate = true;
+          mainMesh = new THREE.Mesh(buildGeometry(shape), shellMat);
+          mainMesh.castShadow = true;
+          squashGroup.add(mainMesh);
+          rotGroup.position.y = { mango: 0.97, egg: 1.16, peach: 1.0, cake: 0.8, heart: 1.05 }[shape] || 1.06;
+          shapeBottom = { mango: 0.94, egg: 1.14, peach: 0.96, cake: 0.78, heart: 1.02 }[shape] || 0.95;
+          blobBase = { mango: 1.06, egg: 0.82, peach: 0.97, cake: 1.02, heart: 1.0 }[shape] || 1.0;
+          basePos = mainMesh.geometry.attributes.position.array.slice();
+          baseNor = mainMesh.geometry.attributes.normal.array.slice();
+          if (shape === "cake") {
+            var cherry = new THREE.Mesh(
+              new THREE.SphereGeometry(0.17, 28, 20),
+              new THREE.MeshPhysicalMaterial({ color: 0xc8102e, roughness: 0.06, metalness: 0, clearcoat: 1, clearcoatRoughness: 0.04, envMapIntensity: 1.5 })
+            );
+            cherry.material._own = true;
+            cherry.position.set(0, 0.87, 0); cherry.castShadow = true;
+            squashGroup.add(cherry);
+            var cstem = new THREE.Mesh(
+              new THREE.CylinderGeometry(0.014, 0.02, 0.17, 8),
+              new THREE.MeshStandardMaterial({ color: 0x5d4020, roughness: 0.85 })
+            );
+            cstem.material._own = true;
+            cstem.position.set(0.05, 1.05, 0); cstem.rotation.z = -0.5; cstem.castShadow = true;
+            squashGroup.add(cstem);
+          } else if (shape === "peach") {
+            var leaf = new THREE.Mesh(
+              new THREE.SphereGeometry(0.2, 20, 14),
+              new THREE.MeshPhysicalMaterial({ color: 0x4a7c3a, roughness: 0.32, metalness: 0, clearcoat: 0.7, clearcoatRoughness: 0.25, envMapIntensity: 1.1 })
+            );
+            leaf.material._own = true;
+            leaf.scale.set(1.25, 0.32, 0.6);
+            leaf.position.set(0.17, 0.92, 0); leaf.rotation.z = 0.5; leaf.castShadow = true;
+            squashGroup.add(leaf);
+          } else if (shape === "mango") {
+            var stem = new THREE.Mesh(
+              new THREE.CylinderGeometry(0.032, 0.05, 0.17, 10),
+              new THREE.MeshStandardMaterial({ color: 0x2e5d33, roughness: 0.8 })
+            );
+            stem.material._own = true;
+            stem.position.set(0.06, 0.99, 0); stem.rotation.z = 0.25; stem.castShadow = true;
+            squashGroup.add(stem);
+            var mleaf = new THREE.Mesh(
+              new THREE.SphereGeometry(0.16, 18, 12),
+              new THREE.MeshPhysicalMaterial({ color: 0x38632e, roughness: 0.35, metalness: 0, clearcoat: 0.6, clearcoatRoughness: 0.3, envMapIntensity: 1.1 })
+            );
+            mleaf.material._own = true;
+            mleaf.scale.set(1.3, 0.26, 0.55);
+            mleaf.position.set(0.24, 1.0, 0); mleaf.rotation.z = 0.35; mleaf.castShadow = true;
+            squashGroup.add(mleaf);
+          }
+        }
+
+        // ---------- cracks (3D lines hugging the surface) ----------
+        var crackGroup = null;
+        var pressLocal = new THREE.Vector3(0, 0, 1);
+        var pressWorld = new THREE.Vector3(0, OBJ_Y, 1);
+        function buildCracks(stage) {
+          if (crackGroup) { squashGroup.remove(crackGroup); disposeObj(crackGroup); crackGroup = null; }
+          // mapped shapes: grow cracks in the texture from the pressed uv point
+          if (shellMat.map && pressUV) {
+            var nStrokes = 3 + stage * 3;
+            for (var si2 = 0; si2 < nStrokes; si2++) {
+              var ang0 = (si2 / nStrokes) * Math.PI * 2 + Math.random() * 0.7;
+              var segs = 4 + Math.floor(Math.random() * 3);
+              var stepLen = 0.014 + Math.random() * 0.010 + stage * 0.004;
+              var pts = [[pressUV.x, pressUV.y]];
+              var cu = pressUV.x, cvv = pressUV.y, ca = ang0;
+              for (var sj = 0; sj < segs; sj++) {
+                ca += (Math.random() - 0.5) * 0.65;
+                cu += Math.cos(ca) * stepLen;
+                cvv += Math.sin(ca) * stepLen * 0.55;
+                pts.push([cu, cvv]);
+                if (Math.random() < 0.3) {
+                  // short branch fork
+                  var ba = ca + (Math.random() < 0.5 ? 0.8 : -0.8);
+                  crackStrokes.push({ pts: [[cu, cvv], [cu + Math.cos(ba) * stepLen * 1.4, cvv + Math.sin(ba) * stepLen * 0.8]], w: 1.1 });
+                }
+              }
+              crackStrokes.push({ pts: pts, w: 1.5 + stage * 0.55 });
+            }
+            paintTexture();
+            return;
+          }
+          crackGroup = new THREE.Group();
+          var n = pressLocal.clone().normalize();
+          var up = Math.abs(n.y) > 0.9 ? new THREE.Vector3(1, 0, 0) : new THREE.Vector3(0, 1, 0);
+          var t1 = new THREE.Vector3().crossVectors(n, up).normalize();
+          var t2 = new THREE.Vector3().crossVectors(n, t1).normalize();
+          var R0 = pressLocal.length();
+          var mat = new THREE.LineBasicMaterial({ color: 0x4a2c14, transparent: true, opacity: 0.92 });
+          mat._own = true;
+          var count = 3 + stage * 3;
+          var maxLen = 0.34 + stage * 0.24;
+          function surfPoint(a, b) {
+            var p = pressLocal.clone().addScaledVector(t1, a).addScaledVector(t2, b);
+            return p.normalize().multiplyScalar(R0 + 0.014);
+          }
+          for (var i = 0; i < count; i++) {
+            var ang = (i / count) * Math.PI * 2 + Math.random() * 0.5;
+            var len = maxLen * (0.6 + Math.random() * 0.5);
+            var steps = 3 + Math.floor(Math.random() * 3);
+            var pts = [];
+            for (var j = 0; j <= steps; j++) {
+              var d = (len * j) / steps;
+              var a = ang + (Math.random() - 0.5) * 0.5;
+              pts.push(surfPoint(Math.cos(a) * d, Math.sin(a) * d));
+            }
+            crackGroup.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(pts), mat));
+            if (Math.random() < 0.6 && steps > 2) {
+              var base = pts[2].clone().sub(pressLocal);
+              var ba = ang + 0.7 + Math.random() * 0.5;
+              var bp = [pts[2]];
+              for (var k = 1; k <= 2; k++) {
+                bp.push(surfPoint(base.dot(t1) + Math.cos(ba) * 0.15 * k, base.dot(t2) + Math.sin(ba) * 0.15 * k));
+              }
+              crackGroup.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(bp), mat));
+            }
+          }
+          squashGroup.add(crackGroup);
+        }
+        function clearCracks() {
+          if (crackGroup) { squashGroup.remove(crackGroup); disposeObj(crackGroup); crackGroup = null; }
+          if (crackStrokes.length) { crackStrokes = []; paintTexture(); }
+        }
+
+        // ---------- tap-crack / peel infrastructure ----------
+        // a soft-core bulge showing through where shell has come away;
+        // lives on the squash group so it deforms with the body
+        function addExposedPatch(dirLocal, size) {
+          var mat = new THREE.MeshPhysicalMaterial({
+            color: gooColor, roughness: 0.28, metalness: 0,
+            clearcoat: 0.7, clearcoatRoughness: 0.3, envMapIntensity: 0.9
+          });
+          mat._own = true;
+          var m = new THREE.Mesh(new THREE.SphereGeometry(size, 18, 12), mat);
+          var d = dirLocal.clone().normalize();
+          m.position.copy(d).multiplyScalar(Math.max(0.55, dirLocal.length()) * 0.94);
+          m.scale.set(1, 0.82, 1);
+          m.castShadow = true;
+          squashGroup.add(m);
+          return m;
+        }
+        // one shell chunk + crumbs knocked off by a tap / burst: they fly
+        // from the hit point, bounce once on the stand and stay there
+        function spawnTapFlakes(worldPos, big) {
+          var R = Math.random;
+          var n = big ? 2 : 1;
+          for (var i = 0; i < n; i++) {
+            var mat = new THREE.MeshStandardMaterial({ color: shellColor, roughness: 0.55, side: THREE.DoubleSide });
+            mat._own = true;
+            var sz = 0.13 + R() * 0.10;
+            var m = new THREE.Mesh(new THREE.SphereGeometry(sz, 8, 6, R() * 3, 1.2 + R(), R() * 2, 1 + R()), mat);
+            m.castShadow = true;
+            m.position.copy(worldPos);
+            m.rotation.set(R() * 3, R() * 3, R() * 3);
+            scene.add(m);
+            var a = R() * Math.PI * 2, sp = 0.7 + R() * 1.5;
+            tapDyn.push({
+              mesh: m, restY: 0.07, settled: false,
+              vx: Math.cos(a) * sp, vy: 1.2 + R() * 1.4, vz: Math.sin(a) * sp * 0.8,
+              rx: (R() - 0.5) * 10, ry: (R() - 0.5) * 10, rz: (R() - 0.5) * 10
+            });
+          }
+          for (var c = 0; c < 3; c++) {
+            var cmat = new THREE.MeshStandardMaterial({ color: shellColor, roughness: 0.6 });
+            cmat._own = true;
+            var cm = new THREE.Mesh(new THREE.TetrahedronGeometry(0.03 + R() * 0.035), cmat);
+            cm.castShadow = true;
+            cm.position.copy(worldPos);
+            scene.add(cm);
+            var ca = R() * Math.PI * 2, csp = 0.4 + R() * 1.1;
+            tapDyn.push({
+              mesh: cm, restY: 0.04, settled: false,
+              vx: Math.cos(ca) * csp, vy: 1.0 + R() * 1.2, vz: Math.sin(ca) * csp * 0.8,
+              rx: (R() - 0.5) * 12, ry: (R() - 0.5) * 12, rz: (R() - 0.5) * 12
+            });
+          }
+        }
+        function updateTapDyn(dt) {
+          for (var i = 0; i < tapDyn.length; i++) {
+            var d = tapDyn[i];
+            if (d.settled) continue;
+            d.vy -= 7.5 * dt;
+            d.mesh.position.x += d.vx * dt;
+            d.mesh.position.y += d.vy * dt;
+            d.mesh.position.z += d.vz * dt;
+            d.mesh.rotation.x += d.rx * dt;
+            d.mesh.rotation.y += d.ry * dt;
+            d.mesh.rotation.z += d.rz * dt;
+            if (d.mesh.position.y <= d.restY) {
+              d.mesh.position.y = d.restY;
+              if (Math.abs(d.vy) > 0.9) {
+                d.vy = -d.vy * 0.3; d.vx *= 0.55; d.vz *= 0.55;
+                d.rx *= 0.45; d.ry *= 0.45; d.rz *= 0.45;
+              } else d.settled = true;
+            }
+          }
+        }
+        function clearTapDyn() {
+          for (var i = 0; i < tapDyn.length; i++) { scene.remove(tapDyn[i].mesh); disposeObj(tapDyn[i].mesh); }
+          tapDyn = [];
+        }
+        function clearPeelAttached() {
+          while (peelGroup.children.length) {
+            var ch = peelGroup.children[0];
+            peelGroup.remove(ch);
+            disposeObj(ch);
+          }
+          peelPieces = []; peelTotal = 0; peeledCount = 0; peelReady = false; peelDrag = null;
+        }
+        // shell is loose: lay six lifted shell pieces over the surface,
+        // each one waiting to be dragged off
+        function spawnPeelPieces() {
+          if (peelPieces.length) return;
+          shardMat.map = shellMat.map;
+          shardMat.color.set(shellMat.map ? "#ffffff" : shellColor);
+          shardMat.needsUpdate = true;
+          var R = rng((Math.random() * 1e9) | 0);
+          for (var i = 0; i < 6; i++) {
+            var phiS = (i / 6) * Math.PI * 2 + R() * 0.35;
+            var thS = 0.45 + R() * 1.5;
+            var geo = jagged(new THREE.SphereGeometry(1.06, 10, 7, phiS, 0.92, thS, 0.78), 0.015, 3100 + i * 71);
+            var outer = new THREE.Mesh(geo, shardMat);
+            outer.castShadow = true;
+            var inner = new THREE.Mesh(geo, shardInnerMat);
+            inner.scale.setScalar(0.982);
+            outer.add(inner);
+            // direction of this piece's centre, in body-local space
+            var phiM = phiS + 0.46, thM = thS + 0.39;
+            var dir = new THREE.Vector3(
+              -Math.sin(thM) * Math.cos(phiM),
+              Math.cos(thM),
+              Math.sin(thM) * Math.sin(phiM)
+            ).normalize();
+            outer.userData.isPeel = true;
+            outer.userData.dir = dir;
+            outer.userData.homePos = dir.clone().multiplyScalar(0.035); // slightly lifted, already loose
+            outer.userData.homeRot = new THREE.Euler((R() - 0.5) * 0.07, (R() - 0.5) * 0.07, (R() - 0.5) * 0.07);
+            outer.position.copy(outer.userData.homePos);
+            outer.rotation.copy(outer.userData.homeRot);
+            peelGroup.add(outer);
+            peelPieces.push(outer);
+          }
+          peelTotal = peelPieces.length;
+        }
+        function enterPeelMode() {
+          if (peelReady) return;
+          peelReady = true;
+          spawnPeelPieces();
+          if (viewMode === "squeeze") hint.textContent = "壳松了！按住一片壳往外拖，把它剥下来";
+          showToast("可以剥壳了：拖动壳片往外拉");
+        }
+        // a quick tap on the intact shell: crack right where the finger hit
+        function doTapCrack() {
+          tapCrackSound();
+          vibe(14);
+          shake = Math.max(shake, reducedMotion ? 0 : 0.03);
+          tapCount++;
+          var stage = Math.min(3, tapCount);
+          if (stage > crackStage) crackStage = stage;
+          if (!pressUV) pressUV = { x: 0.5, y: 0.5 };
+          buildCracks(Math.max(1, stage));
+          if (mainMesh) {
+            mainMesh.updateWorldMatrix(true, false);
+            var wp = pressLocal.clone().applyMatrix4(mainMesh.matrixWorld);
+            spawnTapFlakes(wp, tapCount >= 3);
+          }
+          addExposedPatch(pressLocal, 0.16 + Math.min(0.1, tapCount * 0.02));
+          if (tapCount >= 3) {
+            enterPeelMode();
+          } else if (viewMode === "squeeze") {
+            hint.textContent = "裂开一块！再点 " + (3 - tapCount) + " 下，壳就松到能剥了";
+          }
+          showToast("咔！裂开一块");
+        }
+        // two-finger stretch pulled past the limit: a bigger sheet of
+        // shell bursts off along the stretch, core pulled long with it
+        function stretchBurst() {
+          crackSound();
+          vibe([18, 30, 36]);
+          shake = Math.max(shake, reducedMotion ? 0 : 0.07);
+          tapCount += 3;
+          crackStage = 3;
+          if (!pressUV) pressUV = { x: 0.5, y: 0.5 };
+          buildCracks(3);
+          var wp = new THREE.Vector3(0, rotGroup.position.y + 0.1, 0.7);
+          spawnTapFlakes(wp, true);
+          spawnParticles(wp);
+          addExposedPatch(new THREE.Vector3(0.55, 0.25, 0.85), 0.30);
+          addExposedPatch(new THREE.Vector3(-0.6, -0.1, 0.8), 0.26);
+          enterPeelMode();
+          if (viewMode === "squeeze") hint.textContent = "拉炸了一大片！剩下的壳拖着剥下来";
+          showToast("炸开一大片！");
+        }
+        // one peel piece dragged far enough: it comes off, drops to the
+        // stand as a shard, and the soft core shows where it was
+        function completePeel(piece) {
+          var dir = piece.userData.dir.clone();
+          peelSound();
+          vibe(16);
+          // world spot the piece was covering, for the falling shard
+          var wp = dir.clone().multiplyScalar(1.02);
+          rotGroup.localToWorld(wp);
+          peelGroup.remove(piece);
+          disposeObj(piece);
+          var idx = peelPieces.indexOf(piece);
+          if (idx >= 0) peelPieces.splice(idx, 1);
+          peeledCount++;
+          var mat = new THREE.MeshStandardMaterial({ color: shellColor, roughness: 0.55, side: THREE.DoubleSide });
+          mat._own = true;
+          var shard = new THREE.Mesh(jagged(new THREE.SphereGeometry(0.34, 9, 6, Math.random() * 3, 1.4, Math.random() * 2, 1.1), 0.03, (Math.random() * 1e9) | 0), mat);
+          shard.castShadow = true;
+          shard.position.copy(wp);
+          shard.rotation.set(Math.random() * 3, Math.random() * 3, Math.random() * 3);
+          scene.add(shard);
+          tapDyn.push({
+            mesh: shard, restY: 0.08, settled: false,
+            vx: dir.x * 1.1 + (Math.random() - 0.5) * 0.5, vy: 1.1, vz: dir.z * 1.1 + (Math.random() - 0.5) * 0.5,
+            rx: (Math.random() - 0.5) * 8, ry: (Math.random() - 0.5) * 8, rz: (Math.random() - 0.5) * 8
+          });
+          addExposedPatch(dir, 0.40);
+          if (peelPieces.length === 0 && peelTotal > 0) {
+            doPeeledReveal();
+          } else if (viewMode === "squeeze") {
+            hint.textContent = "剥下一片！还剩 " + peelPieces.length + " 片";
+            showToast("剥下来了，还剩 " + peelPieces.length + " 片");
+          }
+        }
+        // every piece off: the whole soft core is out — hand over to the
+        // existing broken-state kneading (press, drag, stretch, slow rebound)
+        function doPeeledReveal() {
+          state = "broken";
+          stopStrain();
+          stopSizzle();
+          peelReady = false;
+          playNoise(0.3, "lowpass", 800, 180, 0.3, 0);
+          playBlip(300, 70, 0.3, 0.2, "sine", 0.02);
+          vibe([20, 40, 30]);
+          brokenCount++;
+          updateStats();
+          rotGroup.visible = false;
+          brokenGroup.visible = true;
+          gooMat.color.set(gooColor);
+          puddleMat.color.set(gooColor);
+          gooSpread = 0.3;
+          gooPop = 0.25; gooPopV = 2.4;
+          meterRow.style.visibility = "hidden";
+          if (viewMode === "squeeze") hint.textContent = "剥干净了！按住拖着揉软芯，拉伸压扁都可以";
+          showToast("剥干净了，软芯露出来了");
+        }
+
+        // stress-whitening sprite at the press point
+        var stressSprite = (function () {
+          var c = document.createElement("canvas"); c.width = c.height = 128;
+          var g = c.getContext("2d");
+          var rg = g.createRadialGradient(64, 64, 2, 64, 64, 64);
+          rg.addColorStop(0, "rgba(255,255,255,0.85)");
+          rg.addColorStop(0.5, "rgba(255,255,255,0.28)");
+          rg.addColorStop(1, "rgba(255,255,255,0)");
+          g.fillStyle = rg; g.fillRect(0, 0, 128, 128);
+          var m = new THREE.SpriteMaterial({ map: new THREE.CanvasTexture(c), transparent: true, opacity: 0, depthWrite: false });
+          m._own = true;
+          var sp = new THREE.Sprite(m);
+          sp.scale.set(0.75, 0.75, 1);
+          sp.visible = false;
+          return sp;
+        })();
+
+        // ---------- broken state: goo blob + shards + particles ----------
+        var gooMat = new THREE.MeshPhysicalMaterial({
+          color: 0xff9a1f, roughness: 0.16, metalness: 0,
+          clearcoat: 1, clearcoatRoughness: 0.18, envMapIntensity: 1.0
+        });
+        // the core is NOT a ball: a lumpy, flattened pulp mass with an
+        // irregular silhouette, displaced once with a fixed seed
+        var gooGeo = new THREE.SphereGeometry(0.94, 56, 40);
+        (function lumpify(geo) {
+          var pos = geo.attributes.position;
+          var v = new THREE.Vector3();
+          var R = rng(20261114);
+          var ph1 = R() * 6.28, ph2 = R() * 6.28, ph3 = R() * 6.28;
+          for (var i = 0; i < pos.count; i++) {
+            v.fromBufferAttribute(pos, i);
+            var d = 1
+              + 0.055 * Math.sin(v.x * 6.4 + ph1) * Math.sin(v.y * 5.2 + ph2)
+              + 0.045 * Math.sin(v.z * 7.6 + ph3) * Math.sin(v.x * 3.9 + ph2)
+              + 0.03 * Math.sin(v.y * 11.0 + ph3);
+            v.multiplyScalar(d);
+            v.y *= 0.60; // slumped under its own weight
+            pos.setXYZ(i, v.x, v.y, v.z);
+          }
+          geo.computeVertexNormals();
+        })(gooGeo);
+        var gooMesh = new THREE.Mesh(gooGeo, gooMat);
+        gooMesh.castShadow = true;
+        gooMesh.position.y = 0.40;
+        var gooBase = gooMesh.geometry.attributes.position.array.slice();
+        brokenGroup.add(gooMesh);
+        // pulp lobes oozing out sideways over the pedestal edge of the mass
+        (function addLobes() {
+          var R = rng(777);
+          for (var i = 0; i < 6; i++) {
+            var lobe = new THREE.Mesh(new THREE.SphereGeometry(0.26 + R() * 0.17, 20, 14), gooMat);
+            var a = (i / 6) * Math.PI * 2 + R() * 0.8;
+            var rr = 0.78 + R() * 0.22;
+            lobe.position.set(Math.cos(a) * rr, -0.22 + R() * 0.1, Math.sin(a) * rr * 0.9);
+            lobe.scale.set(1, 0.45 + R() * 0.2, 1);
+            lobe.castShadow = true;
+            gooMesh.add(lobe);
+          }
+        })();
+        var gooPop = 0.3, gooPopV = 0; // springy reveal of the core at break
+        var puddleMat = new THREE.MeshPhysicalMaterial({ color: 0xff9a1f, roughness: 0.22, clearcoat: 0.8, transparent: true, opacity: 0.55 });
+        var puddleGeo = new THREE.CircleGeometry(1, 44);
+        (function irregularPuddle(geo) {
+          var pos = geo.attributes.position;
+          var R = rng(31337);
+          var jit = [];
+          for (var i = 0; i < pos.count; i++) jit.push(0.8 + R() * 0.42);
+          for (var j = 0; j < pos.count; j++) {
+            var x = pos.getX(j), y = pos.getY(j);
+            if (Math.hypot(x, y) > 0.1) pos.setXY(j, x * jit[j], y * jit[j]);
+          }
+          geo.computeVertexNormals();
+        })(puddleGeo);
+        var puddle = new THREE.Mesh(puddleGeo, puddleMat);
+        puddle.rotation.x = -Math.PI / 2;
+        puddle.position.y = 0.012;
+        puddle.receiveShadow = true;
+        brokenGroup.add(puddle);
+
+        var shardMat = new THREE.MeshPhysicalMaterial({
+          map: shellTex, roughness: 0.4, clearcoat: 0.7, clearcoatRoughness: 0.4, side: THREE.DoubleSide
+        });
+        // pale waxy underside of the shell, seen where pieces have flipped
+        var shardInnerMat = new THREE.MeshStandardMaterial({ color: 0xfdf3e0, roughness: 0.62, metalness: 0, side: THREE.BackSide });
+        shardInnerMat._own = true;
+        // broken-set bookkeeping: two big halves (animated open), loose
+        // pieces with real fall/settle physics, goo strands
+        var brokenExtras = [];
+        var halves = [];
+        var brokenDyn = [];
+        var strands = [];
+        function clearBrokenExtras() {
+          for (var i = 0; i < brokenExtras.length; i++) { brokenGroup.remove(brokenExtras[i]); disposeObj(brokenExtras[i]); }
+          brokenExtras = []; halves = []; brokenDyn = []; strands = [];
+        }
+        function jagged(geo, amt, seed) {
+          var pos = geo.attributes.position;
+          var R = rng(seed);
+          var p1 = R() * 6.28, p2 = R() * 6.28;
+          var v = new THREE.Vector3();
+          for (var i = 0; i < pos.count; i++) {
+            v.fromBufferAttribute(pos, i);
+            var d = 1 + amt * Math.sin(v.x * 21 + p1) * Math.sin(v.y * 17 + p2) + amt * 0.7 * Math.sin(v.z * 25 + p1);
+            v.multiplyScalar(d);
+            pos.setXYZ(i, v.x, v.y, v.z);
+          }
+          geo.computeVertexNormals();
+          return geo;
+        }
+        function spawnBroken(centerY) {
+          clearBrokenExtras();
+          shardMat.map = shellMat.map;
+          shardMat.color.set(shellMat.map ? "#ffffff" : shellColor);
+          shardMat.needsUpdate = true;
+          var R = rng((Math.random() * 1e9) | 0);
+          // -- two big shell halves: they start closed (so the break reads
+          // as THIS object splitting, not a swap) and tip open sideways,
+          // still cradling the core, outer colour out / pale wax inside
+          for (var h = 0; h < 2; h++) {
+            var side = h === 0 ? 1 : -1;
+            var hgeo = jagged(new THREE.SphereGeometry(1.04, 40, 26, h * Math.PI, Math.PI * 0.96), 0.012, 500 + h * 37);
+            var pivot = new THREE.Group();
+            var outer = new THREE.Mesh(hgeo, shardMat);
+            outer.castShadow = true;
+            var inner = new THREE.Mesh(hgeo, shardInnerMat);
+            inner.scale.setScalar(0.985);
+            pivot.add(outer); pivot.add(inner);
+            // sphere phi halves split along Z: h=0 covers +Z, h=1 covers -Z.
+            // both pivots share one Y rotation (the split direction); each
+            // half tips around X toward its own side and slides that way.
+            var openA = R() * Math.PI * 2;
+            var dirX = -Math.sin(openA), dirZ = Math.cos(openA);
+            pivot.position.set(0, centerY, 0);
+            brokenGroup.add(pivot);
+            brokenExtras.push(pivot);
+            halves.push({
+              pivot: pivot, t: 0, dur: 0.55 + R() * 0.2,
+              fromPos: new THREE.Vector3(0, centerY, 0),
+              toPos: new THREE.Vector3(dirX * side * (0.62 + R() * 0.2), 0.34, dirZ * side * (0.62 + R() * 0.2)),
+              fromRot: new THREE.Euler(0, -openA, 0),
+              toRot: new THREE.Euler(side * (1.72 + R() * 0.3), -openA + (R() - 0.5) * 0.5, (R() - 0.5) * 0.3)
+            });
+            pivot.rotation.copy(halves[h].fromRot);
+          }
+          // -- loose shell pieces: all different sizes, thrown from the
+          // break point, tumble, bounce once on the stand and stay there
+          for (var k = 0; k < 7; k++) {
+            var phi = R() * Math.PI * 2;
+            var pgeo = jagged(new THREE.SphereGeometry(1.05, 9, 6, phi, 0.35 + R() * 0.55, R() * 1.1, 0.35 + R() * 0.5), 0.02, 900 + k * 53);
+            var pm = new THREE.Mesh(pgeo, shardMat);
+            pm.castShadow = true;
+            pm.position.set((R() - 0.5) * 0.3, centerY + (R() - 0.5) * 0.3, (R() - 0.5) * 0.3);
+            pm.rotation.set(R() * 3, R() * 3, R() * 3);
+            var pa = R() * Math.PI * 2, psp = 0.9 + R() * 1.9;
+            brokenGroup.add(pm); brokenExtras.push(pm);
+            brokenDyn.push({
+              mesh: pm, restY: 0.10,
+              vx: Math.cos(pa) * psp, vy: 1.4 + R() * 1.8, vz: Math.sin(pa) * psp * 0.85,
+              rx: (R() - 0.5) * 9, ry: (R() - 0.5) * 9, rz: (R() - 0.5) * 9, settled: false
+            });
+          }
+          // -- crumbs: tiny jagged bits that barely travel
+          for (var c = 0; c < 22; c++) {
+            var cgeo = new THREE.TetrahedronGeometry(0.035 + R() * 0.05);
+            var cm = new THREE.Mesh(cgeo, shardMat);
+            cm.castShadow = true;
+            cm.scale.y = 0.55;
+            cm.position.set((R() - 0.5) * 0.4, centerY + (R() - 0.5) * 0.4, (R() - 0.5) * 0.4);
+            cm.rotation.set(R() * 3, R() * 3, R() * 3);
+            var ca2 = R() * Math.PI * 2, csp = 0.4 + R() * 1.3;
+            brokenGroup.add(cm); brokenExtras.push(cm);
+            brokenDyn.push({
+              mesh: cm, restY: 0.045,
+              vx: Math.cos(ca2) * csp, vy: 1.0 + R() * 1.6, vz: Math.sin(ca2) * csp * 0.85,
+              rx: (R() - 0.5) * 12, ry: (R() - 0.5) * 12, rz: (R() - 0.5) * 12, settled: false
+            });
+          }
+          // -- goo strands still linking core and shell, thinning out
+          for (var s = 0; s < 5; s++) {
+            var sa = (s / 5) * Math.PI * 2 + R() * 0.9;
+            var sm2 = new THREE.Mesh(new THREE.CapsuleGeometry(0.030 + R() * 0.02, 0.42 + R() * 0.3, 3, 8), gooMat);
+            sm2.position.set(Math.cos(sa) * 0.52, 0.62, Math.sin(sa) * 0.52);
+            sm2.rotation.set(Math.sin(sa) * 0.85, 0, -Math.cos(sa) * 0.85);
+            sm2.castShadow = true;
+            brokenGroup.add(sm2); brokenExtras.push(sm2);
+            strands.push({ mesh: sm2, life: 1, delay: 0.25 + R() * 0.4 });
+          }
+        }
+        function updateBroken(dt, now) {
+          for (var i = 0; i < halves.length; i++) {
+            var hf = halves[i];
+            if (hf.t >= 1) continue;
+            hf.t = Math.min(1, hf.t + dt / hf.dur);
+            var t = hf.t;
+            var e = 1 + 2.0 * Math.pow(t - 1, 3) + 1.35 * Math.pow(t - 1, 2); // easeOutBack, slight overshoot as it lands
+            hf.pivot.position.lerpVectors(hf.fromPos, hf.toPos, e);
+            hf.pivot.position.y = hf.fromPos.y + (hf.toPos.y - hf.fromPos.y) * (1 - Math.pow(1 - t, 3));
+            hf.pivot.rotation.set(
+              hf.fromRot.x + (hf.toRot.x - hf.fromRot.x) * e,
+              hf.fromRot.y + (hf.toRot.y - hf.fromRot.y) * e,
+              hf.fromRot.z + (hf.toRot.z - hf.fromRot.z) * e
+            );
+          }
+          for (var j = 0; j < brokenDyn.length; j++) {
+            var d = brokenDyn[j];
+            if (d.settled) continue;
+            d.vy -= 7.5 * dt;
+            d.mesh.position.x += d.vx * dt;
+            d.mesh.position.y += d.vy * dt;
+            d.mesh.position.z += d.vz * dt;
+            d.mesh.rotation.x += d.rx * dt;
+            d.mesh.rotation.y += d.ry * dt;
+            d.mesh.rotation.z += d.rz * dt;
+            if (d.mesh.position.y <= d.restY) {
+              d.mesh.position.y = d.restY;
+              if (Math.abs(d.vy) > 0.9) {
+                d.vy = -d.vy * 0.30; d.vx *= 0.55; d.vz *= 0.55;
+                d.rx *= 0.45; d.ry *= 0.45; d.rz *= 0.45;
+              } else {
+                d.settled = true; // stays on the stand until reset
+              }
+            }
+          }
+          for (var s2 = strands.length - 1; s2 >= 0; s2--) {
+            var st = strands[s2];
+            if (st.delay > 0) { st.delay -= dt; continue; }
+            st.life -= dt * 0.85;
+            var thin = Math.max(0.02, st.life);
+            st.mesh.scale.set(thin, 1, thin);
+            if (st.life <= 0.03) {
+              brokenGroup.remove(st.mesh);
+              st.mesh.geometry.dispose();
+              var ei = brokenExtras.indexOf(st.mesh);
+              if (ei >= 0) brokenExtras.splice(ei, 1);
+              strands.splice(s2, 1);
+            }
+          }
+        }
+
+        var particles = [];
+        var gooDropGeo = new THREE.SphereGeometry(1, 10, 8);
+        var shellBitGeo = new THREE.TetrahedronGeometry(1);
+        function spawnParticles(origin) {
+          for (var j = 0; j < 40; j++) {
+            var isGoo = j % 2 === 0;
+            var mat = new THREE.MeshStandardMaterial({
+              color: isGoo ? gooColor : shellColor, roughness: isGoo ? 0.2 : 0.6, transparent: true
+            });
+            mat._own = true;
+            var m = new THREE.Mesh(isGoo ? gooDropGeo : shellBitGeo, mat);
+            var r = isGoo ? 0.03 + Math.random() * 0.06 : 0.025 + Math.random() * 0.045;
+            m.scale.setScalar(r);
+            m.position.copy(origin);
+            var a = Math.random() * Math.PI * 2;
+            var sp = 0.9 + Math.random() * 2.8;
+            m.castShadow = true;
+            scene.add(m);
+            particles.push({
+              mesh: m, isGoo: isGoo, r: r, landed: false,
+              vx: Math.cos(a) * sp, vy: 1.8 + Math.random() * 2.4, vz: Math.sin(a) * sp,
+              rx: (Math.random() - 0.5) * 8, rz: (Math.random() - 0.5) * 8,
+              life: 1
+            });
+          }
+        }
+        function updateParticles(dt) {
+          for (var i = particles.length - 1; i >= 0; i--) {
+            var p = particles[i];
+            if (!p.landed) {
+              p.vy -= 7.5 * dt;
+              p.mesh.position.x += p.vx * dt;
+              p.mesh.position.y += p.vy * dt;
+              p.mesh.position.z += p.vz * dt;
+              p.mesh.rotation.x += p.rx * dt;
+              p.mesh.rotation.z += p.rz * dt;
+              if (p.isGoo) {
+                // droplets stretch along their flight, like real splatter
+                var stretch = 1 + Math.min(1.6, Math.abs(p.vy) * 0.28);
+                p.mesh.scale.set(p.r, p.r * stretch, p.r);
+              }
+              if (p.mesh.position.y < 0.03) {
+                p.mesh.position.y = 0.03;
+                p.landed = true;
+                if (p.isGoo) {
+                  // splat flat and STAY as a glossy spot on the stand
+                  p.mesh.scale.set(p.r * 1.7, p.r * 0.32, p.r * 1.7);
+                  p.mesh.rotation.set(0, 0, 0);
+                } else if (Math.abs(p.vy) > 1.0) {
+                  p.landed = false;
+                  p.vy = -p.vy * 0.3; p.vx *= 0.6; p.vz *= 0.6;
+                }
+              }
+            }
+            // goo splats persist; shell bits fade only very slowly
+            p.life -= dt * (p.isGoo ? 0.012 : 0.05);
+            p.mesh.material.opacity = Math.max(0, Math.min(1, p.life));
+            if (p.life <= 0) {
+              scene.remove(p.mesh);
+              p.mesh.material.dispose();
+              particles.splice(i, 1);
+            }
+          }
+        }
+        function clearParticles() {
+          for (var i = 0; i < particles.length; i++) {
+            scene.remove(particles[i].mesh);
+            particles[i].mesh.material.dispose();
+          }
+          particles = [];
+        }
+
+        // ---------- deformation ----------
+        var dentDepth = 0;
+        function applyDent() {
+          if (!mainMesh || !basePos) return;
+          var pos = mainMesh.geometry.attributes.position;
+          var depth = dentDepth;
+          var cx = pressLocal.x, cy = pressLocal.y, cz = pressLocal.z;
+          var R2 = 0.62 * 0.62;
+          // drag-stretch pull, converted from screen space into local space
+          var ry = rotGroup.rotation.y;
+          var sLX = Math.cos(ry) * stretchX, sLZ = Math.sin(ry) * stretchX, sLY = stretchY;
+          for (var i = 0; i < pos.count; i++) {
+            var bx = basePos[i * 3], by = basePos[i * 3 + 1], bz = basePos[i * 3 + 2];
+            var dx = bx - cx, dy = by - cy, dz = bz - cz;
+            var d2 = dx * dx + dy * dy + dz * dz;
+            // sticky base: vertices near the stand barely move, so the body
+            // squashes/stretches in place instead of sliding or lifting off
+            var baseF = 0.25 + 0.75 * Math.min(1, Math.max(0, (by + shapeBottom) / 0.55));
+            var inf = Math.exp(-d2 / R2) * depth * baseF;
+            var pull = Math.exp(-d2 / (0.85 * 0.85)) * baseF;
+            var hW = (by / shapeBottom) * 0.5 + 0.5; // height weight for global elongation
+            pos.setXYZ(i,
+              bx - baseNor[i * 3] * inf + sLX * (pull * 0.55 + hW * 0.10),
+              by - baseNor[i * 3 + 1] * inf + sLY * (pull * 0.55 + hW * 0.10),
+              bz - baseNor[i * 3 + 2] * inf + sLZ * (pull * 0.55 + hW * 0.10));
+          }
+          pos.needsUpdate = true;
+          mainMesh.geometry.computeVertexNormals();
+        }
+        function applyGooWobble(time) {
+          var pos = gooMesh.geometry.attributes.position;
+          var spreadXZ = 1 + gooSpread * 0.55;
+          for (var i = 0; i < pos.count; i++) {
+            var bx = gooBase[i * 3], by = gooBase[i * 3 + 1], bz = gooBase[i * 3 + 2];
+            var ang = Math.atan2(bz, bx);
+            var wob = 1 + Math.sin(ang * 3 + time * 0.0016) * 0.045
+                        + Math.sin(ang * 5 - time * 0.0011) * 0.03
+                        + Math.sin(ang * 2 + kneadTime * 0.004) * mixLevel * 0.05;
+            pos.setXYZ(i, bx * wob * spreadXZ, by, bz * wob * spreadXZ);
+          }
+          pos.needsUpdate = true;
+        }
+
+        // ---------- break / reset ----------
+        function doBreak() {
+          state = "broken";
+          stopStrain();
+          stopSizzle();
+          clearPeelAttached();
+          crackSound();
+          vibe([30, 40, 60]);
+          shake = reducedMotion ? 0 : 0.09;
+          if (!reducedMotion) slowUntil = performance.now() + 320;
+          brokenCount++;
+          updateStats();
+          if (viewMode === "squeeze") hint.textContent = "碎了！按住拖着揉，当手作袋继续捏";
+          meterRow.style.visibility = "hidden";
+          showToast("咔嚓！爆浆了");
+          mainMesh.updateWorldMatrix(true, false);
+          pressWorld.copy(pressLocal).applyMatrix4(mainMesh.matrixWorld);
+          rotGroup.visible = false;
+          stressSprite.visible = false;
+          brokenGroup.visible = true;
+          gooMat.color.set(gooColor);
+          puddleMat.color.set(gooColor);
+          gooSpread = 0.25;
+          gooPop = 0.25; gooPopV = 2.4; // core bursts out of the split, then settles
+          spawnBroken(rotGroup.position.y);
+          spawnParticles(pressWorld);
+        }
+        function reset() {
+          state = "intact";
+          pressure = 0; squash = 0; squashV = 0; dentDepth = 0; dentV = 0;
+          stretchX = 0; stretchY = 0; stretchVX = 0; stretchVY = 0; stretchTX = 0; stretchTY = 0;
+          pinchStretch = 0; pinchStretchV = 0; pinchTarget = 0;
+          stopSizzle();
+          squashGroup.position.y = 0;
+          crackStage = 0;
+          gooSpread = 0; gooSquash = 0; gooSquashV = 0; mixLevel = 0; kneadTime = 0;
+          gooPop = 0.3; gooPopV = 0;
+          tapCount = 0;
+          pinchBurstDone = false;
+          clearPeelAttached();
+          clearTapDyn();
+          clearParticles();
+          rotGroup.visible = true;
+          brokenGroup.visible = false;
+          rotGroup.rotation.y = 0;
+          squashGroup.scale.set(1, 1, 1);
+          buildShape();
+          meterRow.style.visibility = "visible";
+          hint.textContent = viewMode === "squeeze" ? "点它一下就裂开 · 按住蓄力捏碎" : "拖动旋转 · 双指或滚轮放大看细节 · 双击复位";
+          updateMeter();
+        }
+
+        // ---------- input ----------
+        var raycaster = new THREE.Raycaster();
+        var ndc = new THREE.Vector2();
+        var lastPX = 0, lastPY = 0, dragDist = 0;
+        var cv = renderer.domElement;
+        function setPressPoint(e) {
+          var r = cv.getBoundingClientRect();
+          ndc.x = ((e.clientX - r.left) / r.width) * 2 - 1;
+          ndc.y = -((e.clientY - r.top) / r.height) * 2 + 1;
+          raycaster.setFromCamera(ndc, camera);
+          if (state === "intact" && mainMesh) {
+            var hits = raycaster.intersectObject(mainMesh, false);
+            if (hits.length) {
+              pressLocal.copy(mainMesh.worldToLocal(hits[0].point.clone()));
+              pressUV = hits[0].uv ? { x: hits[0].uv.x, y: hits[0].uv.y } : null;
+              return;
+            }
+            // pressed the backdrop: aim at the front of the object
+            var dir = new THREE.Vector3();
+            camera.getWorldDirection(dir);
+            pressLocal.copy(dir.multiplyScalar(1.05));
+            pressLocal.y *= 0.6;
+          }
+        }
+        // gesture disambiguation: hold still = squeeze, drag = orbit,
+        // two fingers = pinch zoom. In 360 mode every drag orbits.
+        var pointers = new Map();
+        var gesture = "none"; // pending | squeeze | orbit | pinch
+        var downX = 0, downY = 0, holdTimer = null;
+        var pinchD0 = 0, pinchDist0 = 5.6;
+        function clampCam() {
+          camPhiT = Math.max(0.28, Math.min(1.5, camPhiT));
+          camDistT = Math.max(CAM_MIN, Math.min(CAM_MAX, camDistT));
+        }
+        function activatePress() {
+          if (gesture !== "pending") return;
+          gesture = "squeeze";
+          pressing = true;
+          dragDist = 0;
+          stretchTX = 0; stretchTY = 0;
+          if (state === "intact") startStrain();
+        }
+        function cancelPress() {
+          if (holdTimer) { clearTimeout(holdTimer); holdTimer = null; }
+          if (pressing) {
+            pressing = false;
+            stopStrain();
+            lastVibeLevel = 0;
+            if (state === "intact" && crackStage > 0 && tapCount === 0 && viewMode === "squeeze") hint.textContent = "松手裂纹会合上…一口气捏到底！";
+          }
+        }
+        cv.addEventListener("pointerdown", function (e) {
+          e.preventDefault();
+          ensureAudio();
+          pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
+          try { cv.setPointerCapture(e.pointerId); } catch (err) {}
+          if (pointers.size === 2) {
+            cancelPress();
+            if (peelDrag) {
+              peelDrag.mesh.position.copy(peelDrag.mesh.userData.homePos);
+              peelDrag.mesh.rotation.copy(peelDrag.mesh.userData.homeRot);
+              peelDrag = null;
+            }
+            var pts = Array.from(pointers.values());
+            pinchD0 = Math.hypot(pts[0].x - pts[1].x, pts[0].y - pts[1].y) || 1;
+            if (viewMode === "orbit") {
+              gesture = "pinch";
+              pinchDist0 = camDistT;
+            } else {
+              // two fingers in squeeze mode stretch the body apart
+              gesture = "pinchStretch";
+            }
+            return;
+          }
+          lastPX = e.clientX; lastPY = e.clientY;
+          downX = e.clientX; downY = e.clientY;
+          downTime = performance.now();
+          if (viewMode === "orbit") {
+            gesture = "orbit";
+          } else {
+            setPressPoint(e);
+            // instant contact tick: the sound starts on touch-down,
+            // not after the gesture resolves — no perceptible delay
+            if (state === "intact") playNoise(0.03, "highpass", 2000, 900, 0.10, 0);
+            // peel has priority: a drag that starts on a loose shell
+            // piece is a peel, never a squeeze or an orbit
+            if (state === "intact" && peelReady && peelGroup.children.length) {
+              var ph = raycaster.intersectObjects(peelGroup.children, true);
+              if (ph.length) {
+                var node = ph[0].object;
+                while (node && !node.userData.isPeel) node = node.parent;
+                if (node) {
+                  gesture = "peel";
+                  peelDrag = { mesh: node, startX: e.clientX, startY: e.clientY, len: 0, sounded: false };
+                  return;
+                }
+              }
+            }
+            gesture = "pending";
+            if (holdTimer) clearTimeout(holdTimer);
+            holdTimer = setTimeout(activatePress, 130);
+          }
+        });
+        cv.addEventListener("pointermove", function (e) {
+          if (!pointers.has(e.pointerId)) return;
+          var dx = e.clientX - lastPX, dy = e.clientY - lastPY;
+          pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
+          if ((gesture === "pinch" || gesture === "pinchStretch") && pointers.size === 2) {
+            var pts = Array.from(pointers.values());
+            var d = Math.hypot(pts[0].x - pts[1].x, pts[0].y - pts[1].y) || 1;
+            if (gesture === "pinch") {
+              camDistT = pinchDist0 * (pinchD0 / d);
+              clampCam();
+            } else {
+              pinchTarget = Math.max(-0.15, Math.min(0.8, (d / pinchD0 - 1) * 1.15));
+            }
+            return;
+          }
+          lastPX = e.clientX; lastPY = e.clientY;
+          if (gesture === "peel" && peelDrag) {
+            var pdx = e.clientX - peelDrag.startX;
+            var pdy = e.clientY - peelDrag.startY;
+            peelDrag.len = Math.hypot(pdx, pdy);
+            var lift = Math.min(0.55, peelDrag.len * 0.0045);
+            var pm = peelDrag.mesh;
+            pm.position.copy(pm.userData.homePos).addScaledVector(pm.userData.dir, lift);
+            pm.rotation.set(
+              pm.userData.homeRot.x + pdy * 0.004,
+              pm.userData.homeRot.y,
+              pm.userData.homeRot.z - pdx * 0.004
+            );
+            if (peelDrag.len > 26 && !peelDrag.sounded) {
+              peelDrag.sounded = true;
+              playNoise(0.08, "lowpass", 1100, 400, 0.14, 0);
+              vibe(6);
+            }
+            return;
+          }
+          if (gesture === "pending") {
+            if (Math.hypot(e.clientX - downX, e.clientY - downY) > 10) {
+              if (holdTimer) { clearTimeout(holdTimer); holdTimer = null; }
+              gesture = "orbit";
+            } else {
+              return;
+            }
+          }
+          if (gesture === "orbit") {
+            camThetaT -= dx * 0.0075;
+            camPhiT -= dy * 0.005;
+            clampCam();
+          } else if (gesture === "squeeze") {
+            dragDist += Math.abs(dx) + Math.abs(dy);
+            if (state === "intact") {
+              setPressPoint(e);
+              // hold-then-drag stretches the body toward the drag direction
+              stretchTX = Math.max(-0.55, Math.min(0.55, stretchTX + dx * 0.0024));
+              stretchTY = Math.max(-0.45, Math.min(0.45, stretchTY - dy * 0.0024));
+            }
+          }
+        });
+        function endPointer(e) {
+          var wasGesture = gesture;
+          var isUp = e.type === "pointerup";
+          pointers.delete(e.pointerId);
+          if (pointers.size === 0) {
+            // peel resolves on release: dragged far enough, the piece
+            // comes off; short drag, it springs back onto the shell
+            if (wasGesture === "peel" && peelDrag) {
+              var pd = peelDrag; peelDrag = null;
+              gesture = "none";
+              cancelPress();
+              if (pd.len > 55) completePeel(pd.mesh);
+              else {
+                pd.mesh.position.copy(pd.mesh.userData.homePos);
+                pd.mesh.rotation.copy(pd.mesh.userData.homeRot);
+              }
+              return;
+            }
+            // a quick, near-stationary release on the intact shell is a
+            // tap — crack right there. A hold charges pressure instead,
+            // a moved drag orbits/stretches: the three never collide.
+            var quickTap = isUp && viewMode === "squeeze" && state === "intact"
+              && (wasGesture === "pending" || wasGesture === "squeeze")
+              && performance.now() - downTime < 320
+              && Math.hypot(e.clientX - downX, e.clientY - downY) < 12
+              && pressure < 22;
+            cancelPress();
+            if (wasGesture === "pinchStretch") { pinchTarget = 0; pinchBurstDone = false; }
+            gesture = "none";
+            if (quickTap) doTapCrack();
+          } else if (gesture === "pinch" || gesture === "pinchStretch") {
+            if (gesture === "pinchStretch") { pinchTarget = 0; pinchBurstDone = false; playBlip(240, 90, 0.16, 0.10, "sine", 0); }
+            gesture = "none";
+            var rest = Array.from(pointers.values())[0];
+            if (rest) { lastPX = rest.x; lastPY = rest.y; downX = rest.x; downY = rest.y; }
+          }
+        }
+        cv.addEventListener("pointerup", endPointer);
+        cv.addEventListener("pointercancel", endPointer);
+        cv.addEventListener("wheel", function (e) {
+          e.preventDefault();
+          camDistT *= (1 + e.deltaY * 0.0011);
+          clampCam();
+        }, { passive: false });
+        cv.addEventListener("dblclick", function (e) {
+          e.preventDefault();
+          camThetaT = 0; camPhiT = 1.35; camDistT = 5.6;
+          showToast("视角复位");
+        });
+
+        // ---------- main loop ----------
+        var clock = new THREE.Clock();
+        var elapsed = 0;
+        function frame() {
+          requestAnimationFrame(frame);
+          var rawDt = Math.min(0.05, clock.getDelta());
+          var now = performance.now();
+          timeScale = now < slowUntil ? 0.25 : Math.min(1, timeScale + rawDt * 2.2);
+          var dt = rawDt * timeScale;
+          elapsed += dt;
+
+          if (state === "intact") {
+            if (pressing) {
+              pressure = Math.min(100, pressure + dt * 62);
+              // strain creak follows pressure; micro-ticks and faint
+              // vibration pulses build tension as the shell nears breaking
+              if (strainGain && strainFilter) {
+                strainGain.gain.value = 0.010 + (pressure / 100) * 0.05;
+                strainFilter.frequency.value = 320 + pressure * 7;
+              }
+              if (pressure > 22 && now - lastTick > 105 && Math.random() < 0.65) {
+                lastTick = now;
+                playNoise(0.025, "bandpass", 2000 + Math.random() * 1800, 900, 0.018 + pressure * 0.0005, 0);
+              }
+              var vLvl = Math.floor(pressure / 20);
+              if (vLvl > lastVibeLevel) {
+                lastVibeLevel = vLvl;
+                if (vLvl >= 3) vibe(8);
+              }
+              var stage = pressure > 88 ? 3 : pressure > 74 ? 2 : pressure > 56 ? 1 : 0;
+              if (stage > crackStage) {
+                crackStage = stage;
+                buildCracks(stage);
+                creakSound(stage);
+                vibe(12);
+                shake = Math.max(shake, 0.02);
+                if (viewMode === "squeeze") hint.textContent = stage === 1 ? "出裂纹了…再用点力" : stage === 2 ? "壳在咯吱响，快了！" : "就差一下——捏爆它！";
+              }
+              updateMeter();
+              if (pressure >= 100) { doBreak(); }
+            } else {
+              pressure = Math.max(0, pressure - dt * 130);
+              // hold-only cracks heal when you let go; tap cracks are
+              // permanent damage — they stay, and lead into peeling
+              if (pressure === 0 && crackStage > 0 && tapCount === 0) {
+                crackStage = 0; clearCracks();
+                if (viewMode === "squeeze") hint.textContent = "点它一下就裂开 · 按住蓄力捏碎";
+              }
+              updateMeter();
+              if (!reducedMotion && viewMode === "squeeze" && gesture !== "peel") rotGroup.rotation.y += rawDt * 0.25;
+            }
+            // soft-body springs integrated at 120Hz substeps; underdamped,
+            // so release overshoots and the body jiggles back with after-shake
+            var steps = Math.max(1, Math.min(6, Math.round(rawDt / (1 / 120))));
+            var h = rawDt / steps;
+            var sqTgt = pressing ? pressure / 100 : 0;
+            var dnTgt = pressing ? (pressure / 100) * 0.30 : 0;
+            var stXT = (gesture === "squeeze" && pressing) ? stretchTX : 0;
+            var stYT = (gesture === "squeeze" && pressing) ? stretchTY : 0;
+            for (var stp = 0; stp < steps; stp++) {
+              squashV += ((sqTgt - squash) * 150 - squashV * 9) * h;
+              squash += squashV * h;
+              dentV += ((dnTgt - dentDepth) * 175 - dentV * 13) * h;
+              dentDepth += dentV * h;
+              stretchVX += ((stXT - stretchX) * 115 - stretchVX * 8) * h;
+              stretchX += stretchVX * h;
+              stretchVY += ((stYT - stretchY) * 115 - stretchVY * 8) * h;
+              stretchY += stretchVY * h;
+              pinchStretchV += ((pinchTarget - pinchStretch) * 95 - pinchStretchV * 8) * h;
+              pinchStretch += pinchStretchV * h;
+            }
+            if (!pressing && pinchTarget === 0 && Math.abs(squash) < 0.002 && Math.abs(squashV) < 0.002) { squash = 0; squashV = 0; }
+            squash = Math.max(-0.22, Math.min(1, squash));
+            dentDepth = Math.max(-0.06, Math.min(0.34, dentDepth));
+            // volume conservation: whatever height is lost bulges sideways
+            var syE = 1 - 0.38 * squash;
+            var sxz = Math.pow(1 / Math.max(0.45, syE), 0.5);
+            syE *= (1 - pinchStretch * 0.22);
+            squashGroup.scale.set(sxz * (1 + pinchStretch), syE, sxz * (1 - pinchStretch * 0.4));
+            // bottom stays glued to the stand while the top compresses
+            squashGroup.position.y = -shapeBottom * (1 - syE);
+            blobShadow.scale.setScalar(blobBase * (1 + squash * 0.30 + pinchStretch * 0.25));
+            blobShadow.material.opacity = 0.30 + squash * 0.14;
+            if (Math.abs(dentDepth) > 0.0015 || pressing || Math.abs(stretchX) + Math.abs(stretchY) > 0.004) applyDent();
+            // two fingers pulled past the shell's limit: burst a bigger
+            // sheet of shell off along the stretch (once per pinch)
+            if (pinchStretch > 0.52 && !pinchBurstDone) {
+              pinchBurstDone = true;
+              stretchBurst();
+            }
+            // stretch sizzle + continuous light vibration while拉伸
+            var stretchAct = Math.abs(stretchX) + Math.abs(stretchY) + Math.abs(pinchStretch);
+            if (stretchAct > 0.05) {
+              startSizzle();
+              if (sizzleGain) sizzleGain.gain.value = Math.min(0.10, 0.02 + stretchAct * 0.08 + Math.abs(stretchVX) * 0.04);
+              if (now - lastStretchVibe > 190) { lastStretchVibe = now; vibe(4); }
+            } else {
+              stopSizzle();
+            }
+            // stress whitening at press point
+            if (pressing && pressure > 4) {
+              stressSprite.visible = true;
+              stressSprite.position.copy(pressLocal).multiplyScalar(1.04);
+              var ss = 0.5 + pressure * 0.008;
+              stressSprite.scale.set(ss, ss, 1);
+              stressSprite.material.opacity = 0.16 + (pressure / 100) * 0.4;
+            } else {
+              stressSprite.visible = false;
+            }
+          } else {
+            var gTarget = pressing ? 1 : 0;
+            var gSteps = Math.max(1, Math.min(6, Math.round(rawDt / (1 / 120))));
+            var gh = rawDt / gSteps;
+            for (var gst = 0; gst < gSteps; gst++) {
+              gooSquashV += ((gTarget - gooSquash) * 120 - gooSquashV * 7.5) * gh;
+              gooSquash += gooSquashV * gh;
+              gooPopV += ((1 - gooPop) * 105 - gooPopV * 8.5) * gh;
+              gooPop += gooPopV * gh;
+            }
+            gooSquash = Math.max(-0.2, Math.min(1, gooSquash));
+            if (pressing) {
+              kneadTime += rawDt * 1000;
+              gooSpread = Math.min(1, gooSpread + dt * 0.35);
+              mixLevel = Math.min(1, mixLevel + dt * (0.22 + dragDist * 0.0004));
+              squishSound(Math.abs(gooSquash));
+              if (now - lastTick > 850) { lastTick = now; vibe(7); }
+            }
+            dragDist *= Math.pow(0.02, rawDt);
+            var gSy = 1 - gooSquash * 0.38;
+            var gSxz = Math.pow(1 / Math.max(0.45, gSy), 0.5);
+            var reveal = Math.max(0.12, gooPop);
+            gooMesh.scale.set(gSxz * (0.5 + 0.5 * reveal), gSy * (0.4 + 0.6 * reveal), gSxz * (0.5 + 0.5 * reveal));
+            gooMesh.position.y = 0.40 - gooSquash * 0.08;
+            blobShadow.scale.setScalar(blobBase * (0.85 + gooSpread * 0.75));
+            blobShadow.material.opacity = 0.26 + gooSpread * 0.1;
+            applyGooWobble(now);
+            if (mixLevel > 0.02) {
+              var gc = new THREE.Color(gooColor);
+              var sc2 = new THREE.Color(shellColor);
+              gooMat.color.copy(gc).lerp(sc2, mixLevel * 0.35);
+            }
+            puddle.scale.setScalar(0.55 + gooSpread * 0.95);
+            updateBroken(dt, now);
+          }
+
+          updateParticles(dt);
+          updateTapDyn(dt);
+
+          shake *= Math.pow(0.001, rawDt);
+          if (shake < 0.002) shake = 0;
+          // spherical orbit camera: theta/phi/dist ease toward targets
+          var ease = Math.min(1, rawDt * 9);
+          camTheta += (camThetaT - camTheta) * ease;
+          camPhi += (camPhiT - camPhi) * ease;
+          camDist += (camDistT - camDist) * ease;
+          var bob = (viewMode === "squeeze" && !reducedMotion) ? Math.sin(elapsed * 0.7) * 0.03 : 0;
+          camera.position.set(
+            Math.sin(camPhi) * Math.sin(camTheta) * camDist + (Math.random() - 0.5) * shake,
+            0.95 + Math.cos(camPhi) * camDist + bob + (Math.random() - 0.5) * shake * 0.7,
+            Math.sin(camPhi) * Math.cos(camTheta) * camDist
+          );
+          camera.lookAt(0, 0.95, 0);
+          renderer.render(scene, camera);
+        }
+
+        // ---------- resize ----------
+        function resize() {
+          var w = stageEl.clientWidth, h = stageEl.clientHeight;
+          if (!w || !h) return;
+          renderer.setSize(w, h, false);
+          camera.aspect = w / h;
+          camera.updateProjectionMatrix();
+        }
+        window.addEventListener("resize", resize);
+
+        // ---------- controls ----------
+        var chips = document.querySelectorAll("#shapeChips .chip");
+        chips.forEach(function (chip) {
+          chip.addEventListener("click", function () {
+            chips.forEach(function (c) { c.setAttribute("aria-pressed", "false"); });
+            chip.setAttribute("aria-pressed", "true");
+            shape = chip.getAttribute("data-shape");
+            shellColor = SHAPES[shape].shell;
+            gooColor = SHAPES[shape].goo;
+            document.getElementById("shellColor").value = shellColor;
+            document.getElementById("gooColor").value = gooColor;
+            reset();
+            applyFinish();
+            showToast("换好了，捏它！");
+          });
+        });
+        document.getElementById("shellColor").addEventListener("input", function (e) {
+          shellColor = e.target.value;
+          paintTexture();
+          if (shape === "heart" && !texImage) { shellMat.color.set(shellColor); shellMat.needsUpdate = true; }
+        });
+        document.getElementById("gooColor").addEventListener("input", function (e) {
+          gooColor = e.target.value;
+          applyFinish();
+          if (state === "broken") { gooMat.color.set(gooColor); puddleMat.color.set(gooColor); }
+          if (shape === "cake" && !texImage) paintTexture();
+        });
+        document.getElementById("fileInput").addEventListener("change", function (e) {
+          var f = e.target.files && e.target.files[0];
+          if (!f) return;
+          var url = URL.createObjectURL(f);
+          var img = new Image();
+          img.onload = function () {
+            texImage = img;
+            document.getElementById("fileName").textContent = f.name;
+            if (state === "broken") { reset(); } else { buildShape(); }
+            showToast("花纹贴上了");
+          };
+          img.src = url;
+        });
+        document.getElementById("clearTex").addEventListener("click", function () {
+          texImage = null;
+          document.getElementById("fileName").textContent = "";
+          document.getElementById("fileInput").value = "";
+          if (state === "broken") { reset(); } else { buildShape(); }
+          showToast("花纹已清除");
+        });
+        document.getElementById("resetBtn").addEventListener("click", function () {
+          ensureAudio();
+          reset();
+          showToast("新的一个，完好无损");
+        });
+        var soundBtn = document.getElementById("soundBtn");
+        soundBtn.addEventListener("click", function () {
+          soundOn = !soundOn;
+          soundBtn.textContent = soundOn ? "声音：开" : "声音：关";
+          soundBtn.setAttribute("aria-pressed", String(soundOn));
+          if (soundOn) { ensureAudio(); if (pressing && state === "intact") startStrain(); }
+          else stopStrain();
+        });
+        var vibeBtn = document.getElementById("vibeBtn");
+        vibeBtn.addEventListener("click", function () {
+          vibeOn = !vibeOn;
+          vibeBtn.textContent = vibeOn ? "震动：开" : "震动：关";
+          vibeBtn.setAttribute("aria-pressed", String(vibeOn));
+          if (vibeOn) vibe(20);
+        });
+
+        // ---------- finish: per-shape layered materials ----------
+        // shell / core / decor each carry their own roughness + clearcoat;
+        // the 湿亮/哑光 toggle only shifts the shell's surface response
+        var SHAPE_MAT = {
+          mango: { rough: 0.21, cc: 1.0, ccRough: 0.08, sheen: 0.25, env: 1.3, bump: 0.018 },
+          egg:   { rough: 0.78, cc: 0.06, ccRough: 0.6, sheen: 0.2, env: 0.5, bump: 0.035 },
+          cake:  { rough: 0.58, cc: 0.14, ccRough: 0.5, sheen: 0.5, env: 0.6, bump: 0.022 },
+          peach: { rough: 0.46, cc: 0.3, ccRough: 0.35, sheen: 1.0, env: 0.8, bump: 0.028 },
+          heart: { rough: 0.15, cc: 1.0, ccRough: 0.06, sheen: 0.15, env: 1.4, bump: 0.006 }
+        };
+        var finishGlossBtn = document.getElementById("finishGloss");
+        var finishMatteBtn = document.getElementById("finishMatte");
+        function applyFinish() {
+          var gloss = finish === "gloss";
+          finishGlossBtn.setAttribute("aria-pressed", String(gloss));
+          finishMatteBtn.setAttribute("aria-pressed", String(!gloss));
+          var sm = SHAPE_MAT[shape] || SHAPE_MAT.mango;
+          if (gloss) {
+            shellMat.roughness = sm.rough; shellMat.clearcoat = sm.cc; shellMat.clearcoatRoughness = sm.ccRough;
+            shellMat.envMapIntensity = sm.env;
+            gooMat.roughness = 0.14; gooMat.clearcoat = 1; gooMat.clearcoatRoughness = 0.12; gooMat.envMapIntensity = 1.2;
+            shardMat.roughness = Math.min(0.4, sm.rough + 0.08);
+          } else {
+            shellMat.roughness = Math.min(0.92, sm.rough + 0.38); shellMat.clearcoat = sm.cc * 0.25; shellMat.clearcoatRoughness = 0.7;
+            shellMat.envMapIntensity = sm.env * 0.55;
+            gooMat.roughness = 0.34; gooMat.clearcoat = 0.5; gooMat.clearcoatRoughness = 0.35;
+            shardMat.roughness = 0.6;
+          }
+          shellMat.sheen = sm.sheen;
+          shellMat.sheenColor.set(shape === "peach" ? 0xffd9c2 : 0xffe2b8);
+          shellMat.bumpMap = bumpTex;
+          shellMat.bumpScale = sm.bump;
+          // the core only ghosts through the shell: a whisper of its colour
+          shellMat.emissive = new THREE.Color(gooColor);
+          shellMat.emissiveIntensity = 0.045;
+          shellMat.needsUpdate = true;
+          gooMat.needsUpdate = true;
+          shardMat.needsUpdate = true;
+        }
+        finishGlossBtn.addEventListener("click", function () { finish = "gloss"; applyFinish(); showToast("湿亮质感：玻璃蜡面"); });
+        finishMatteBtn.addEventListener("click", function () { finish = "matte"; applyFinish(); showToast("哑光质感：细孔软皮面"); });
+        applyFinish();
+
+        // ---------- view mode + zoom controls ----------
+        var modeSqueezeBtn = document.getElementById("modeSqueeze");
+        var modeOrbitBtn = document.getElementById("modeOrbit");
+        function setViewMode(m) {
+          if (viewMode === m) return;
+          viewMode = m;
+          cancelPress();
+          gesture = "none";
+          modeSqueezeBtn.setAttribute("aria-pressed", String(m === "squeeze"));
+          modeOrbitBtn.setAttribute("aria-pressed", String(m === "orbit"));
+          if (m === "orbit") {
+            hint.textContent = state === "intact"
+              ? "拖动旋转 · 双指或滚轮放大看细节 · 双击复位"
+              : "拖动旋转看碎片和果浆 · 双指或滚轮放大 · 双击复位";
+            showToast("360° 查看：拖动旋转，捏合放大");
+          } else {
+            hint.textContent = state === "intact"
+              ? (peelReady ? "壳松了！按住一片壳往外拖，把它剥下来" : "点它一下就裂开 · 按住蓄力捏碎")
+              : "碎了！按住拖着揉，当手作袋继续捏";
+            showToast("捏一捏：点按裂开、长按捏碎，拖动旋转请切到 360° 查看");
+          }
+        }
+        modeSqueezeBtn.addEventListener("click", function () { setViewMode("squeeze"); });
+        modeOrbitBtn.addEventListener("click", function () { ensureAudio(); setViewMode("orbit"); });
+        document.getElementById("zoomIn").addEventListener("click", function () { camDistT *= 0.76; clampCam(); });
+        document.getElementById("zoomOut").addEventListener("click", function () { camDistT *= 1.3; clampCam(); });
+        document.getElementById("zoomReset").addEventListener("click", function () {
+          camThetaT = 0; camPhiT = 1.35; camDistT = 5.6;
+          showToast("视角复位");
+        });
+
+        // ---------- natural colour palettes (real food / object colours) ----------
+        var SHELL_SWATCHES = ["#f2a81d", "#e2703a", "#9aa84f", "#f1ecdd", "#fbf3df", "#f6c39a", "#c8102e", "#6b4423", "#4a7c3a", "#fdf6ec"];
+        var GOO_SWATCHES = ["#ffb340", "#f0be4e", "#f49b6c", "#6b4423", "#fdf6ec", "#e2703a", "#c8102e", "#f2c14e"];
+        function buildSwatches(elId, colors, target) {
+          var box = document.getElementById(elId);
+          colors.forEach(function (col) {
+            var b = document.createElement("button");
+            b.type = "button";
+            b.className = "swatch";
+            b.style.background = col;
+            b.setAttribute("aria-label", (target === "shell" ? "壳色 " : "芯色 ") + col);
+            b.addEventListener("click", function () {
+              if (target === "shell") {
+                shellColor = col;
+                document.getElementById("shellColor").value = col;
+                paintTexture();
+                if (shape === "heart" && !texImage) { shellMat.color.set(shellColor); shellMat.needsUpdate = true; }
+              } else {
+                gooColor = col;
+                document.getElementById("gooColor").value = col;
+                applyFinish();
+                if (state === "broken") { gooMat.color.set(gooColor); puddleMat.color.set(gooColor); }
+                if (shape === "cake" && !texImage) paintTexture();
+              }
+            });
+            box.appendChild(b);
+          });
+        }
+        buildSwatches("shellSwatches", SHELL_SWATCHES, "shell");
+        buildSwatches("gooSwatches", GOO_SWATCHES, "goo");
+
+        // ---------- 今日手帐 (in-memory for this visit; download to keep) ----------
+        var journalEntries = [];
+        var selectedMood = "";
+        var moodChipEls = document.querySelectorAll("#moodChips .chip");
+        moodChipEls.forEach(function (chip) {
+          chip.addEventListener("click", function () {
+            var was = chip.getAttribute("aria-pressed") === "true";
+            moodChipEls.forEach(function (c) { c.setAttribute("aria-pressed", "false"); });
+            if (was) { selectedMood = ""; }
+            else { chip.setAttribute("aria-pressed", "true"); selectedMood = chip.getAttribute("data-mood"); }
+          });
+        });
+        var journalDateEl = document.getElementById("journalDate");
+        var nowDate = new Date();
+        journalDateEl.textContent = nowDate.toLocaleDateString("zh-CN", { year: "numeric", month: "long", day: "numeric", weekday: "long" });
+        var entriesEl = document.getElementById("entries");
+        var tileMood = document.getElementById("tileMood");
+        document.getElementById("addEntryBtn").addEventListener("click", function () {
+          var note = document.getElementById("moodNote").value.trim();
+          if (!selectedMood && !note) { showToast("先选个心情，或写一句话"); return; }
+          var t = new Date();
+          var entry = {
+            time: t.toLocaleTimeString("zh-CN", { hour: "2-digit", minute: "2-digit" }),
+            mood: selectedMood || "随手记",
+            note: note,
+            count: brokenCount,
+            saved: brokenCount * 48
+          };
+          journalEntries.unshift(entry);
+          var empty = document.getElementById("entriesEmpty");
+          if (empty) empty.remove();
+          var div = document.createElement("div");
+          div.className = "entry";
+          var head = document.createElement("div");
+          head.className = "entry-head";
+          var moodSpan = document.createElement("span");
+          moodSpan.className = "entry-mood";
+          moodSpan.textContent = entry.mood;
+          var metaSpan = document.createElement("span");
+          metaSpan.textContent = entry.time + " · 已捏 " + entry.count + " 个 · 约省 ¥" + entry.saved;
+          head.appendChild(moodSpan);
+          head.appendChild(metaSpan);
+          div.appendChild(head);
+          if (entry.note) {
+            var noteP = document.createElement("div");
+            noteP.className = "entry-note";
+            noteP.textContent = entry.note;
+            div.appendChild(noteP);
+          }
+          entriesEl.insertBefore(div, entriesEl.firstChild);
+          tileMood.textContent = entry.mood;
+          document.getElementById("moodNote").value = "";
+          showToast("记好了，今天的手帐 +1");
+        });
+        document.getElementById("downloadBtn").addEventListener("click", function () {
+          var d = new Date();
+          var lines = [];
+          lines.push("脆皮捏捏 · 今日手帐");
+          lines.push(d.toLocaleDateString("zh-CN", { year: "numeric", month: "long", day: "numeric", weekday: "long" }));
+          lines.push("今天捏了 " + brokenCount + " 个 · 约省 ¥" + (brokenCount * 48) + "（按一只 ¥48 粗估）");
+          lines.push("");
+          if (!journalEntries.length) {
+            lines.push("（还没有心情记录）");
+          } else {
+            var reversed = journalEntries.slice().reverse();
+            for (var i = 0; i < reversed.length; i++) {
+              var en = reversed[i];
+              lines.push(en.time + " · " + en.mood + " · 已捏 " + en.count + " 个 · 约省 ¥" + en.saved);
+              if (en.note) lines.push("  " + en.note);
+            }
+          }
+          var blob = new Blob([lines.join("\n")], { type: "text/plain;charset=utf-8" });
+          var a = document.createElement("a");
+          a.href = URL.createObjectURL(blob);
+          a.download = "脆皮捏捏手帐-" + d.toISOString().slice(0, 10) + ".txt";
+          document.body.appendChild(a);
+          a.click();
+          a.remove();
+          setTimeout(function () { URL.revokeObjectURL(a.href); }, 2000);
+          showToast("手帐已下载");
+        });
+
+        buildShape();
+        resize();
+        updateMeter();
+        frame();
+      })();
+    </script>
+  </body>
+</html>
