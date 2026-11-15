@@ -329,6 +329,13 @@
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/0.160.0/three.min.js"></script>
     <script>
+      // if the primary CDN failed, pull the same build from a mirror
+      // before the app script runs (it checks for THREE itself)
+      if (typeof THREE === "undefined") {
+        document.write('<script src="https:\/\/unpkg.com\/three@0.160.0\/build\/three.min.js"><\/script>');
+      }
+    </script>
+    <script>
       (function () {
         "use strict";
         var hint = document.getElementById("hint");
@@ -600,14 +607,15 @@
             g.fillRect(x, y, w, h); g.fillRect(x, y, w, h);
             g.restore();
           }
-          // key strip softbox (narrow, very bright → the travelling streak)
-          strip(210, 30, 34, 300, "rgba(255,252,240,0.98)", 18);
-          // pinpoint strip: a very thin, intense sliver — this is what
-          // puts a small hard local highlight on the most convex point
-          // of the skin instead of a broad plastic sheen
-          strip(292, 44, 7, 210, "rgba(255,255,255,1)", 6);
-          // second cooler strip for the opposite edge
-          strip(700, 20, 30, 230, "rgba(226,238,255,0.85)", 20);
+          // key softbox: WIDE and soft. Previous builds used a narrow
+          // strip plus a 7px pinpoint sliver — in equirect reflection
+          // on a convex body those draw one hard vertical white band
+          // down the fruit, the single biggest "plastic" tell in the
+          // renders. A broad soft source gives a wide, dim, broken
+          // sheen like window light on real skin.
+          strip(170, 26, 120, 300, "rgba(255,250,236,0.62)", 46);
+          // second cooler softbox for the opposite edge, also wide
+          strip(660, 20, 110, 230, "rgba(226,238,255,0.5)", 44);
           // warm bounce card low right (orange rim source)
           strip(880, 300, 120, 130, "rgba(255,150,60,0.55)", 42);
           // soft top glow so the crown is never dead black
@@ -623,8 +631,8 @@
         })();
 
         // lights: warm studio key + rim + fill
-        scene.add(new THREE.HemisphereLight(0xfff2dd, 0x6b4a2c, 0.34));
-        var key = new THREE.DirectionalLight(0xfff3da, 2.7);
+        scene.add(new THREE.HemisphereLight(0xfff2dd, 0x6b4a2c, 0.52));
+        var key = new THREE.DirectionalLight(0xfff3da, 2.05);
         key.position.set(3.2, 5.5, 4.2);
         key.castShadow = true;
         key.shadow.mapSize.set(2048, 2048);
@@ -634,24 +642,22 @@
         key.shadow.radius = 6;
         key.shadow.bias = -0.0004;
         scene.add(key);
-        var rim = new THREE.DirectionalLight(0xff9a4d, 1.5);
+        var rim = new THREE.DirectionalLight(0xff9a4d, 1.05);
         rim.position.set(-4.5, 2.6, -3.5);
         scene.add(rim);
         var fill = new THREE.DirectionalLight(0xdfeaff, 0.30);
         fill.position.set(-3, 1.5, 4.5);
         scene.add(fill);
-        // tight specular kicker: small bright source whose highlight sits
-        // on the most convex part of the curve and slides as it turns
-        var spec = new THREE.PointLight(0xffffff, 10, 0, 2);
+        // specular kickers kept WEAK: at 10/5 these two point lights
+        // burned a white-hot spot onto the cheek that read as varnish.
+        // Real fruit glints are small and dim against the diffuse skin.
+        var spec = new THREE.PointLight(0xffffff, 2.6, 0, 2);
         spec.position.set(-1.7, 3.1, 3.4);
         scene.add(spec);
-        // second pinpoint source, low and frontal: a small secondary
-        // glint on the lower cheek so highlights read as local spots
-        // on a real surface, not one uniform glow
-        var spec2 = new THREE.PointLight(0xfff6e0, 5, 0, 2);
+        var spec2 = new THREE.PointLight(0xfff6e0, 1.4, 0, 2);
         spec2.position.set(1.9, 0.7, 3.1);
         scene.add(spec2);
-        var topLight = new THREE.SpotLight(0xffe9c0, 22, 0, 0.5, 0.65, 1.6);
+        var topLight = new THREE.SpotLight(0xffe9c0, 13, 0, 0.5, 0.65, 1.6);
         topLight.position.set(0.6, 6.2, 1.2);
         topLight.target.position.set(0, 0.9, 0);
         scene.add(topLight); scene.add(topLight.target);
@@ -783,7 +789,7 @@
             g.fillStyle = mg; g.fillRect(0, 0, W2, H2 * 0.42);
             // sun-blush: warm orange-red cheek, low on one side
             var rg2 = g.createRadialGradient(1450, 640, 30, 1450, 640, 620);
-            rg2.addColorStop(0, "rgba(226,84,32,0.55)"); rg2.addColorStop(0.6, "rgba(232,110,40,0.22)"); rg2.addColorStop(1, "rgba(232,110,40,0)");
+            rg2.addColorStop(0, "rgba(226,84,32,0.68)"); rg2.addColorStop(0.6, "rgba(232,110,40,0.30)"); rg2.addColorStop(1, "rgba(232,110,40,0)");
             g.fillStyle = rg2; g.fillRect(0, 0, W2, H2);
             var rg2b = g.createRadialGradient(420, 760, 20, 420, 760, 380);
             rg2b.addColorStop(0, "rgba(230,100,40,0.28)"); rg2b.addColorStop(1, "rgba(230,100,40,0)");
@@ -791,18 +797,35 @@
             // lenticel speckles: tiny pale dots, denser near the crown
             for (var i = 0; i < 1500; i++) {
               var sx = R() * W2, sy = Math.pow(R(), 1.5) * H2;
-              g.fillStyle = R() < 0.6 ? "rgba(255,240,190,0.20)" : "rgba(150,100,20,0.16)";
+              g.fillStyle = R() < 0.6 ? "rgba(255,240,190,0.32)" : "rgba(150,100,20,0.27)";
               g.beginPath(); g.arc(sx, sy, 1 + R() * 2.2, 0, Math.PI * 2); g.fill();
             }
-            // faint vertical skin streaks
-            g.fillStyle = "rgba(190,120,10,0.05)";
+            // vertical skin streaks
+            g.fillStyle = "rgba(190,120,10,0.10)";
             for (var st2 = 0; st2 < 46; st2++) { g.fillRect(R() * W2, 0, 2 + R() * 5, H2); }
-            // ---- realism pass: the layers that stop it reading as plastic ----
+            // ---- realism pass, SECOND attempt at full strength ----
+            // The first pass used alphas of 0.09–0.13; ACES tone mapping
+            // plus the old hard lighting washed them out completely in
+            // the actual renders (testers saw a smooth gradient). These
+            // layers now run at roughly double contrast, and a new
+            // large-scale value structure (deep base, pale shoulder)
+            // is laid down first so the skin has real tonal geography
+            // before any fine detail goes on.
+            var shadeB = g.createLinearGradient(0, H2 * 0.55, 0, H2);
+            shadeB.addColorStop(0, "rgba(146,64,6,0)");
+            shadeB.addColorStop(1, "rgba(146,64,6,0.30)");
+            g.fillStyle = shadeB; g.fillRect(0, H2 * 0.55, W2, H2 * 0.45);
+            var deep1 = g.createRadialGradient(1150, 830, 30, 1150, 830, 560);
+            deep1.addColorStop(0, "rgba(196,84,14,0.34)"); deep1.addColorStop(1, "rgba(196,84,14,0)");
+            g.fillStyle = deep1; g.fillRect(0, 0, W2, H2);
+            var deep2 = g.createRadialGradient(300, 300, 20, 300, 300, 480);
+            deep2.addColorStop(0, "rgba(140,150,58,0.30)"); deep2.addColorStop(1, "rgba(140,150,58,0)");
+            g.fillStyle = deep2; g.fillRect(0, 0, W2, H2);
             // 1) broad colour mottling: uneven ripening, yellow-green
             //    patches breathing through the orange, never uniform
-            for (var mo = 0; mo < 90; mo++) {
+            for (var mo = 0; mo < 120; mo++) {
               var mx = R() * W2, my = R() * H2, mr = 60 + R() * 220;
-              var mcols = ["rgba(169,176,76,0.10)", "rgba(246,168,29,0.10)", "rgba(221,116,20,0.09)", "rgba(233,179,42,0.11)"];
+              var mcols = ["rgba(169,176,76,0.21)", "rgba(246,168,29,0.20)", "rgba(221,116,20,0.19)", "rgba(233,179,42,0.22)"];
               var mc = mcols[Math.floor(R() * mcols.length)];
               var mg2 = g.createRadialGradient(mx, my, 2, mx, my, mr);
               mg2.addColorStop(0, mc); mg2.addColorStop(1, "rgba(0,0,0,0)");
@@ -813,33 +836,33 @@
             for (var bl = 0; bl < 26; bl++) {
               var bx = R() * W2, by = Math.pow(R(), 1.6) * H2 * 0.75, br = 50 + R() * 150;
               var bg2 = g.createRadialGradient(bx, by, 2, bx, by, br);
-              bg2.addColorStop(0, "rgba(255,250,230,0.13)"); bg2.addColorStop(1, "rgba(255,250,230,0)");
+              bg2.addColorStop(0, "rgba(255,250,230,0.19)"); bg2.addColorStop(1, "rgba(255,250,230,0)");
               g.fillStyle = bg2; g.fillRect(bx - br, by - br, br * 2, br * 2);
             }
             // 3) russet corking around the stem end (top of the map):
             //    rough tan-brown scurf real fruit gets near the stalk
-            for (var ru = 0; ru < 260; ru++) {
-              var rx = R() * W2, ry = Math.pow(R(), 2.2) * H2 * 0.16;
-              g.fillStyle = "rgba(146,104,52," + (0.10 + R() * 0.16) + ")";
+            for (var ru = 0; ru < 320; ru++) {
+              var rx = R() * W2, ry = Math.pow(R(), 2.2) * H2 * 0.18;
+              g.fillStyle = "rgba(146,104,52," + (0.16 + R() * 0.22) + ")";
               g.beginPath(); g.arc(rx, ry, 1.5 + R() * 4.5, 0, Math.PI * 2); g.fill();
             }
             // 4) lenticels with depth: each dot gets a shadow side and a
             //    highlight side, so close-ups read as pores, not print
-            for (var le = 0; le < 900; le++) {
+            for (var le = 0; le < 1100; le++) {
               var lx = R() * W2, ly = Math.pow(R(), 1.4) * H2, lr = 1.2 + R() * 2.4;
-              g.fillStyle = "rgba(120,70,10,0.22)";
+              g.fillStyle = "rgba(120,70,10,0.36)";
               g.beginPath(); g.arc(lx + lr * 0.4, ly + lr * 0.4, lr, 0, Math.PI * 2); g.fill();
-              g.fillStyle = "rgba(255,244,200,0.26)";
+              g.fillStyle = "rgba(255,244,200,0.38)";
               g.beginPath(); g.arc(lx - lr * 0.3, ly - lr * 0.3, lr * 0.8, 0, Math.PI * 2); g.fill();
             }
-            // 5) sparse natural blemishes: tiny dark specks and two or
-            //    three faint scuffs — perfect skin is what looks fake
-            for (var bm = 0; bm < 46; bm++) {
-              g.fillStyle = "rgba(88,52,14," + (0.14 + R() * 0.2) + ")";
-              g.beginPath(); g.arc(R() * W2, R() * H2, 0.8 + R() * 2.0, 0, Math.PI * 2); g.fill();
+            // 5) natural blemishes: dark specks and faint scuffs —
+            //    perfect skin is what looks fake
+            for (var bm = 0; bm < 60; bm++) {
+              g.fillStyle = "rgba(88,52,14," + (0.22 + R() * 0.26) + ")";
+              g.beginPath(); g.arc(R() * W2, R() * H2, 0.8 + R() * 2.2, 0, Math.PI * 2); g.fill();
             }
-            g.strokeStyle = "rgba(150,96,30,0.13)"; g.lineCap = "round";
-            for (var sf = 0; sf < 4; sf++) {
+            g.strokeStyle = "rgba(150,96,30,0.20)"; g.lineCap = "round";
+            for (var sf = 0; sf < 5; sf++) {
               var sx2 = R() * W2, sy2 = R() * H2;
               g.lineWidth = 2 + R() * 3;
               g.beginPath(); g.moveTo(sx2, sy2);
@@ -909,7 +932,7 @@
           }
           // fine all-over grain so close-ups never look airbrushed flat
           for (var gr = 0; gr < 5200; gr++) {
-            g.fillStyle = R() < 0.5 ? "rgba(60,30,5,0.028)" : "rgba(255,252,240,0.030)";
+            g.fillStyle = R() < 0.5 ? "rgba(60,30,5,0.05)" : "rgba(255,252,240,0.05)";
             g.fillRect(R() * W2, R() * H2, 2, 2);
           }
           if (texImage) {
@@ -1071,13 +1094,16 @@
         // front, and a small beak pinching out at the very tip
         function mangoDeform(v) {
           var ny = v.y; // ~-1..1 on the unit sphere, +y = stem end
-          // strong kidney arc: the whole fruit bends sideways, most mid-body
-          var bend = 0.21 * Math.sin((ny + 1) * 1.22) * (1 - Math.abs(ny) * 0.22);
+          // kidney arc, THIRD pass at full amplitude: two earlier rounds
+          // (0.15, then 0.21) still rendered as a symmetric egg, so the
+          // bend, the narrowing and the elongation all go up together —
+          // height/width ratio lands near 1.45, unmistakably a mango
+          var bend = 0.30 * Math.sin((ny + 1) * 1.22) * (1 - Math.abs(ny) * 0.22);
           v.x += bend;
           // stem end tapers in clearly; blossom end stays full
-          var taper = ny > 0 ? 1 - 0.21 * Math.pow(ny, 1.6) : 1 + 0.045 * (-ny);
-          v.x *= 0.88 * taper;
-          v.z *= 0.74 * taper;
+          var taper = ny > 0 ? 1 - 0.27 * Math.pow(ny, 1.6) : 1 + 0.045 * (-ny);
+          v.x *= 0.83 * taper;
+          v.z *= 0.72 * taper;
           // front cheek slightly flattened, back cheek rounder — real
           // mangoes are not symmetric front-to-back either
           if (v.z > 0) v.z *= 0.93;
@@ -1091,10 +1117,10 @@
           if (v.z < -0.35 && v.x > 0.1) v.z *= 0.98; // faint flat facet on the back cheek
           // lower cheek (+x side) swells — the classic lopsided mango
           var low = Math.max(0, -ny);
-          if (v.x > bend) v.x += 0.10 * low * low * Math.max(0, v.x - bend);
+          if (v.x > bend) v.x += 0.14 * low * low * Math.max(0, v.x - bend);
           if (v.z !== 0) v.z *= 1 + 0.05 * low;
           // tall, elongated oval — an egg is plumper and symmetric
-          v.y *= 1.21;
+          v.y *= 1.30;
           // blossom-end beak: the last bit pinches and nudges forward
           if (ny < -0.80) {
             var bk = (-ny - 0.80) / 0.20; // 0..1
@@ -1106,7 +1132,7 @@
           // suture groove down the front face, following the arc —
           // deeper and wider than a hairline so it reads at a glance
           var gd = Math.abs(v.x - (bend + 0.02));
-          if (v.z > 0 && gd < 0.20) v.z -= (0.20 - gd) * 0.24 * Math.max(0, v.z) * (1 - Math.abs(ny) * 0.35);
+          if (v.z > 0 && gd < 0.23) v.z -= (0.23 - gd) * 0.32 * Math.max(0, v.z) * (1 - Math.abs(ny) * 0.35);
         }
         function buildGeometry(name) {
           if (name === "mango") {
@@ -1177,8 +1203,8 @@
           mainMesh = new THREE.Mesh(buildGeometry(shape), shellMat);
           mainMesh.castShadow = true;
           squashGroup.add(mainMesh);
-          rotGroup.position.y = { mango: 1.28, egg: 1.16, peach: 1.0, cake: 0.8, heart: 1.05 }[shape] || 1.06;
-          shapeBottom = { mango: 1.27, egg: 1.14, peach: 0.96, cake: 0.78, heart: 1.02 }[shape] || 0.95;
+          rotGroup.position.y = { mango: 1.37, egg: 1.16, peach: 1.0, cake: 0.8, heart: 1.05 }[shape] || 1.06;
+          shapeBottom = { mango: 1.36, egg: 1.14, peach: 0.96, cake: 0.78, heart: 1.02 }[shape] || 0.95;
           blobBase = { mango: 0.94, egg: 0.82, peach: 0.97, cake: 1.02, heart: 1.0 }[shape] || 1.0;
           basePos = mainMesh.geometry.attributes.position.array.slice();
           baseNor = mainMesh.geometry.attributes.normal.array.slice();
@@ -1212,7 +1238,9 @@
               new THREE.MeshStandardMaterial({ color: 0x2e5d33, roughness: 0.8 })
             );
             stem.material._own = true;
-            stem.position.set(0.10, 1.20, 0); stem.rotation.z = 0.25; stem.castShadow = true;
+            // the stem sits where the kidney arc puts the crown now:
+            // pushed sideways by the bend, on top of the taller body
+            stem.position.set(0.20, 1.31, 0); stem.rotation.z = 0.38; stem.castShadow = true;
             squashGroup.add(stem);
             var mleaf = new THREE.Mesh(
               new THREE.SphereGeometry(0.16, 18, 12),
@@ -1220,7 +1248,7 @@
             );
             mleaf.material._own = true;
             mleaf.scale.set(1.3, 0.26, 0.55);
-            mleaf.position.set(0.28, 1.21, 0); mleaf.rotation.z = 0.35; mleaf.castShadow = true;
+            mleaf.position.set(0.40, 1.32, 0); mleaf.rotation.z = 0.35; mleaf.castShadow = true;
             squashGroup.add(mleaf);
           }
         }
@@ -1299,18 +1327,31 @@
         }
 
         // ---------- tap-crack / peel infrastructure ----------
-        // a soft-core bulge showing through where shell has come away;
-        // lives on the squash group so it deforms with the body
-        function addExposedPatch(dirLocal, size) {
+        // the fruit's surface point for a unit direction, with the
+        // shape deform applied — patches and peel shards must sit on
+        // the REAL (kidney) surface, not on the undeformed sphere
+        function fruitSurfacePoint(dir) {
+          var p = dir.clone().normalize().multiplyScalar(1.04);
+          if (shape === "mango") mangoDeform(p);
+          return p;
+        }
+        // soft core showing through where shell has come away. It is a
+        // flat LENS hugging the surface, oriented along the local
+        // normal — the old version was an undeformed sphere segment
+        // that stuck out of the kidney body as a visible ball / slab,
+        // the "rectangular patch + round lump" testers flagged
+        function addExposedPatch(dirLocal, size, isSurfacePoint) {
           var mat = new THREE.MeshPhysicalMaterial({
-            color: gooColor, roughness: 0.28, metalness: 0,
-            clearcoat: 0.7, clearcoatRoughness: 0.3, envMapIntensity: 0.9
+            color: gooColor, roughness: 0.38, metalness: 0,
+            clearcoat: 0.35, clearcoatRoughness: 0.3, envMapIntensity: 0.7
           });
           mat._own = true;
           var m = new THREE.Mesh(new THREE.SphereGeometry(size, 18, 12), mat);
-          var d = dirLocal.clone().normalize();
-          m.position.copy(d).multiplyScalar(Math.max(0.55, dirLocal.length()) * 0.94);
-          m.scale.set(1, 0.82, 1);
+          var p = isSurfacePoint ? dirLocal.clone() : fruitSurfacePoint(dirLocal);
+          var n = p.clone().normalize();
+          m.quaternion.setFromUnitVectors(new THREE.Vector3(0, 0, 1), n);
+          m.scale.set(1, 1, 0.38); // flattened in local z, then oriented
+          m.position.copy(p).multiplyScalar(0.965);
           m.castShadow = true;
           squashGroup.add(m);
           return m;
@@ -1442,7 +1483,7 @@
             var wp = pressLocal.clone().applyMatrix4(mainMesh.matrixWorld);
             spawnTapFlakes(wp, tapCount >= 3);
           }
-          addExposedPatch(pressLocal, 0.16 + Math.min(0.1, tapCount * 0.02));
+          addExposedPatch(pressLocal, 0.18 + Math.min(0.12, tapCount * 0.03), true);
           if (tapCount >= 3) {
             enterPeelMode();
           } else if (viewMode === "squeeze") {
@@ -1476,8 +1517,9 @@
           var dir = piece.userData.dir.clone();
           peelSound();
           vibe(16);
-          // world spot the piece was covering, for the falling shard
-          var wp = dir.clone().multiplyScalar(1.02);
+          // world spot the piece was covering, for the falling shard —
+          // on the deformed fruit surface, not the bare sphere
+          var wp = fruitSurfacePoint(dir);
           rotGroup.localToWorld(wp);
           peelGroup.remove(piece);
           disposeObj(piece);
@@ -1576,7 +1618,34 @@
           var gt = new THREE.CanvasTexture(c);
           gt.wrapS = THREE.RepeatWrapping;
           gooMat.bumpMap = gt;
-          gooMat.bumpScale = 0.035;
+          gooMat.bumpScale = 0.06;
+          // fibre COLOUR map on top of the bump: near-white base (the
+          // material colour tints through it) crossed by warm darker
+          // fibre streaks and paler vesicle patches, so the pulp has
+          // visible internal structure instead of one flat glossy fill
+          // — bump alone never showed in renders, it only moves light
+          var c2 = document.createElement("canvas"); c2.width = 1024; c2.height = 512;
+          var g2 = c2.getContext("2d");
+          g2.fillStyle = "#fdf6ec"; g2.fillRect(0, 0, 1024, 512);
+          for (var vi = 0; vi < 700; vi++) { // vesicle patches, light and deep
+            var vx = R() * 1024, vy = R() * 512, vr = 6 + R() * 26;
+            var vg = g2.createRadialGradient(vx, vy, 1, vx, vy, vr);
+            var vc = R() < 0.5 ? "255,214,130" : "226,150,52";
+            vg.addColorStop(0, "rgba(" + vc + "," + (0.16 + R() * 0.16) + ")");
+            vg.addColorStop(1, "rgba(" + vc + ",0)");
+            g2.fillStyle = vg; g2.fillRect(vx - vr, vy - vr, vr * 2, vr * 2);
+          }
+          g2.lineCap = "round";
+          for (var fi = 0; fi < 1100; fi++) { // fibre streaks, mostly aligned
+            var fx2 = R() * 1024, fy2 = R() * 512, fl2 = 10 + R() * 34, fa2 = 0.5 + (R() - 0.5) * 1.1;
+            g2.strokeStyle = R() < 0.55 ? "rgba(206,138,44," + (0.14 + R() * 0.18) + ")" : "rgba(255,226,160," + (0.12 + R() * 0.14) + ")";
+            g2.lineWidth = 0.8 + R() * 1.6;
+            g2.beginPath(); g2.moveTo(fx2, fy2); g2.lineTo(fx2 + Math.cos(fa2) * fl2, fy2 + Math.sin(fa2) * fl2); g2.stroke();
+          }
+          var mt = new THREE.CanvasTexture(c2);
+          mt.wrapS = THREE.RepeatWrapping;
+          if (THREE.SRGBColorSpace) mt.colorSpace = THREE.SRGBColorSpace;
+          gooMat.map = mt;
           gooMat.needsUpdate = true;
         })();
         // the core is NOT a ball: a lumpy, flattened pulp mass with an
@@ -1889,12 +1958,14 @@
             geo.computeVertexNormals();
             // juice reads WET by contrast: deepened, saturated colour
             // against the pale board + a near-mirror clearcoat, instead
-            // of pale goo colour that washed out to a matte smudge
-            var stainCol = new THREE.Color(gooColor).lerp(new THREE.Color(0xc1440e), 0.38);
+            // of pale goo colour that washed out to a matte smudge.
+            // Third pass: deeper colour mix, full opacity, larger area —
+            // the previous mix still photographed as a faint smudge.
+            var stainCol = new THREE.Color(gooColor).lerp(new THREE.Color(0xc1440e), 0.52);
             var mat = new THREE.MeshPhysicalMaterial({
-              color: stainCol, roughness: 0.05, metalness: 0,
-              clearcoat: 1, clearcoatRoughness: 0.04, envMapIntensity: 1.7,
-              transparent: true, opacity: 0.95
+              color: stainCol, roughness: 0.04, metalness: 0,
+              clearcoat: 1, clearcoatRoughness: 0.03, envMapIntensity: 2.1,
+              transparent: true, opacity: 1
             });
             mat._own = true;
             var m = new THREE.Mesh(geo, mat);
@@ -1902,7 +1973,7 @@
             m.rotation.x = -Math.PI / 2;
             m.rotation.z = R() * Math.PI;
             m.position.set(Math.cos(a) * rr, 0.013 + stainCount * 0.0007, Math.sin(a) * rr * 0.85);
-            var sc = 0.22 + R() * 0.50;
+            var sc = 0.32 + R() * 0.62;
             m.scale.set(sc, sc * (0.55 + R() * 0.5), 1);
             m.renderOrder = 2;
             m.receiveShadow = true;
@@ -2449,7 +2520,7 @@
           applyFinish();
           if (state === "broken") {
             gooMat.color.set(gooColor); puddleMat.color.set(gooColor);
-            var stainCol2 = new THREE.Color(gooColor).lerp(new THREE.Color(0xc1440e), 0.38);
+            var stainCol2 = new THREE.Color(gooColor).lerp(new THREE.Color(0xc1440e), 0.52);
             stainGroup.children.forEach(function (m) { if (m.material && m.material.color) m.material.color.copy(stainCol2); });
           }
           if (shape === "cake" && !texImage) paintTexture();
@@ -2546,7 +2617,7 @@
         // shell / core / decor each carry their own roughness + clearcoat;
         // the 湿亮/哑光 toggle only shifts the shell's surface response
         var SHAPE_MAT = {
-          mango: { rough: 0.34, cc: 0.5, ccRough: 0.32, sheen: 0.25, env: 0.95, bump: 0.026 },
+          mango: { rough: 0.5, cc: 0.26, ccRough: 0.42, sheen: 0.25, env: 0.55, bump: 0.034 },
           egg:   { rough: 0.78, cc: 0.06, ccRough: 0.6, sheen: 0.2, env: 0.5, bump: 0.035 },
           cake:  { rough: 0.58, cc: 0.14, ccRough: 0.5, sheen: 0.5, env: 0.6, bump: 0.022 },
           peach: { rough: 0.46, cc: 0.3, ccRough: 0.35, sheen: 1.0, env: 0.8, bump: 0.028 },
@@ -2562,8 +2633,8 @@
           if (gloss) {
             shellMat.roughness = sm.rough; shellMat.clearcoat = sm.cc; shellMat.clearcoatRoughness = sm.ccRough;
             shellMat.envMapIntensity = sm.env;
-            shellMat.specularIntensity = shape === "mango" ? 0.85 : 1.2;
-            gooMat.roughness = 0.24; gooMat.clearcoat = 0.65; gooMat.clearcoatRoughness = 0.22; gooMat.envMapIntensity = 1.0; gooMat.specularIntensity = 0.85;
+            shellMat.specularIntensity = shape === "mango" ? 0.55 : 1.2;
+            gooMat.roughness = 0.42; gooMat.clearcoat = 0.3; gooMat.clearcoatRoughness = 0.3; gooMat.envMapIntensity = 0.7; gooMat.specularIntensity = 0.7;
             shardMat.roughness = Math.min(0.4, sm.rough + 0.08);
           } else {
             shellMat.roughness = Math.min(0.92, sm.rough + 0.38); shellMat.clearcoat = sm.cc * 0.25; shellMat.clearcoatRoughness = 0.7;
