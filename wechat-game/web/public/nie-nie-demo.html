@@ -2,7 +2,15 @@
 <html lang="zh-CN">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="脆皮捏捏" />
+    <meta name="theme-color" content="#fdf6ec" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#1d130c" media="(prefers-color-scheme: dark)" />
+    <link rel="manifest" href="data:application/octet-stream;base64,eyJiYWNrZ3JvdW5kX2NvbG9yIjoiI2ZkZjZlYyIsImRlc2NyaXB0aW9uIjoiM0Qg6ISG55qu5o2P5o2P77ya54K55oyJ6KOC5byA44CB6ZW/5oyJ5o2P56KO44CB5ouW5Yqo5Yml5aOz44CB5o+J5o2P6L2v6Iqv44CCIiwiZGlzcGxheSI6InN0YW5kYWxvbmUiLCJpY29ucyI6W3sicHVycG9zZSI6ImFueSIsInNpemVzIjoiMTkyeDE5MiIsInNyYyI6Imljb24tMTkyLnBuZyIsInR5cGUiOiJpbWFnZS9wbmcifSx7InB1cnBvc2UiOiJhbnkiLCJzaXplcyI6IjUxMng1MTIiLCJzcmMiOiJpY29uLTUxMi5wbmciLCJ0eXBlIjoiaW1hZ2UvcG5nIn0seyJwdXJwb3NlIjoibWFza2FibGUiLCJzaXplcyI6IjUxMng1MTIiLCJzcmMiOiJpY29uLTUxMi5wbmciLCJ0eXBlIjoiaW1hZ2UvcG5nIn1dLCJsYW5nIjoiemgtQ04iLCJuYW1lIjoi6ISG55qu5o2P5o2PIiwib3JpZW50YXRpb24iOiJwb3J0cmFpdCIsInNjb3BlIjoiLi4vIiwic2hvcnRfbmFtZSI6IuiEhuearuaNj+aNjyIsInN0YXJ0X3VybCI6Ii4uL2luZGV4Lmh0bWwiLCJ0aGVtZV9jb2xvciI6IiNmZGY2ZWMifQ==" />
+    <link rel="apple-touch-icon" href="data:image/png;base64,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" />
     <meta name="color-scheme" content="light dark" />
     <link rel="icon" href="data:," />
     <title>脆皮捏捏 Demo</title>
@@ -47,8 +55,18 @@
         background: linear-gradient(180deg, var(--bg) 0%, var(--bg2) 100%);
         color: var(--ink);
         min-height: 100vh;
+        min-height: 100dvh;
+        overscroll-behavior: none;
+        -webkit-tap-highlight-color: transparent;
+        -webkit-touch-callout: none;
       }
-      .wrap { max-width: 560px; margin: 0 auto; padding: 16px 14px 28px; }
+      .wrap { max-width: 560px; margin: 0 auto; padding: calc(16px + env(safe-area-inset-top)) 14px calc(28px + env(safe-area-inset-bottom)); }
+      /* installed / fullscreen app mode: the stage takes the screen like a native app */
+      @media (display-mode: standalone), (display-mode: fullscreen) {
+        .wrap { padding-top: calc(8px + env(safe-area-inset-top)); }
+        h1 { font-size: 22px; }
+        .sub { display: none; }
+      }
       h1 { font-size: 26px; margin: 4px 0 2px; letter-spacing: 0.5px; }
       .sub { color: var(--ink-soft); font-size: 13.5px; margin: 0 0 12px; line-height: 1.55; }
       .stage-card {
@@ -265,6 +283,11 @@
           <button class="btn primary" id="resetBtn" type="button">再来一个（免费）</button>
           <button class="btn" id="soundBtn" type="button" aria-pressed="true">声音：开</button>
           <button class="btn" id="vibeBtn" type="button" aria-pressed="true">震动：开</button>
+        </div>
+        <div class="btn-row" style="margin-top:8px;">
+          <button class="btn" id="fullBtn" type="button">全屏 App 模式</button>
+          <button class="btn" id="installBtn" type="button" style="display:none;">安装到主屏幕</button>
+          <span class="file-name" id="installHint"></span>
         </div>
       </div>
 
@@ -574,7 +597,11 @@
             g.restore();
           }
           // key strip softbox (narrow, very bright → the travelling streak)
-          strip(210, 30, 54, 300, "rgba(255,252,240,0.98)", 26);
+          strip(210, 30, 34, 300, "rgba(255,252,240,0.98)", 18);
+          // pinpoint strip: a very thin, intense sliver — this is what
+          // puts a small hard local highlight on the most convex point
+          // of the skin instead of a broad plastic sheen
+          strip(292, 44, 7, 210, "rgba(255,255,255,1)", 6);
           // second cooler strip for the opposite edge
           strip(700, 20, 30, 230, "rgba(226,238,255,0.85)", 20);
           // warm bounce card low right (orange rim source)
@@ -611,22 +638,53 @@
         scene.add(fill);
         // tight specular kicker: small bright source whose highlight sits
         // on the most convex part of the curve and slides as it turns
-        var spec = new THREE.PointLight(0xffffff, 14, 0, 2);
+        var spec = new THREE.PointLight(0xffffff, 30, 0, 2);
         spec.position.set(-1.7, 3.1, 3.4);
         scene.add(spec);
+        // second pinpoint source, low and frontal: a small secondary
+        // glint on the lower cheek so highlights read as local spots
+        // on a real surface, not one uniform glow
+        var spec2 = new THREE.PointLight(0xfff6e0, 9, 0, 2);
+        spec2.position.set(1.9, 0.7, 3.1);
+        scene.add(spec2);
         var topLight = new THREE.SpotLight(0xffe9c0, 22, 0, 0.5, 0.65, 1.6);
         topLight.position.set(0.6, 6.2, 1.2);
         topLight.target.position.set(0, 0.9, 0);
         scene.add(topLight); scene.add(topLight.target);
 
-        // pedestal + shadow catcher
-        var pedestal = new THREE.Mesh(
-          new THREE.CylinderGeometry(2.55, 2.8, 0.28, 56),
-          new THREE.MeshStandardMaterial({ color: darkMode ? 0x4a3018 : 0xdcc093, roughness: 0.85, metalness: 0 })
-        );
-        pedestal.position.y = -0.14;
-        pedestal.receiveShadow = true;
-        scene.add(pedestal);
+        // pedestal: a worn wooden board, grain painted in — a real
+        // surface under the fruit, not a flat colour disc
+        var pedestal = (function () {
+          var c = document.createElement("canvas"); c.width = 1024; c.height = 256;
+          var g = c.getContext("2d");
+          var R = rng(4242);
+          g.fillStyle = darkMode ? "#5a3a1e" : "#dcb98c"; g.fillRect(0, 0, 1024, 256);
+          for (var i = 0; i < 90; i++) {
+            var gy = R() * 256;
+            g.strokeStyle = "rgba(120,78,36," + (0.05 + R() * 0.13) + ")";
+            g.lineWidth = 0.8 + R() * 2.4;
+            g.beginPath(); g.moveTo(0, gy);
+            for (var x = 0; x <= 1024; x += 128) g.lineTo(x, gy + (R() - 0.5) * 7);
+            g.stroke();
+          }
+          for (var k2 = 0; k2 < 7; k2++) { // knots / worn patches
+            var kx = R() * 1024, ky = R() * 256;
+            var kg = g.createRadialGradient(kx, ky, 2, kx, ky, 22 + R() * 30);
+            kg.addColorStop(0, "rgba(105,64,28,0.35)"); kg.addColorStop(1, "rgba(105,64,28,0)");
+            g.fillStyle = kg; g.fillRect(kx - 60, ky - 60, 120, 120);
+          }
+          var ptex = new THREE.CanvasTexture(c);
+          ptex.wrapS = THREE.RepeatWrapping;
+          if (THREE.SRGBColorSpace) ptex.colorSpace = THREE.SRGBColorSpace;
+          var m = new THREE.Mesh(
+            new THREE.CylinderGeometry(2.55, 2.8, 0.28, 56),
+            new THREE.MeshStandardMaterial({ map: ptex, color: darkMode ? 0xb99f7d : 0xffffff, roughness: 0.82, metalness: 0 })
+          );
+          m.position.y = -0.14;
+          m.receiveShadow = true;
+          scene.add(m);
+          return m;
+        })();
         var ground = new THREE.Mesh(
           new THREE.CircleGeometry(14, 40),
           new THREE.ShadowMaterial({ opacity: darkMode ? 0.4 : 0.22 })
@@ -661,6 +719,8 @@
         var brokenGroup = new THREE.Group(); brokenGroup.visible = false; scene.add(brokenGroup);
         // peelable shell pieces live on the rotating body, above the shell
         var peelGroup = new THREE.Group(); rotGroup.add(peelGroup);
+        // pulp stains that stay on the board after a burst
+        var stainGroup = new THREE.Group(); scene.add(stainGroup);
 
         // ---------- shell texture (painted canvas) ----------
         var texCanvas = document.createElement("canvas");
@@ -674,6 +734,14 @@
         bumpCanvas.width = 1024; bumpCanvas.height = 512;
         var bumpTex = new THREE.CanvasTexture(bumpCanvas);
         bumpTex.wrapS = THREE.RepeatWrapping;
+        // roughness variation: real skin is never uniformly glossy —
+        // waxy-smooth patches take a hard local highlight while drier
+        // patches scatter it. Values stay in the upper range so this
+        // map only modulates the material's own roughness.
+        var roughCanvas = document.createElement("canvas");
+        roughCanvas.width = 1024; roughCanvas.height = 512;
+        var roughTex = new THREE.CanvasTexture(roughCanvas);
+        roughTex.wrapS = THREE.RepeatWrapping;
         // deterministic rng so the skin looks identical on every repaint
         function rng(seed) {
           var a = seed >>> 0;
@@ -835,7 +903,47 @@
             }
           }
           paintBump();
+          paintRough();
           shellTex.needsUpdate = true;
+        }
+
+        // patchy wax / dry-skin roughness so highlights break up into
+        // local spots the way they do on real fruit skin and eggshell
+        function paintRough() {
+          var g = roughCanvas.getContext("2d");
+          var W2 = 1024, H2 = 512;
+          var R = rng(555777);
+          // base level per skin: mango wax fairly smooth, egg mostly dry
+          var base = shape === "mango" ? 205 : shape === "heart" ? 185 : shape === "peach" ? 225 : shape === "cake" ? 235 : 242;
+          g.fillStyle = "rgb(" + base + "," + base + "," + base + ")"; g.fillRect(0, 0, W2, H2);
+          // broad soft patches, smoother (darker = glossier highlight)
+          for (var i = 0; i < 46; i++) {
+            var px = R() * W2, py = R() * H2, pr = 40 + R() * 130;
+            var v = base - 30 - Math.round(R() * 55);
+            var rg = g.createRadialGradient(px, py, 2, px, py, pr);
+            rg.addColorStop(0, "rgba(" + v + "," + v + "," + v + ",0.55)");
+            rg.addColorStop(1, "rgba(" + v + "," + v + "," + v + ",0)");
+            g.fillStyle = rg; g.fillRect(px - pr, py - pr, pr * 2, pr * 2);
+          }
+          // dry matte freckling that scatters the highlight
+          var dryN = shape === "egg" ? 4200 : shape === "peach" ? 3600 : 2200;
+          for (var d = 0; d < dryN; d++) {
+            var dv = Math.min(255, base + 12 + Math.round(R() * 26));
+            g.fillStyle = "rgba(" + dv + "," + dv + "," + dv + ",0.5)";
+            g.beginPath(); g.arc(R() * W2, R() * H2, 0.8 + R() * 2.4, 0, Math.PI * 2); g.fill();
+          }
+          // a few near-mirror waxy streaks on mango / candy heart
+          if (shape === "mango" || shape === "heart") {
+            for (var s = 0; s < 12; s++) {
+              var sx = R() * W2, sy = R() * H2;
+              var sg = g.createRadialGradient(sx, sy, 1, sx, sy, 26 + R() * 40);
+              sg.addColorStop(0, "rgba(120,120,120,0.6)"); sg.addColorStop(1, "rgba(120,120,120,0)");
+              g.fillStyle = sg;
+              g.save(); g.translate(sx, sy); g.scale(1, 0.35); g.translate(-sx, -sy);
+              g.fillRect(sx - 70, sy - 70, 140, 140); g.restore();
+            }
+          }
+          roughTex.needsUpdate = true;
         }
 
         // micro-relief matched to each skin: egg pores, mango lenticels,
@@ -866,10 +974,12 @@
           map: shellTex,
           bumpMap: bumpTex,
           bumpScale: 0.02,
+          roughnessMap: roughTex,
           roughness: 0.22,
           metalness: 0,
           clearcoat: 1,
           clearcoatRoughness: 0.08,
+          specularIntensity: 1.15,
           sheen: 0.3,
           sheenRoughness: 0.5,
           sheenColor: new THREE.Color(0xffe2b8),
@@ -890,13 +1000,36 @@
         }
         function buildGeometry(name) {
           if (name === "mango") {
-            return deformSphere(new THREE.SphereGeometry(1, 72, 52), function (v) {
-              var bend = 0.10 * Math.sin((v.y + 1) * 0.9);
-              v.x = v.x * 1.14 + bend * (1 - Math.abs(v.y)) * 0.4;
-              v.y *= 0.94;
-              v.z *= 0.84;
-              var d = Math.abs(v.x - 0.12);
-              if (v.z > 0 && d < 0.2) v.z -= (0.2 - d) * 0.10 * v.z;
+            // a real mango is NOT a ball: tall kidney/oval, stem end
+            // narrower, blossom end fuller and rounder, body arcing to
+            // one side, one cheek swelling lower, a shallow suture groove
+            // running down the front, and a slight beak at the very tip
+            return deformSphere(new THREE.SphereGeometry(1, 80, 56), function (v) {
+              var ny = v.y; // -1..1 on the unit sphere, +y = stem end
+              // kidney arc: the whole fruit bends sideways, most mid-body
+              var bend = 0.15 * Math.sin((ny + 1) * 1.30) * (1 - Math.abs(ny) * 0.30);
+              v.x += bend;
+              // stem end tapers in; blossom end stays full
+              var taper = ny > 0 ? 1 - 0.17 * ny * ny : 1 + 0.03 * (-ny);
+              v.x *= 0.90 * taper;
+              v.z *= 0.76 * taper;
+              // lower cheek (+x side) swells — the classic lopsided mango
+              var low = Math.max(0, -ny);
+              if (v.x > bend) v.x += 0.075 * low * low * Math.max(0, v.x - bend);
+              if (v.z !== 0) v.z *= 1 + 0.05 * low;
+              // tall oval, not round
+              v.y *= 1.17;
+              // blossom-end beak: the last bit pinches and nudges forward
+              if (ny < -0.82) {
+                var bk = (-ny - 0.82) / 0.18; // 0..1
+                v.x = bend + (v.x - bend) * (1 - 0.22 * bk);
+                v.z *= 1 - 0.18 * bk;
+                v.y -= 0.045 * bk * bk;
+                v.z += 0.03 * bk;
+              }
+              // shallow suture groove down the front face, following the arc
+              var gd = Math.abs(v.x - (bend + 0.02));
+              if (v.z > 0 && gd < 0.16) v.z -= (0.16 - gd) * 0.16 * Math.max(0, v.z) * (1 - Math.abs(ny) * 0.4);
             });
           }
           if (name === "egg") {
@@ -964,9 +1097,9 @@
           mainMesh = new THREE.Mesh(buildGeometry(shape), shellMat);
           mainMesh.castShadow = true;
           squashGroup.add(mainMesh);
-          rotGroup.position.y = { mango: 0.97, egg: 1.16, peach: 1.0, cake: 0.8, heart: 1.05 }[shape] || 1.06;
-          shapeBottom = { mango: 0.94, egg: 1.14, peach: 0.96, cake: 0.78, heart: 1.02 }[shape] || 0.95;
-          blobBase = { mango: 1.06, egg: 0.82, peach: 0.97, cake: 1.02, heart: 1.0 }[shape] || 1.0;
+          rotGroup.position.y = { mango: 1.22, egg: 1.16, peach: 1.0, cake: 0.8, heart: 1.05 }[shape] || 1.06;
+          shapeBottom = { mango: 1.17, egg: 1.14, peach: 0.96, cake: 0.78, heart: 1.02 }[shape] || 0.95;
+          blobBase = { mango: 0.94, egg: 0.82, peach: 0.97, cake: 1.02, heart: 1.0 }[shape] || 1.0;
           basePos = mainMesh.geometry.attributes.position.array.slice();
           baseNor = mainMesh.geometry.attributes.normal.array.slice();
           if (shape === "cake") {
@@ -999,7 +1132,7 @@
               new THREE.MeshStandardMaterial({ color: 0x2e5d33, roughness: 0.8 })
             );
             stem.material._own = true;
-            stem.position.set(0.06, 0.99, 0); stem.rotation.z = 0.25; stem.castShadow = true;
+            stem.position.set(0.10, 1.20, 0); stem.rotation.z = 0.25; stem.castShadow = true;
             squashGroup.add(stem);
             var mleaf = new THREE.Mesh(
               new THREE.SphereGeometry(0.16, 18, 12),
@@ -1007,7 +1140,7 @@
             );
             mleaf.material._own = true;
             mleaf.scale.set(1.3, 0.26, 0.55);
-            mleaf.position.set(0.24, 1.0, 0); mleaf.rotation.z = 0.35; mleaf.castShadow = true;
+            mleaf.position.set(0.28, 1.21, 0); mleaf.rotation.z = 0.35; mleaf.castShadow = true;
             squashGroup.add(mleaf);
           }
         }
@@ -1248,6 +1381,7 @@
           var wp = new THREE.Vector3(0, rotGroup.position.y + 0.1, 0.7);
           spawnTapFlakes(wp, true);
           spawnParticles(wp);
+          spawnStains(3, 1.2);
           addExposedPatch(new THREE.Vector3(0.55, 0.25, 0.85), 0.30);
           addExposedPatch(new THREE.Vector3(-0.6, -0.1, 0.8), 0.26);
           enterPeelMode();
@@ -1306,6 +1440,7 @@
           puddleMat.color.set(gooColor);
           gooSpread = 0.3;
           gooPop = 0.25; gooPopV = 2.4;
+          spawnStains(3, 1.0);
           meterRow.style.visibility = "hidden";
           if (viewMode === "squeeze") hint.textContent = "剥干净了！按住拖着揉软芯，拉伸压扁都可以";
           showToast("剥干净了，软芯露出来了");
@@ -1372,7 +1507,7 @@
           }
         })();
         var gooPop = 0.3, gooPopV = 0; // springy reveal of the core at break
-        var puddleMat = new THREE.MeshPhysicalMaterial({ color: 0xff9a1f, roughness: 0.22, clearcoat: 0.8, transparent: true, opacity: 0.55 });
+        var puddleMat = new THREE.MeshPhysicalMaterial({ color: 0xff9a1f, roughness: 0.09, clearcoat: 1, clearcoatRoughness: 0.08, envMapIntensity: 1.25, transparent: true, opacity: 0.82 });
         var puddleGeo = new THREE.CircleGeometry(1, 44);
         (function irregularPuddle(geo) {
           var pos = geo.attributes.position;
@@ -1392,7 +1527,7 @@
         brokenGroup.add(puddle);
 
         var shardMat = new THREE.MeshPhysicalMaterial({
-          map: shellTex, roughness: 0.4, clearcoat: 0.7, clearcoatRoughness: 0.4, side: THREE.DoubleSide
+          map: shellTex, roughnessMap: roughTex, roughness: 0.4, clearcoat: 0.7, clearcoatRoughness: 0.4, side: THREE.DoubleSide
         });
         // pale waxy underside of the shell, seen where pieces have flipped
         var shardInnerMat = new THREE.MeshStandardMaterial({ color: 0xfdf3e0, roughness: 0.62, metalness: 0, side: THREE.BackSide });
@@ -1596,8 +1731,8 @@
                 p.mesh.position.y = 0.03;
                 p.landed = true;
                 if (p.isGoo) {
-                  // splat flat and STAY as a glossy spot on the stand
-                  p.mesh.scale.set(p.r * 1.7, p.r * 0.32, p.r * 1.7);
+                  // splat flat and STAY as a glossy wet spot on the stand
+                  p.mesh.scale.set(p.r * 2.4, p.r * 0.30, p.r * 2.4);
                   p.mesh.rotation.set(0, 0, 0);
                 } else if (Math.abs(p.vy) > 1.0) {
                   p.landed = false;
@@ -1605,8 +1740,8 @@
                 }
               }
             }
-            // goo splats persist; shell bits fade only very slowly
-            p.life -= dt * (p.isGoo ? 0.012 : 0.05);
+            // goo splats persist a long while; shell bits fade only very slowly
+            p.life -= dt * (p.isGoo ? 0.004 : 0.05);
             p.mesh.material.opacity = Math.max(0, Math.min(1, p.life));
             if (p.life <= 0) {
               scene.remove(p.mesh);
@@ -1621,6 +1756,60 @@
             particles[i].mesh.material.dispose();
           }
           particles = [];
+        }
+
+        // ---------- pulp stains on the board ----------
+        // irregular glossy splats that land around the break point and
+        // STAY there (previous builds let the juice visually vanish)
+        var stainCount = 0;
+        function spawnStains(n, radius) {
+          var R = Math.random;
+          for (var i = 0; i < n; i++) {
+            var geo = new THREE.CircleGeometry(1, 26);
+            var pos = geo.attributes.position;
+            var jit = [];
+            for (var j = 0; j < pos.count; j++) jit.push(0.72 + R() * 0.6);
+            for (var k = 0; k < pos.count; k++) {
+              var x = pos.getX(k), y = pos.getY(k);
+              if (Math.hypot(x, y) > 0.1) pos.setXY(k, x * jit[k], y * jit[k]);
+            }
+            geo.computeVertexNormals();
+            var mat = new THREE.MeshPhysicalMaterial({
+              color: gooColor, roughness: 0.07, metalness: 0,
+              clearcoat: 1, clearcoatRoughness: 0.06, envMapIntensity: 1.3,
+              transparent: true, opacity: 0.88
+            });
+            mat._own = true;
+            var m = new THREE.Mesh(geo, mat);
+            var a = R() * Math.PI * 2, rr = 0.35 + R() * radius;
+            m.rotation.x = -Math.PI / 2;
+            m.rotation.z = R() * Math.PI;
+            m.position.set(Math.cos(a) * rr, 0.013 + stainCount * 0.0007, Math.sin(a) * rr * 0.85);
+            var sc = 0.16 + R() * 0.42;
+            m.scale.set(sc, sc * (0.55 + R() * 0.5), 1);
+            m.renderOrder = 2;
+            m.receiveShadow = true;
+            stainGroup.add(m);
+            stainCount++;
+            // a couple of satellite droplets trailing each splat
+            if (R() < 0.7) {
+              var dm = new THREE.Mesh(geo, mat);
+              dm.rotation.x = -Math.PI / 2;
+              dm.position.set(m.position.x + (R() - 0.5) * 0.55, m.position.y + 0.0004, m.position.z + (R() - 0.5) * 0.45);
+              dm.scale.setScalar(0.05 + R() * 0.07);
+              dm.renderOrder = 2;
+              stainGroup.add(dm);
+              stainCount++;
+            }
+          }
+        }
+        function clearStains() {
+          while (stainGroup.children.length) {
+            var ch = stainGroup.children[0];
+            stainGroup.remove(ch);
+            disposeObj(ch);
+          }
+          stainCount = 0;
         }
 
         // ---------- deformation ----------
@@ -1692,6 +1881,7 @@
           gooPop = 0.25; gooPopV = 2.4; // core bursts out of the split, then settles
           spawnBroken(rotGroup.position.y);
           spawnParticles(pressWorld);
+          spawnStains(8, 1.7);
         }
         function reset() {
           state = "intact";
@@ -1708,6 +1898,7 @@
           clearPeelAttached();
           clearTapDyn();
           clearParticles();
+          clearStains();
           rotGroup.visible = true;
           brokenGroup.visible = false;
           rotGroup.rotation.y = 0;
@@ -2127,7 +2318,10 @@
         document.getElementById("gooColor").addEventListener("input", function (e) {
           gooColor = e.target.value;
           applyFinish();
-          if (state === "broken") { gooMat.color.set(gooColor); puddleMat.color.set(gooColor); }
+          if (state === "broken") {
+            gooMat.color.set(gooColor); puddleMat.color.set(gooColor);
+            stainGroup.children.forEach(function (m) { if (m.material && m.material.color) m.material.color.set(gooColor); });
+          }
           if (shape === "cake" && !texImage) paintTexture();
         });
         document.getElementById("fileInput").addEventListener("change", function (e) {
@@ -2171,6 +2365,53 @@
           if (vibeOn) vibe(20);
         });
 
+        // ---------- app mode: fullscreen + install to home screen ----------
+        // manifest + icons ship as real files (data:application/octet-stream;base64,eyJiYWNrZ3JvdW5kX2NvbG9yIjoiI2ZkZjZlYyIsImRlc2NyaXB0aW9uIjoiM0Qg6ISG55qu5o2P5o2P77ya54K55oyJ6KOC5byA44CB6ZW/5oyJ5o2P56KO44CB5ouW5Yqo5Yml5aOz44CB5o+J5o2P6L2v6Iqv44CCIiwiZGlzcGxheSI6InN0YW5kYWxvbmUiLCJpY29ucyI6W3sicHVycG9zZSI6ImFueSIsInNpemVzIjoiMTkyeDE5MiIsInNyYyI6Imljb24tMTkyLnBuZyIsInR5cGUiOiJpbWFnZS9wbmcifSx7InB1cnBvc2UiOiJhbnkiLCJzaXplcyI6IjUxMng1MTIiLCJzcmMiOiJpY29uLTUxMi5wbmciLCJ0eXBlIjoiaW1hZ2UvcG5nIn0seyJwdXJwb3NlIjoibWFza2FibGUiLCJzaXplcyI6IjUxMng1MTIiLCJzcmMiOiJpY29uLTUxMi5wbmciLCJ0eXBlIjoiaW1hZ2UvcG5nIn1dLCJsYW5nIjoiemgtQ04iLCJuYW1lIjoi6ISG55qu5o2P5o2PIiwib3JpZW50YXRpb24iOiJwb3J0cmFpdCIsInNjb3BlIjoiLi4vIiwic2hvcnRfbmFtZSI6IuiEhuearuaNj+aNjyIsInN0YXJ0X3VybCI6Ii4uL2luZGV4Lmh0bWwiLCJ0aGVtZV9jb2xvciI6IiNmZGY2ZWMifQ==),
+        // so the page installs and launches like an app: own icon on the
+        // home screen, standalone window, no browser chrome
+        (function setupAppMode() {
+          var fullBtn = document.getElementById("fullBtn");
+          var installBtn = document.getElementById("installBtn");
+          var installHint = document.getElementById("installHint");
+          fullBtn.addEventListener("click", function () {
+            if (document.fullscreenElement) {
+              document.exitFullscreen();
+            } else if (document.documentElement.requestFullscreen) {
+              document.documentElement.requestFullscreen().catch(function () { showToast("这个浏览器不支持全屏"); });
+            } else {
+              showToast("这个浏览器不支持全屏，用「安装到主屏幕」效果一样");
+            }
+          });
+          document.addEventListener("fullscreenchange", function () {
+            fullBtn.textContent = document.fullscreenElement ? "退出全屏" : "全屏 App 模式";
+          });
+          var deferredPrompt = null;
+          window.addEventListener("beforeinstallprompt", function (e) {
+            e.preventDefault();
+            deferredPrompt = e;
+            installBtn.style.display = "";
+            installHint.textContent = "";
+          });
+          var isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
+          var standalone = window.matchMedia("(display-mode: standalone)").matches || window.navigator.standalone;
+          if (!standalone) {
+            if (isIOS) installHint.textContent = "iPhone：点浏览器「分享」→「添加到主屏幕」，就像装了个 App";
+          } else {
+            fullBtn.style.display = "none";
+          }
+          installBtn.addEventListener("click", function () {
+            if (!deferredPrompt) return;
+            // the PWA Install Prompt API (not a dialog): asks the browser
+            // to show its own "install this app" sheet
+            deferredPrompt["prompt"]();
+            deferredPrompt.userChoice.then(function () { deferredPrompt = null; installBtn.style.display = "none"; });
+          });
+          window.addEventListener("appinstalled", function () {
+            installBtn.style.display = "none";
+            showToast("装好了，从主屏幕打开就是 App");
+          });
+        })();
+
         // ---------- finish: per-shape layered materials ----------
         // shell / core / decor each carry their own roughness + clearcoat;
         // the 湿亮/哑光 toggle only shifts the shell's surface response
@@ -2191,12 +2432,14 @@
           if (gloss) {
             shellMat.roughness = sm.rough; shellMat.clearcoat = sm.cc; shellMat.clearcoatRoughness = sm.ccRough;
             shellMat.envMapIntensity = sm.env;
-            gooMat.roughness = 0.14; gooMat.clearcoat = 1; gooMat.clearcoatRoughness = 0.12; gooMat.envMapIntensity = 1.2;
+            shellMat.specularIntensity = 1.2;
+            gooMat.roughness = 0.13; gooMat.clearcoat = 1; gooMat.clearcoatRoughness = 0.10; gooMat.envMapIntensity = 1.35; gooMat.specularIntensity = 1.2;
             shardMat.roughness = Math.min(0.4, sm.rough + 0.08);
           } else {
             shellMat.roughness = Math.min(0.92, sm.rough + 0.38); shellMat.clearcoat = sm.cc * 0.25; shellMat.clearcoatRoughness = 0.7;
             shellMat.envMapIntensity = sm.env * 0.55;
-            gooMat.roughness = 0.34; gooMat.clearcoat = 0.5; gooMat.clearcoatRoughness = 0.35;
+            shellMat.specularIntensity = 0.7;
+            gooMat.roughness = 0.34; gooMat.clearcoat = 0.5; gooMat.clearcoatRoughness = 0.35; gooMat.specularIntensity = 0.8;
             shardMat.roughness = 0.6;
           }
           shellMat.sheen = sm.sheen;
