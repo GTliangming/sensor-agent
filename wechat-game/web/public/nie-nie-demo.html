@@ -459,6 +459,9 @@
             playNoise(0.05, "bandpass", 2200 + Math.random() * 2200, 800, 0.30, i * 0.028 + Math.random() * 0.012);
           }
           playBlip(500, 90, 0.18, 0.20, "triangle", 0);
+          // wet pulp squelch under the crack: juicy, not just woody
+          playNoise(0.30, "lowpass", 620, 140, 0.42, 0.03);
+          playBlip(140, 55, 0.22, 0.16, "sine", 0.05);
           playNoise(0.35, "lowpass", 900, 200, 0.35, 0.06);
           playBlip(320, 60, 0.32, 0.28, "sine", 0.06);
           playBlip(180, 50, 0.4, 0.18, "sine", 0.12);
@@ -638,13 +641,13 @@
         scene.add(fill);
         // tight specular kicker: small bright source whose highlight sits
         // on the most convex part of the curve and slides as it turns
-        var spec = new THREE.PointLight(0xffffff, 30, 0, 2);
+        var spec = new THREE.PointLight(0xffffff, 14, 0, 2);
         spec.position.set(-1.7, 3.1, 3.4);
         scene.add(spec);
         // second pinpoint source, low and frontal: a small secondary
         // glint on the lower cheek so highlights read as local spots
         // on a real surface, not one uniform glow
-        var spec2 = new THREE.PointLight(0xfff6e0, 9, 0, 2);
+        var spec2 = new THREE.PointLight(0xfff6e0, 5, 0, 2);
         spec2.position.set(1.9, 0.7, 3.1);
         scene.add(spec2);
         var topLight = new THREE.SpotLight(0xffe9c0, 22, 0, 0.5, 0.65, 1.6);
@@ -793,6 +796,55 @@
             // faint vertical skin streaks
             g.fillStyle = "rgba(190,120,10,0.05)";
             for (var st2 = 0; st2 < 46; st2++) { g.fillRect(R() * W2, 0, 2 + R() * 5, H2); }
+            // ---- realism pass: the layers that stop it reading as plastic ----
+            // 1) broad colour mottling: uneven ripening, yellow-green
+            //    patches breathing through the orange, never uniform
+            for (var mo = 0; mo < 90; mo++) {
+              var mx = R() * W2, my = R() * H2, mr = 60 + R() * 220;
+              var mcols = ["rgba(169,176,76,0.10)", "rgba(246,168,29,0.10)", "rgba(221,116,20,0.09)", "rgba(233,179,42,0.11)"];
+              var mc = mcols[Math.floor(R() * mcols.length)];
+              var mg2 = g.createRadialGradient(mx, my, 2, mx, my, mr);
+              mg2.addColorStop(0, mc); mg2.addColorStop(1, "rgba(0,0,0,0)");
+              g.fillStyle = mg2; g.fillRect(mx - mr, my - mr, mr * 2, mr * 2);
+            }
+            // 2) waxy bloom: the powdery pale dusting real mangoes carry —
+            //    soft whitish veils, strongest on the shoulders
+            for (var bl = 0; bl < 26; bl++) {
+              var bx = R() * W2, by = Math.pow(R(), 1.6) * H2 * 0.75, br = 50 + R() * 150;
+              var bg2 = g.createRadialGradient(bx, by, 2, bx, by, br);
+              bg2.addColorStop(0, "rgba(255,250,230,0.13)"); bg2.addColorStop(1, "rgba(255,250,230,0)");
+              g.fillStyle = bg2; g.fillRect(bx - br, by - br, br * 2, br * 2);
+            }
+            // 3) russet corking around the stem end (top of the map):
+            //    rough tan-brown scurf real fruit gets near the stalk
+            for (var ru = 0; ru < 260; ru++) {
+              var rx = R() * W2, ry = Math.pow(R(), 2.2) * H2 * 0.16;
+              g.fillStyle = "rgba(146,104,52," + (0.10 + R() * 0.16) + ")";
+              g.beginPath(); g.arc(rx, ry, 1.5 + R() * 4.5, 0, Math.PI * 2); g.fill();
+            }
+            // 4) lenticels with depth: each dot gets a shadow side and a
+            //    highlight side, so close-ups read as pores, not print
+            for (var le = 0; le < 900; le++) {
+              var lx = R() * W2, ly = Math.pow(R(), 1.4) * H2, lr = 1.2 + R() * 2.4;
+              g.fillStyle = "rgba(120,70,10,0.22)";
+              g.beginPath(); g.arc(lx + lr * 0.4, ly + lr * 0.4, lr, 0, Math.PI * 2); g.fill();
+              g.fillStyle = "rgba(255,244,200,0.26)";
+              g.beginPath(); g.arc(lx - lr * 0.3, ly - lr * 0.3, lr * 0.8, 0, Math.PI * 2); g.fill();
+            }
+            // 5) sparse natural blemishes: tiny dark specks and two or
+            //    three faint scuffs — perfect skin is what looks fake
+            for (var bm = 0; bm < 46; bm++) {
+              g.fillStyle = "rgba(88,52,14," + (0.14 + R() * 0.2) + ")";
+              g.beginPath(); g.arc(R() * W2, R() * H2, 0.8 + R() * 2.0, 0, Math.PI * 2); g.fill();
+            }
+            g.strokeStyle = "rgba(150,96,30,0.13)"; g.lineCap = "round";
+            for (var sf = 0; sf < 4; sf++) {
+              var sx2 = R() * W2, sy2 = R() * H2;
+              g.lineWidth = 2 + R() * 3;
+              g.beginPath(); g.moveTo(sx2, sy2);
+              g.quadraticCurveTo(sx2 + (R() - 0.5) * 90, sy2 + (R() - 0.5) * 90, sx2 + (R() - 0.5) * 160, sy2 + (R() - 0.5) * 160);
+              g.stroke();
+            }
           } else if (shape === "egg") {
             // palest blue-white cast at the crown
             var eg = g.createRadialGradient(1024, 120, 40, 1024, 120, 700);
@@ -953,7 +1005,18 @@
           var W2 = 1024, H2 = 512;
           var R = rng(987654);
           g.fillStyle = "#808080"; g.fillRect(0, 0, W2, H2);
-          var density = shape === "egg" ? 5200 : shape === "peach" ? 6000 : shape === "mango" ? 2400 : shape === "cake" ? 3400 : 700;
+          if (shape === "mango") {
+            // large soft undulations under the fine grain: the skin
+            // drapes over pulp, it is not a polished shell
+            for (var lu = 0; lu < 60; lu++) {
+              var ux = R() * W2, uy = R() * H2, ur = 30 + R() * 90;
+              var uv = R() < 0.5 ? "168,168,168" : "96,96,96";
+              var ug = g.createRadialGradient(ux, uy, 2, ux, uy, ur);
+              ug.addColorStop(0, "rgba(" + uv + ",0.35)"); ug.addColorStop(1, "rgba(" + uv + ",0)");
+              g.fillStyle = ug; g.fillRect(ux - ur, uy - ur, ur * 2, ur * 2);
+            }
+          }
+          var density = shape === "egg" ? 5200 : shape === "peach" ? 6000 : shape === "mango" ? 3800 : shape === "cake" ? 3400 : 700;
           var amp = shape === "heart" ? 10 : 26;
           for (var i = 0; i < density; i++) {
             var v = 128 + Math.round((R() - 0.5) * 2 * amp);
@@ -975,15 +1038,15 @@
           bumpMap: bumpTex,
           bumpScale: 0.02,
           roughnessMap: roughTex,
-          roughness: 0.22,
+          roughness: 0.34,
           metalness: 0,
-          clearcoat: 1,
-          clearcoatRoughness: 0.08,
-          specularIntensity: 1.15,
+          clearcoat: 0.5,
+          clearcoatRoughness: 0.32,
+          specularIntensity: 0.85,
           sheen: 0.3,
           sheenRoughness: 0.5,
           sheenColor: new THREE.Color(0xffe2b8),
-          envMapIntensity: 1.25
+          envMapIntensity: 0.95
         });
 
         // ---------- geometry builders ----------
@@ -1004,7 +1067,7 @@
             // narrower, blossom end fuller and rounder, body arcing to
             // one side, one cheek swelling lower, a shallow suture groove
             // running down the front, and a slight beak at the very tip
-            return deformSphere(new THREE.SphereGeometry(1, 80, 56), function (v) {
+            return deformSphere(new THREE.SphereGeometry(1, 96, 64), function (v) {
               var ny = v.y; // -1..1 on the unit sphere, +y = stem end
               // kidney arc: the whole fruit bends sideways, most mid-body
               var bend = 0.15 * Math.sin((ny + 1) * 1.30) * (1 - Math.abs(ny) * 0.30);
@@ -1013,6 +1076,15 @@
               var taper = ny > 0 ? 1 - 0.17 * ny * ny : 1 + 0.03 * (-ny);
               v.x *= 0.90 * taper;
               v.z *= 0.76 * taper;
+              // organic imperfection: real fruit is never a perfect
+              // surface of revolution — low-frequency lumps and one
+              // slightly flattened facet break the CG-perfect silhouette
+              var lump = 1
+                + 0.014 * Math.sin(v.x * 8.3 + 1.7) * Math.sin(ny * 6.1 + 0.4)
+                + 0.011 * Math.sin(v.z * 10.7 + 2.9) * Math.sin(ny * 4.6 + 1.1)
+                + 0.007 * Math.sin((v.x + v.z) * 13.7 + 0.8);
+              v.x *= lump; v.z *= lump;
+              if (v.z < -0.35 && v.x > 0.1) v.z *= 0.985; // faint flat facet on the back cheek
               // lower cheek (+x side) swells — the classic lopsided mango
               var low = Math.max(0, -ny);
               if (v.x > bend) v.x += 0.075 * low * low * Math.max(0, v.x - bend);
@@ -1468,6 +1540,32 @@
           color: 0xff9a1f, roughness: 0.16, metalness: 0,
           clearcoat: 1, clearcoatRoughness: 0.18, envMapIntensity: 1.0
         });
+        // pulp fibre relief: real mango flesh is fibrous vesicles, not
+        // smooth jelly — short directional streaks + juice-cell dots
+        // break the light so the core reads as fruit, not plasticine
+        (function paintGooBump() {
+          var c = document.createElement("canvas"); c.width = 1024; c.height = 512;
+          var g = c.getContext("2d");
+          var R = rng(4451);
+          g.fillStyle = "#808080"; g.fillRect(0, 0, 1024, 512);
+          for (var i = 0; i < 2600; i++) { // juice vesicles
+            var v = 118 + Math.round(R() * 90);
+            g.fillStyle = "rgb(" + v + "," + v + "," + v + ")";
+            g.beginPath(); g.ellipse(R() * 1024, R() * 512, 2 + R() * 5, 1.2 + R() * 2.4, R() * 3.14, 0, Math.PI * 2); g.fill();
+          }
+          g.lineCap = "round";
+          for (var f = 0; f < 1500; f++) { // fibres, mostly one direction
+            var fx = R() * 1024, fy = R() * 512, fl = 6 + R() * 20, fa = 0.5 + (R() - 0.5) * 0.9;
+            var fv = R() < 0.5 ? "rgba(170,170,170,0.4)" : "rgba(96,96,96,0.4)";
+            g.strokeStyle = fv; g.lineWidth = 0.8 + R() * 1.1;
+            g.beginPath(); g.moveTo(fx, fy); g.lineTo(fx + Math.cos(fa) * fl, fy + Math.sin(fa) * fl); g.stroke();
+          }
+          var gt = new THREE.CanvasTexture(c);
+          gt.wrapS = THREE.RepeatWrapping;
+          gooMat.bumpMap = gt;
+          gooMat.bumpScale = 0.035;
+          gooMat.needsUpdate = true;
+        })();
         // the core is NOT a ball: a lumpy, flattened pulp mass with an
         // irregular silhouette, displaced once with a fixed seed
         var gooGeo = new THREE.SphereGeometry(0.94, 56, 40);
@@ -1479,9 +1577,9 @@
           for (var i = 0; i < pos.count; i++) {
             v.fromBufferAttribute(pos, i);
             var d = 1
-              + 0.055 * Math.sin(v.x * 6.4 + ph1) * Math.sin(v.y * 5.2 + ph2)
-              + 0.045 * Math.sin(v.z * 7.6 + ph3) * Math.sin(v.x * 3.9 + ph2)
-              + 0.03 * Math.sin(v.y * 11.0 + ph3);
+              + 0.075 * Math.sin(v.x * 6.4 + ph1) * Math.sin(v.y * 5.2 + ph2)
+              + 0.06 * Math.sin(v.z * 7.6 + ph3) * Math.sin(v.x * 3.9 + ph2)
+              + 0.04 * Math.sin(v.y * 11.0 + ph3);
             v.multiplyScalar(d);
             v.y *= 0.60; // slumped under its own weight
             pos.setXYZ(i, v.x, v.y, v.z);
@@ -2416,7 +2514,7 @@
         // shell / core / decor each carry their own roughness + clearcoat;
         // the 湿亮/哑光 toggle only shifts the shell's surface response
         var SHAPE_MAT = {
-          mango: { rough: 0.21, cc: 1.0, ccRough: 0.08, sheen: 0.25, env: 1.3, bump: 0.018 },
+          mango: { rough: 0.34, cc: 0.5, ccRough: 0.32, sheen: 0.25, env: 0.95, bump: 0.026 },
           egg:   { rough: 0.78, cc: 0.06, ccRough: 0.6, sheen: 0.2, env: 0.5, bump: 0.035 },
           cake:  { rough: 0.58, cc: 0.14, ccRough: 0.5, sheen: 0.5, env: 0.6, bump: 0.022 },
           peach: { rough: 0.46, cc: 0.3, ccRough: 0.35, sheen: 1.0, env: 0.8, bump: 0.028 },
@@ -2432,7 +2530,7 @@
           if (gloss) {
             shellMat.roughness = sm.rough; shellMat.clearcoat = sm.cc; shellMat.clearcoatRoughness = sm.ccRough;
             shellMat.envMapIntensity = sm.env;
-            shellMat.specularIntensity = 1.2;
+            shellMat.specularIntensity = shape === "mango" ? 0.85 : 1.2;
             gooMat.roughness = 0.13; gooMat.clearcoat = 1; gooMat.clearcoatRoughness = 0.10; gooMat.envMapIntensity = 1.35; gooMat.specularIntensity = 1.2;
             shardMat.roughness = Math.min(0.4, sm.rough + 0.08);
           } else {
