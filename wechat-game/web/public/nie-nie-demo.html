@@ -231,7 +231,7 @@
           <div class="hint" id="hint">点它一下就裂开 · 按住蓄力捏碎</div>
         </div>
         <div class="meter-row" id="meterRow">
-          <span class="meter-label">壳的压力</span>
+          <span class="meter-label" id="meterLabel">壳的压力</span>
           <div class="meter"><div class="meter-fill" id="meterFill"></div></div>
           <span class="meter-pct" id="meterPct">0%</span>
         </div>
@@ -335,6 +335,7 @@
         var meterFill = document.getElementById("meterFill");
         var meterPct = document.getElementById("meterPct");
         var meterRow = document.getElementById("meterRow");
+        var meterLabel = document.getElementById("meterLabel");
         var statsEl = document.getElementById("stats");
         var toast = document.getElementById("toast");
         var stageEl = document.getElementById("stage3d");
@@ -641,7 +642,7 @@
         scene.add(fill);
         // tight specular kicker: small bright source whose highlight sits
         // on the most convex part of the curve and slides as it turns
-        var spec = new THREE.PointLight(0xffffff, 14, 0, 2);
+        var spec = new THREE.PointLight(0xffffff, 10, 0, 2);
         spec.position.set(-1.7, 3.1, 3.4);
         scene.add(spec);
         // second pinpoint source, low and frontal: a small secondary
@@ -1061,48 +1062,55 @@
           geo.computeVertexNormals();
           return geo;
         }
+        // the mango deform, shared by the body, the peelable shell
+        // pieces and the two broken halves, so every part of the fruit
+        // carries the same unmistakable kidney silhouette — a real
+        // mango is NOT a ball and NOT an egg: stem end clearly narrower,
+        // blossom end full and round, the whole body arcing to one side,
+        // front cheek slightly flattened, a suture groove down the
+        // front, and a small beak pinching out at the very tip
+        function mangoDeform(v) {
+          var ny = v.y; // ~-1..1 on the unit sphere, +y = stem end
+          // strong kidney arc: the whole fruit bends sideways, most mid-body
+          var bend = 0.21 * Math.sin((ny + 1) * 1.22) * (1 - Math.abs(ny) * 0.22);
+          v.x += bend;
+          // stem end tapers in clearly; blossom end stays full
+          var taper = ny > 0 ? 1 - 0.21 * Math.pow(ny, 1.6) : 1 + 0.045 * (-ny);
+          v.x *= 0.88 * taper;
+          v.z *= 0.74 * taper;
+          // front cheek slightly flattened, back cheek rounder — real
+          // mangoes are not symmetric front-to-back either
+          if (v.z > 0) v.z *= 0.93;
+          // organic imperfection: low-frequency lumps and one slightly
+          // flattened facet break the CG-perfect silhouette
+          var lump = 1
+            + 0.016 * Math.sin(v.x * 8.3 + 1.7) * Math.sin(ny * 6.1 + 0.4)
+            + 0.013 * Math.sin(v.z * 10.7 + 2.9) * Math.sin(ny * 4.6 + 1.1)
+            + 0.008 * Math.sin((v.x + v.z) * 13.7 + 0.8);
+          v.x *= lump; v.z *= lump;
+          if (v.z < -0.35 && v.x > 0.1) v.z *= 0.98; // faint flat facet on the back cheek
+          // lower cheek (+x side) swells — the classic lopsided mango
+          var low = Math.max(0, -ny);
+          if (v.x > bend) v.x += 0.10 * low * low * Math.max(0, v.x - bend);
+          if (v.z !== 0) v.z *= 1 + 0.05 * low;
+          // tall, elongated oval — an egg is plumper and symmetric
+          v.y *= 1.21;
+          // blossom-end beak: the last bit pinches and nudges forward
+          if (ny < -0.80) {
+            var bk = (-ny - 0.80) / 0.20; // 0..1
+            v.x = bend + (v.x - bend) * (1 - 0.26 * bk);
+            v.z *= 1 - 0.20 * bk;
+            v.y -= 0.06 * bk * bk;
+            v.z += 0.035 * bk;
+          }
+          // suture groove down the front face, following the arc —
+          // deeper and wider than a hairline so it reads at a glance
+          var gd = Math.abs(v.x - (bend + 0.02));
+          if (v.z > 0 && gd < 0.20) v.z -= (0.20 - gd) * 0.24 * Math.max(0, v.z) * (1 - Math.abs(ny) * 0.35);
+        }
         function buildGeometry(name) {
           if (name === "mango") {
-            // a real mango is NOT a ball: tall kidney/oval, stem end
-            // narrower, blossom end fuller and rounder, body arcing to
-            // one side, one cheek swelling lower, a shallow suture groove
-            // running down the front, and a slight beak at the very tip
-            return deformSphere(new THREE.SphereGeometry(1, 96, 64), function (v) {
-              var ny = v.y; // -1..1 on the unit sphere, +y = stem end
-              // kidney arc: the whole fruit bends sideways, most mid-body
-              var bend = 0.15 * Math.sin((ny + 1) * 1.30) * (1 - Math.abs(ny) * 0.30);
-              v.x += bend;
-              // stem end tapers in; blossom end stays full
-              var taper = ny > 0 ? 1 - 0.17 * ny * ny : 1 + 0.03 * (-ny);
-              v.x *= 0.90 * taper;
-              v.z *= 0.76 * taper;
-              // organic imperfection: real fruit is never a perfect
-              // surface of revolution — low-frequency lumps and one
-              // slightly flattened facet break the CG-perfect silhouette
-              var lump = 1
-                + 0.014 * Math.sin(v.x * 8.3 + 1.7) * Math.sin(ny * 6.1 + 0.4)
-                + 0.011 * Math.sin(v.z * 10.7 + 2.9) * Math.sin(ny * 4.6 + 1.1)
-                + 0.007 * Math.sin((v.x + v.z) * 13.7 + 0.8);
-              v.x *= lump; v.z *= lump;
-              if (v.z < -0.35 && v.x > 0.1) v.z *= 0.985; // faint flat facet on the back cheek
-              // lower cheek (+x side) swells — the classic lopsided mango
-              var low = Math.max(0, -ny);
-              if (v.x > bend) v.x += 0.075 * low * low * Math.max(0, v.x - bend);
-              if (v.z !== 0) v.z *= 1 + 0.05 * low;
-              // tall oval, not round
-              v.y *= 1.17;
-              // blossom-end beak: the last bit pinches and nudges forward
-              if (ny < -0.82) {
-                var bk = (-ny - 0.82) / 0.18; // 0..1
-                v.x = bend + (v.x - bend) * (1 - 0.22 * bk);
-                v.z *= 1 - 0.18 * bk;
-                v.y -= 0.045 * bk * bk;
-                v.z += 0.03 * bk;
-              }
-              // shallow suture groove down the front face, following the arc
-              var gd = Math.abs(v.x - (bend + 0.02));
-              if (v.z > 0 && gd < 0.16) v.z -= (0.16 - gd) * 0.16 * Math.max(0, v.z) * (1 - Math.abs(ny) * 0.4);
-            });
+            return deformSphere(new THREE.SphereGeometry(1, 96, 64), mangoDeform);
           }
           if (name === "egg") {
             return deformSphere(new THREE.SphereGeometry(1, 64, 48), function (v) {
@@ -1169,8 +1177,8 @@
           mainMesh = new THREE.Mesh(buildGeometry(shape), shellMat);
           mainMesh.castShadow = true;
           squashGroup.add(mainMesh);
-          rotGroup.position.y = { mango: 1.22, egg: 1.16, peach: 1.0, cake: 0.8, heart: 1.05 }[shape] || 1.06;
-          shapeBottom = { mango: 1.17, egg: 1.14, peach: 0.96, cake: 0.78, heart: 1.02 }[shape] || 0.95;
+          rotGroup.position.y = { mango: 1.28, egg: 1.16, peach: 1.0, cake: 0.8, heart: 1.05 }[shape] || 1.06;
+          shapeBottom = { mango: 1.27, egg: 1.14, peach: 0.96, cake: 0.78, heart: 1.02 }[shape] || 0.95;
           blobBase = { mango: 0.94, egg: 0.82, peach: 0.97, cake: 1.02, heart: 1.0 }[shape] || 1.0;
           basePos = mainMesh.geometry.attributes.position.array.slice();
           baseNor = mainMesh.geometry.attributes.normal.array.slice();
@@ -1387,6 +1395,8 @@
             var phiS = (i / 6) * Math.PI * 2 + R() * 0.35;
             var thS = 0.45 + R() * 1.5;
             var geo = jagged(new THREE.SphereGeometry(1.06, 10, 7, phiS, 0.92, thS, 0.78), 0.015, 3100 + i * 71);
+            // peel pieces must hug the fruit's real silhouette, not a ball
+            if (shape === "mango") deformSphere(geo, mangoDeform);
             var outer = new THREE.Mesh(geo, shardMat);
             outer.castShadow = true;
             var inner = new THREE.Mesh(geo, shardInnerMat);
@@ -1513,7 +1523,10 @@
           gooSpread = 0.3;
           gooPop = 0.25; gooPopV = 2.4;
           spawnStains(3, 1.0);
-          meterRow.style.visibility = "hidden";
+          pressure = 0;
+          meterRow.style.visibility = "visible";
+          meterLabel.textContent = "软芯受力";
+          updateMeter();
           if (viewMode === "squeeze") hint.textContent = "剥干净了！按住拖着揉软芯，拉伸压扁都可以";
           showToast("剥干净了，软芯露出来了");
         }
@@ -1537,8 +1550,8 @@
 
         // ---------- broken state: goo blob + shards + particles ----------
         var gooMat = new THREE.MeshPhysicalMaterial({
-          color: 0xff9a1f, roughness: 0.16, metalness: 0,
-          clearcoat: 1, clearcoatRoughness: 0.18, envMapIntensity: 1.0
+          color: 0xff9a1f, roughness: 0.24, metalness: 0,
+          clearcoat: 0.65, clearcoatRoughness: 0.25, envMapIntensity: 1.0
         });
         // pulp fibre relief: real mango flesh is fibrous vesicles, not
         // smooth jelly — short directional streaks + juice-cell dots
@@ -1605,7 +1618,7 @@
           }
         })();
         var gooPop = 0.3, gooPopV = 0; // springy reveal of the core at break
-        var puddleMat = new THREE.MeshPhysicalMaterial({ color: 0xff9a1f, roughness: 0.09, clearcoat: 1, clearcoatRoughness: 0.08, envMapIntensity: 1.25, transparent: true, opacity: 0.82 });
+        var puddleMat = new THREE.MeshPhysicalMaterial({ color: 0xff9a1f, roughness: 0.05, clearcoat: 1, clearcoatRoughness: 0.04, envMapIntensity: 1.6, transparent: true, opacity: 0.9 });
         var puddleGeo = new THREE.CircleGeometry(1, 44);
         (function irregularPuddle(geo) {
           var pos = geo.attributes.position;
@@ -1666,6 +1679,8 @@
           for (var h = 0; h < 2; h++) {
             var side = h === 0 ? 1 : -1;
             var hgeo = jagged(new THREE.SphereGeometry(1.04, 40, 26, h * Math.PI, Math.PI * 0.96), 0.012, 500 + h * 37);
+            // the halves are THIS fruit splitting open: same kidney deform
+            if (shape === "mango") deformSphere(hgeo, mangoDeform);
             var pivot = new THREE.Group();
             var outer = new THREE.Mesh(hgeo, shardMat);
             outer.castShadow = true;
@@ -1872,10 +1887,14 @@
               if (Math.hypot(x, y) > 0.1) pos.setXY(k, x * jit[k], y * jit[k]);
             }
             geo.computeVertexNormals();
+            // juice reads WET by contrast: deepened, saturated colour
+            // against the pale board + a near-mirror clearcoat, instead
+            // of pale goo colour that washed out to a matte smudge
+            var stainCol = new THREE.Color(gooColor).lerp(new THREE.Color(0xc1440e), 0.38);
             var mat = new THREE.MeshPhysicalMaterial({
-              color: gooColor, roughness: 0.07, metalness: 0,
-              clearcoat: 1, clearcoatRoughness: 0.06, envMapIntensity: 1.3,
-              transparent: true, opacity: 0.88
+              color: stainCol, roughness: 0.05, metalness: 0,
+              clearcoat: 1, clearcoatRoughness: 0.04, envMapIntensity: 1.7,
+              transparent: true, opacity: 0.95
             });
             mat._own = true;
             var m = new THREE.Mesh(geo, mat);
@@ -1883,7 +1902,7 @@
             m.rotation.x = -Math.PI / 2;
             m.rotation.z = R() * Math.PI;
             m.position.set(Math.cos(a) * rr, 0.013 + stainCount * 0.0007, Math.sin(a) * rr * 0.85);
-            var sc = 0.16 + R() * 0.42;
+            var sc = 0.22 + R() * 0.50;
             m.scale.set(sc, sc * (0.55 + R() * 0.5), 1);
             m.renderOrder = 2;
             m.receiveShadow = true;
@@ -1966,7 +1985,10 @@
           brokenCount++;
           updateStats();
           if (viewMode === "squeeze") hint.textContent = "碎了！按住拖着揉，当手作袋继续捏";
-          meterRow.style.visibility = "hidden";
+          pressure = 0;
+          meterRow.style.visibility = "visible";
+          meterLabel.textContent = "软芯受力";
+          updateMeter();
           showToast("咔嚓！爆浆了");
           mainMesh.updateWorldMatrix(true, false);
           pressWorld.copy(pressLocal).applyMatrix4(mainMesh.matrixWorld);
@@ -2003,6 +2025,7 @@
           squashGroup.scale.set(1, 1, 1);
           buildShape();
           meterRow.style.visibility = "visible";
+          meterLabel.textContent = "壳的压力";
           hint.textContent = viewMode === "squeeze" ? "点它一下就裂开 · 按住蓄力捏碎" : "拖动旋转 · 双指或滚轮放大看细节 · 双击复位";
           updateMeter();
         }
@@ -2107,7 +2130,10 @@
             }
             gesture = "pending";
             if (holdTimer) clearTimeout(holdTimer);
-            holdTimer = setTimeout(activatePress, 130);
+            // the soft core has no tap gesture to disambiguate, so a
+            // press there engages instantly — no dead 130ms, no 0% meter
+            if (state === "broken") activatePress();
+            else holdTimer = setTimeout(activatePress, 90);
           }
         });
         cv.addEventListener("pointermove", function (e) {
@@ -2146,7 +2172,7 @@
             return;
           }
           if (gesture === "pending") {
-            if (Math.hypot(e.clientX - downX, e.clientY - downY) > 10) {
+            if (Math.hypot(e.clientX - downX, e.clientY - downY) > 20) {
               if (holdTimer) { clearTimeout(holdTimer); holdTimer = null; }
               gesture = "orbit";
             } else {
@@ -2230,7 +2256,7 @@
 
           if (state === "intact") {
             if (pressing) {
-              pressure = Math.min(100, pressure + dt * 62);
+              pressure = Math.min(100, pressure + dt * 80);
               // strain creak follows pressure; micro-ticks and faint
               // vibration pulses build tension as the shell nears breaking
               if (strainGain && strainFilter) {
@@ -2246,7 +2272,7 @@
                 lastVibeLevel = vLvl;
                 if (vLvl >= 3) vibe(8);
               }
-              var stage = pressure > 88 ? 3 : pressure > 74 ? 2 : pressure > 56 ? 1 : 0;
+              var stage = pressure > 84 ? 3 : pressure > 66 ? 2 : pressure > 48 ? 1 : 0;
               if (stage > crackStage) {
                 crackStage = stage;
                 buildCracks(stage);
@@ -2327,6 +2353,11 @@
               stressSprite.visible = false;
             }
           } else {
+            // the meter stays alive on the soft core: it reads core
+            // pressure now, so pressing the pulp visibly registers
+            if (pressing) pressure = Math.min(100, pressure + rawDt * 170);
+            else pressure = Math.max(0, pressure - rawDt * 150);
+            updateMeter();
             var gTarget = pressing ? 1 : 0;
             var gSteps = Math.max(1, Math.min(6, Math.round(rawDt / (1 / 120))));
             var gh = rawDt / gSteps;
@@ -2418,7 +2449,8 @@
           applyFinish();
           if (state === "broken") {
             gooMat.color.set(gooColor); puddleMat.color.set(gooColor);
-            stainGroup.children.forEach(function (m) { if (m.material && m.material.color) m.material.color.set(gooColor); });
+            var stainCol2 = new THREE.Color(gooColor).lerp(new THREE.Color(0xc1440e), 0.38);
+            stainGroup.children.forEach(function (m) { if (m.material && m.material.color) m.material.color.copy(stainCol2); });
           }
           if (shape === "cake" && !texImage) paintTexture();
         });
@@ -2531,7 +2563,7 @@
             shellMat.roughness = sm.rough; shellMat.clearcoat = sm.cc; shellMat.clearcoatRoughness = sm.ccRough;
             shellMat.envMapIntensity = sm.env;
             shellMat.specularIntensity = shape === "mango" ? 0.85 : 1.2;
-            gooMat.roughness = 0.13; gooMat.clearcoat = 1; gooMat.clearcoatRoughness = 0.10; gooMat.envMapIntensity = 1.35; gooMat.specularIntensity = 1.2;
+            gooMat.roughness = 0.24; gooMat.clearcoat = 0.65; gooMat.clearcoatRoughness = 0.22; gooMat.envMapIntensity = 1.0; gooMat.specularIntensity = 0.85;
             shardMat.roughness = Math.min(0.4, sm.rough + 0.08);
           } else {
             shellMat.roughness = Math.min(0.92, sm.rough + 0.38); shellMat.clearcoat = sm.cc * 0.25; shellMat.clearcoatRoughness = 0.7;
